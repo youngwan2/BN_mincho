@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### env ###
+.env
+
 ### STS ###
 .apt_generated
 .classpath
@@ -15,6 +18,7 @@ build/
 .sts4-cache
 bin/
 !**/src/main/**/bin/
+!**/src/main/resources/application.properties
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
