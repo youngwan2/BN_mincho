@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 import java.util.HashMap;
@@ -19,7 +20,6 @@ public class ErrorResponse {
     private  HttpErrorType httpErrorType; // 상태 코드의 타입 (ex.BAD_REQUEST)
 
     public ResponseEntity<Map<String, String>> getResponse(int httpStatus, String message, HttpErrorType httpErrorType){
-
         Map<String, String> messageMap = new HashMap<>();
         messageMap.put("message", message);
         messageMap.put("status", String.valueOf(httpStatus) );
@@ -27,4 +27,14 @@ public class ErrorResponse {
 
         return ResponseEntity.status(httpStatus).body(messageMap);
     }
+
+    public ResponseEntity<Map<String, String>> getResponse(int httpStatus, String message, String httpErrorType) {
+        Map<String, String> messageMap = new HashMap<>();
+        messageMap.put("message", message);
+        messageMap.put("status", String.valueOf(httpStatus) );
+        messageMap.put("StatusCode", httpErrorType);
+
+        return ResponseEntity.status(httpStatus).body(messageMap);
+    }
+
 }

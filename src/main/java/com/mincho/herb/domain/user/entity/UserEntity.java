@@ -5,7 +5,7 @@ import com.mincho.herb.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
+@Entity(name = "Member")
 @Data
 public class UserEntity {
 
@@ -28,6 +28,7 @@ public class UserEntity {
         userEntity.id = userDomain.getId();
         userEntity.email = userDomain.getEmail();
         userEntity.nickname = userDomain.getNickname();
+        userEntity.password = userDomain.getPassword();
         return userEntity;
     }
 
