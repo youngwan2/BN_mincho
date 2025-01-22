@@ -1,4 +1,4 @@
-package com.pushly.server;
+package com.mincho.herb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
