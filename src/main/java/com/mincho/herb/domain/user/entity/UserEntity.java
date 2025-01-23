@@ -23,6 +23,9 @@ public class UserEntity {
     @Column
     private String password;
 
+    @Column
+    private String role="ROLE_USER";
+
     public static UserEntity toEntity(User userDomain){
         UserEntity userEntity = new UserEntity();
         userEntity.id = userDomain.getId();

@@ -2,12 +2,20 @@ package com.mincho.herb.domain.user.application;
 
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
+import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
 import com.mincho.herb.domain.user.repository.UserRepositoryImpl;
+import com.mincho.herb.infra.auth.JwtAuthProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,6 +31,13 @@ class UserServiceImplTest {
     @Mock
     private UserRepositoryImpl userRepository;
 
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @Mock
+    private JwtAuthProvider jwtAuthProvider;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -33,6 +48,7 @@ class UserServiceImplTest {
     }
 
 
+    /* 회원가입 */
     @Test
     void register_ShouldSaveUser_WhenValidRequest() {
         // Given
@@ -61,6 +77,7 @@ class UserServiceImplTest {
         assertEquals(encodedPassword, capturedUser.getPassword());
     }
 
+    /* 유저 중복 확인*/
     @Test
     void dueCheck_whenEmailExists_returnsTrue() {
         // Given
@@ -94,5 +111,58 @@ class UserServiceImplTest {
         // Then
         assertFalse(result); // 기대 결과가 false인지 확인
         verify(userRepository, Mockito.times(1)).existsByEmail(email); // 메서드 호출 여부 확인
+    }
+
+    /* 로그인 */
+    @Test
+    void login_ShouldCreateToken_WhenValidRequest() {
+        // Given
+        String email = "test@example.com";
+        String password = "password";
+        RequestLoginDTO requestLoginDTO = new RequestLoginDTO(email, password);
+
+        String mockAccessToken = "mockAccessToken";
+        String mockRefreshToken = "mockRefreshToken";
+
+        // 목 객체 설정
+        Authentication mockAuthentication = mock(Authentication.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(mockAuthentication);
+
+        when(jwtAuthProvider.generateToken(mockAuthentication, 60 * 60 * 10 * 1000L))
+                .thenReturn(mockAccessToken);
+        when(jwtAuthProvider.generateToken(mockAuthentication, 60 * 60 * 24 * 30 * 1000L))
+                .thenReturn(mockRefreshToken);
+
+        // When
+        Map<String, String> result = userService.login(requestLoginDTO);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(mockAccessToken, result.get("access"));
+        assertEquals(mockRefreshToken, result.get("refresh"));
+
+        // Verify
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtAuthProvider).generateToken(mockAuthentication, 60 * 60 * 10 * 1000L);
+        verify(jwtAuthProvider).generateToken(mockAuthentication, 60 * 60 * 24 * 30 * 1000L);
+    }
+
+    @Test
+    void login_WhenAuthFailure_ThrowBadCredentialException(){
+        // Given
+        String email = "test@example.com";
+        String password = "wrongPassword";
+        RequestLoginDTO requestLoginDTO = new RequestLoginDTO(email, password);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("자격증명 실패"));
+
+        // When & Then
+        assertThrows(BadCredentialsException.class, () -> userService.login(requestLoginDTO));
+
+        // Verify
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtAuthProvider, never()).generateToken(any(), anyLong());
     }
 }

@@ -4,12 +4,19 @@ import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
+import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
 import com.mincho.herb.domain.user.repository.UserRepositoryImpl;
+import com.mincho.herb.infra.auth.JwtAuthProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -17,8 +24,10 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements  UserService{
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtAuthProvider jwtAuthProvider;
     private final UserRepositoryImpl userRepository;
-    
+
     @Override
     public void register(RequestRegisterDTO registerDTO) {
 
@@ -44,5 +53,31 @@ public class UserServiceImpl implements  UserService{
         return userRepository.existsByEmail(duplicateCheckDTO.getEmail());
     }
 
+    // 로그인
+    @Override
+    public Map<String, String> login(RequestLoginDTO requestLoginDTO) {
 
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(requestLoginDTO.getEmail(), requestLoginDTO.getPassword());
+
+            // 인증 시도
+            Authentication authentication = authenticationManager.authenticate(authToken);
+
+            log.info("인증 성공: {}", authentication);
+
+            // 토큰 생성
+            String accessToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 10* 1000L);
+            String refreshToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 24 * 30 * 1000L);
+
+            Map<String, String> map = new HashMap<>();
+            map.put("access", accessToken);
+            map.put("refresh", refreshToken);
+
+            return map;
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }
