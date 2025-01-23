@@ -11,7 +11,6 @@ public class UserRepositoryImpl implements UserRepository{
     private final UserJpaRepository userJpaRepository; // 의도: jpa 를 외부에서 주입하여 JPA 의존성을 약화
 
 
-
     @Override
     public void save(User user) {
         userJpaRepository.save(UserEntity.toEntity(user));
@@ -20,5 +19,10 @@ public class UserRepositoryImpl implements UserRepository{
     @Override
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userJpaRepository.findByEmail(email);
     }
 }

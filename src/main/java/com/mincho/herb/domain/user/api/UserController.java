@@ -8,10 +8,14 @@ import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.ValidationUtil;
 import com.mincho.herb.domain.user.application.UserServiceImpl;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
+import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
+import com.mincho.herb.infra.auth.CookieUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +28,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/user")
 public class UserController {
     private final ValidationUtil validationUtil;
+    private final CookieUtil cookieUtil;
     private final UserServiceImpl userService;
 
     // 회원가입
@@ -54,5 +59,20 @@ public class UserController {
         }
 
         return new SuccessResponse<>().getResponse(200, "회원가입을 진행해주세요", HttpSuccessType.OK);
+    }
+
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody RequestLoginDTO requestLoginDTO, BindingResult result, HttpServletResponse response){
+
+        if(result.hasErrors()){
+            return new ErrorResponse().getResponse(400, validationUtil.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+        }
+        Map<String, String> tokenMap= userService.login(requestLoginDTO);
+        response.addCookie(cookieUtil.createCookie("refresh", tokenMap.get("refresh"), 60*60*24));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION,"Bearer "+tokenMap.get("access"))
+                .body("{\"message\":\"로그인 되었습니다.\"}");
     }
 }
