@@ -42,9 +42,9 @@ public class SecurityConfig {
         http.addFilterAt(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                     authorizationManagerRequestMatcherRegistry
-                            .requestMatchers("/api/v1/user/register/**").permitAll()
-                            .requestMatchers("/api/v1/user/login/**").permitAll()
-                            .requestMatchers("/api/v1/user/**").hasRole("USER")
+                            .requestMatchers("/api/v1/users/register/**").permitAll()
+                            .requestMatchers("/api/v1/users/login/**").permitAll()
+                            .requestMatchers("/api/v1/users/**").hasRole("USER")
                             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자만 허용
                             .anyRequest().permitAll()
                 );

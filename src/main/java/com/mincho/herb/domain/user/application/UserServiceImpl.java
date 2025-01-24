@@ -42,6 +42,7 @@ public class UserServiceImpl implements  UserService{
                 .nickname(registerDTO.getNickname())
                 .email(registerDTO.getEmail())
                 .password(encodePw)
+                .role("ROLE_USER")
                 .build();
 
         userRepository.save(user);
@@ -63,7 +64,7 @@ public class UserServiceImpl implements  UserService{
             // 인증 시도
             Authentication authentication = authenticationManager.authenticate(authToken);
 
-            log.info("인증 성공: {}", authentication);
+            log.info("인증 성공: {}", authentication.getAuthorities().iterator().next().getAuthority());
 
             // 토큰 생성
             String accessToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 10* 1000L);
@@ -74,6 +75,15 @@ public class UserServiceImpl implements  UserService{
             map.put("refresh", refreshToken);
 
             return map;
+    }
+
+    // 회원탈퇴
+    @Override
+    public void deleteUser(String email) {
+        boolean hasUser =userRepository.existsByEmail(email);
+
+        if(!hasUser) throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
+        userRepository.deleteByEmail(email);
     }
 
     @Override

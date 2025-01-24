@@ -17,15 +17,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.Map;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final ValidationUtil validationUtil;
     private final CookieUtil cookieUtil;
@@ -74,5 +77,15 @@ public class UserController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+tokenMap.get("access"))
                 .body("{\"message\":\"로그인 되었습니다.\"}");
+    }
+
+    // 회원탈퇴
+    @DeleteMapping("/me")
+    public ResponseEntity<Map<String, String>> deleteUser(HttpServletResponse response){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.deleteUser(name);
+
+        response.addCookie(cookieUtil.createCookie("refresh", "", 0));
+        return new SuccessResponse<>().getResponse(200, "정상 탈퇴되었습니다.", HttpSuccessType.OK);
     }
 }
