@@ -3,6 +3,7 @@ package com.mincho.herb.common.exception;
 import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import io.jsonwebtoken.ExpiredJwtException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -47,7 +48,6 @@ public class GlobalException {
     public ResponseEntity<Map<String, String>> handleBadCredentialException(BadCredentialsException ex){
         return new ErrorResponse().getResponse(401  ,ex.getMessage()+" 자격증명을 확인 후 다시시도 해주세요.", HttpErrorType.UNAUTHORIZED);
     }
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception ex){

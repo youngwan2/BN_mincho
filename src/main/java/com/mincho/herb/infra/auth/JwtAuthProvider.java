@@ -44,7 +44,7 @@ public class JwtAuthProvider {
         return jwtUtils.getRole(token);
     }
 
-    public Collection<GrantedAuthority> getAuthorities(String token) {
+  public Collection<GrantedAuthority> getAuthorities(String token) {
         // JWT에서 권한 정보 추출
         String role = this.getRole(token);
 
