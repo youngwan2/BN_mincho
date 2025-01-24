@@ -2,6 +2,8 @@ package com.mincho.herb.common.exception;
 
 import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorType;
+import io.jsonwebtoken.ExpiredJwtException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;

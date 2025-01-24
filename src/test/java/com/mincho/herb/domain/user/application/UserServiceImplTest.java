@@ -1,5 +1,7 @@
 package com.mincho.herb.domain.user.application;
 
+import com.mincho.herb.common.config.error.HttpErrorCode;
+import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.RequestLoginDTO;
@@ -164,5 +166,33 @@ class UserServiceImplTest {
         // Verify
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtAuthProvider, never()).generateToken(any(), anyLong());
+    }
+
+    @Test
+    void deleteUser_UserExists() {
+        // given
+        String email ="test12@example.com";
+        when(userRepository.existsByEmail(email)).thenReturn(true);
+
+        // when
+        userService.deleteUser(email);
+
+        // then
+        verify(userRepository, times(1)).deleteByEmail(email);
+    }
+
+    @Test
+    void deleteUser_UserNotFound() {
+        // given
+        String email ="test12@example.com";
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+
+        // when & then
+        CustomHttpException exception = assertThrows(CustomHttpException.class, () -> {
+            userService.deleteUser(email);
+        });
+
+        assertEquals(HttpErrorCode.RESOURCE_NOT_FOUND, exception.getHttpErrorCode());
+        assertEquals("유저 정보를 찾을 수 없습니다.", exception.getMessage());
     }
 }

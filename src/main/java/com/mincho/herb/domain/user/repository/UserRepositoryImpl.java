@@ -2,6 +2,7 @@ package com.mincho.herb.domain.user.repository;
 
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.entity.UserEntity;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,5 +25,11 @@ public class UserRepositoryImpl implements UserRepository{
     @Override
     public User findByEmail(String email) {
         return userJpaRepository.findByEmail(email);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByEmail(String email) { // 회원탈퇴
+        userJpaRepository.deleteByEmail(email);
     }
 }

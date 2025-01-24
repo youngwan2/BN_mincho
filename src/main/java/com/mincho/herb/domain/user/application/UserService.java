@@ -12,5 +12,7 @@ public interface UserService {
     void register(RequestRegisterDTO requestRegisterDTO);
     boolean dueCheck(DuplicateCheckDTO duplicateCheckDTO);
     Map<String, String> login(RequestLoginDTO requestLoginDTO);
+    void deleteUser(String email); // 회원탈퇴
     User findUserByEmail(String email);
+    
 }
