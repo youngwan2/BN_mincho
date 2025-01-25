@@ -1,7 +1,7 @@
 package com.mincho.herb.infra.auth;
 
 import com.mincho.herb.domain.user.domain.User;
-import com.mincho.herb.domain.user.repository.UserRepositoryImpl;
+import com.mincho.herb.domain.user.repository.user.UserRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

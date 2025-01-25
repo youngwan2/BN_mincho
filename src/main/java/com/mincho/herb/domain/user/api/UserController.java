@@ -6,12 +6,15 @@ import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.ValidationUtil;
-import com.mincho.herb.domain.user.application.UserServiceImpl;
-import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
-import com.mincho.herb.domain.user.dto.RequestLoginDTO;
-import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
+import com.mincho.herb.domain.user.application.profile.ProfileService;
+import com.mincho.herb.domain.user.application.user.UserService;
+import com.mincho.herb.domain.user.application.user.UserServiceImpl;
+import com.mincho.herb.domain.user.domain.Profile;
+import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.dto.*;
 import com.mincho.herb.infra.auth.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalTime;
-import java.util.Date;
+
 import java.util.Map;
 
 @Slf4j
@@ -31,9 +33,11 @@ import java.util.Map;
 public class UserController {
     private final ValidationUtil validationUtil;
     private final CookieUtil cookieUtil;
-    private final UserServiceImpl userService;
+    private final UserService userService;
+    private final ProfileService profileService;
 
     // 회원가입
+    @Transactional
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> userRegister(@Valid @RequestBody RequestRegisterDTO registerDTO, BindingResult result){
 
@@ -41,7 +45,9 @@ public class UserController {
             return new ErrorResponse().getResponse(400, validationUtil.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         log.info("userinfo {}", registerDTO);
-        userService.register(registerDTO);
+        User savedUser = userService.register(registerDTO);
+        profileService.insertProfile(savedUser);
+
 
         log.info("state:{}","회원가입 성공!");
         return new SuccessResponse<>().getResponse(201,"등록 되었습니다.", HttpSuccessType.OK);
@@ -81,10 +87,24 @@ public class UserController {
     // 회원탈퇴
     @DeleteMapping("/me")
     public ResponseEntity<Map<String, String>> deleteUser(HttpServletResponse response){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        userService.deleteUser(name);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.deleteUser(email);
 
         response.addCookie(cookieUtil.createCookie("refresh", "", 0));
         return new SuccessResponse<>().getResponse(200, "정상 탈퇴되었습니다.", HttpSuccessType.OK);
+    }
+
+
+    // 비밀번호 수정
+    @PatchMapping("/me/password")
+    public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody RequestUpdatePassword requestUpdatePassword, BindingResult result){
+
+        if(result.hasErrors()){
+            return new ErrorResponse().getResponse(400, validationUtil.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+        }
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        userService.updatePassword(requestUpdatePassword.getPassword(), email);
+        return new SuccessResponse<>().getResponse(200, "비밀번호가 수정 되었습니다.", HttpSuccessType.OK);
     }
 }

@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.user.application;
+package com.mincho.herb.domain.user.application.user;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
@@ -6,7 +6,7 @@ import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
-import com.mincho.herb.domain.user.repository.UserRepositoryImpl;
+import com.mincho.herb.domain.user.repository.user.UserRepositoryImpl;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +21,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 
 class UserServiceImplTest {
@@ -58,7 +56,6 @@ class UserServiceImplTest {
         when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encodedPassword);
 
         RequestRegisterDTO requestRegisterDTO = new RequestRegisterDTO();
-        requestRegisterDTO.setNickname("testUser");
         requestRegisterDTO.setEmail("test@example.com");
         requestRegisterDTO.setPassword("testPassword123!");
 
@@ -74,7 +71,6 @@ class UserServiceImplTest {
         User capturedUser = userCaptor.getValue();
 
         // 원하는 값으로 비교
-        assertEquals(requestRegisterDTO.getNickname(), capturedUser.getNickname());
         assertEquals(requestRegisterDTO.getEmail(), capturedUser.getEmail());
         assertEquals(encodedPassword, capturedUser.getPassword());
     }

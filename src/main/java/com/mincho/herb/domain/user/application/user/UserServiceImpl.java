@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.user.application;
+package com.mincho.herb.domain.user.application.user;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
@@ -6,7 +6,7 @@ import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
-import com.mincho.herb.domain.user.repository.UserRepositoryImpl;
+import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +26,11 @@ public class UserServiceImpl implements  UserService{
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtAuthProvider jwtAuthProvider;
-    private final UserRepositoryImpl userRepository;
+    private final UserRepository userRepository;
+
 
     @Override
-    public void register(RequestRegisterDTO registerDTO) {
-
+    public User register(RequestRegisterDTO registerDTO) {
         DuplicateCheckDTO duplicateCheckDTO = new DuplicateCheckDTO(registerDTO.getEmail());
         boolean hasUser = dueCheck(duplicateCheckDTO);
         if(hasUser){
@@ -39,13 +39,12 @@ public class UserServiceImpl implements  UserService{
         String encodePw = bCryptPasswordEncoder.encode(registerDTO.getPassword());
 
         User user = User.builder()
-                .nickname(registerDTO.getNickname())
                 .email(registerDTO.getEmail())
                 .password(encodePw)
                 .role("ROLE_USER")
                 .build();
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     // 유저 중복 체크
@@ -86,6 +85,13 @@ public class UserServiceImpl implements  UserService{
         userRepository.deleteByEmail(email);
     }
 
+    // 비밀번호 수정
+    @Override
+    public void updatePassword(String password, String email) {
+        userRepository.updatePasswordByEmail(password, email);
+    }
+
+    // 유저 조회
     @Override
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email);

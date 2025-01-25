@@ -1,11 +1,13 @@
 package com.mincho.herb.domain.user.entity;
 
 
+import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity(name = "Member")
+@Table(name = "member")
 @Data
 public class UserEntity {
 
@@ -18,20 +20,21 @@ public class UserEntity {
     private String email;
 
     @Column
-    private String nickname;
-
-    @Column
     private String password;
 
     @Column
     private String role="ROLE_USER";
 
+
+    @OneToOne(mappedBy = "member")
+    private ProfileEntity profile;
+
     public static UserEntity toEntity(User userDomain){
         UserEntity userEntity = new UserEntity();
         userEntity.id = userDomain.getId();
         userEntity.email = userDomain.getEmail();
-        userEntity.nickname = userDomain.getNickname();
         userEntity.password = userDomain.getPassword();
+        userEntity.role = userDomain.getRole();
         return userEntity;
     }
 
@@ -40,7 +43,7 @@ public class UserEntity {
                 .id(this.id)
                 .email(this.email)
                 .password(this.password)
-                .nickname(this.nickname)
+                .role(this.role)
                 .build();
 
     }

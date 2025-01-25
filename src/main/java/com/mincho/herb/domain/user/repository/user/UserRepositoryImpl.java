@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.user.repository;
+package com.mincho.herb.domain.user.repository.user;
 
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.entity.UserEntity;
@@ -13,8 +13,8 @@ public class UserRepositoryImpl implements UserRepository{
 
 
     @Override
-    public void save(User user) {
-        userJpaRepository.save(UserEntity.toEntity(user));
+    public User save(User user) {
+        return userJpaRepository.save(UserEntity.toEntity(user)).toModel();
     }
 
     @Override
@@ -24,12 +24,18 @@ public class UserRepositoryImpl implements UserRepository{
 
     @Override
     public User findByEmail(String email) {
-        return userJpaRepository.findByEmail(email);
+        return userJpaRepository.findByEmail(email).toModel();
     }
 
     @Override
     @Transactional
     public void deleteByEmail(String email) { // 회원탈퇴
         userJpaRepository.deleteByEmail(email);
+    }
+
+    @Override
+    @Transactional
+    public void updatePasswordByEmail(String password, String email) {
+        userJpaRepository.updatePassword(password, email);
     }
 }
