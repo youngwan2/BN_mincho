@@ -1,4 +1,4 @@
-package com.mincho.herb.infra.auth;
+package com.mincho.herb.common.util;
 
 import io.jsonwebtoken.*;
 import javax.crypto.SecretKey;

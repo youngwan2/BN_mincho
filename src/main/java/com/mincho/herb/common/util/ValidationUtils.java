@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Component
-public class ValidationUtil {
+public class ValidationUtils {
 
     public String extractErrorMessage(BindingResult result){
         return Objects.requireNonNull(result.getFieldError()).getDefaultMessage();

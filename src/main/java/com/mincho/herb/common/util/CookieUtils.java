@@ -1,4 +1,4 @@
-package com.mincho.herb.infra.auth;
+package com.mincho.herb.common.util;
 
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CookieUtil {
+public class CookieUtils {
 
     // 쿠키 생성
     public Cookie createCookie(String key, String value, int maxAge) {

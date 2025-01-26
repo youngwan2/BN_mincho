@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.user.application.user;
+package com.mincho.herb.domain.herb.application.user;
 
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;

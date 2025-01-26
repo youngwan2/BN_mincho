@@ -2,17 +2,17 @@ package com.mincho.herb.domain.user.api;
 
 
 import com.mincho.herb.common.config.error.ErrorResponse;
+import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
-import com.mincho.herb.common.util.ValidationUtil;
+import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.common.util.ValidationUtils;
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.application.user.UserServiceImpl;
-import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.*;
-import com.mincho.herb.infra.auth.CookieUtil;
+import com.mincho.herb.common.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -31,8 +31,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private final ValidationUtil validationUtil;
-    private final CookieUtil cookieUtil;
+    private final ValidationUtils validationUtils;
+    private final CookieUtils cookieUtils;
     private final UserService userService;
     private final ProfileService profileService;
 
@@ -42,7 +42,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> userRegister(@Valid @RequestBody RequestRegisterDTO registerDTO, BindingResult result){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtil.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         log.info("userinfo {}", registerDTO);
         User savedUser = userService.register(registerDTO);
@@ -58,7 +58,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> dueCheck(@Valid @RequestBody DuplicateCheckDTO duplicateCheckDTO, BindingResult result){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtil.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         boolean isDue = userService.dueCheck(duplicateCheckDTO);
 
@@ -74,10 +74,10 @@ public class UserController {
     public ResponseEntity<?> login(@Valid @RequestBody RequestLoginDTO requestLoginDTO, BindingResult result, HttpServletResponse response){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtil.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         Map<String, String> tokenMap= userService.login(requestLoginDTO);
-        response.addCookie(cookieUtil.createCookie("refresh", tokenMap.get("refresh"), 60*60*24));
+        response.addCookie(cookieUtils.createCookie("refresh", tokenMap.get("refresh"), 60*60*24));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+tokenMap.get("access"))
@@ -90,7 +90,7 @@ public class UserController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         userService.deleteUser(email);
 
-        response.addCookie(cookieUtil.createCookie("refresh", "", 0));
+        response.addCookie(cookieUtils.createCookie("refresh", "", 0));
         return new SuccessResponse<>().getResponse(200, "정상 탈퇴되었습니다.", HttpSuccessType.OK);
     }
 
@@ -100,11 +100,44 @@ public class UserController {
     public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody RequestUpdatePassword requestUpdatePassword, BindingResult result){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtil.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         userService.updatePassword(requestUpdatePassword.getPassword(), email);
         return new SuccessResponse<>().getResponse(200, "비밀번호가 수정 되었습니다.", HttpSuccessType.OK);
+    }
+
+    // 로그아웃
+    @DeleteMapping("/me/logout")
+    public ResponseEntity<Map<String, String>> logout(
+            HttpServletResponse response,
+            @CookieValue("refresh") String refreshToken,
+            @RequestParam("action") String action){
+
+        log.info("logout refresh: {}", refreshToken);
+        // 전체 디바이스 로그아웃
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if(!email.contains("@")){
+            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
+        }
+
+        if(!action.equals("all")){
+
+            log.info("logout email: {}",email);
+
+            User user = userService.findUserByEmail(email);
+            if(user == null) {
+                throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
+            }
+            userService.logoutAll(user.getId());
+
+            // 특정 디바이스 로그아웃
+        } else {
+            userService.logout(refreshToken);
+        }
+        response.addCookie(cookieUtils.createCookie("refresh","", 0));
+        return new SuccessResponse<>().getResponse(200, "로그아웃 되었습니다.", HttpSuccessType.OK);
     }
 }

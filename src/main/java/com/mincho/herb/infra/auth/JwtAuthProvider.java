@@ -1,5 +1,6 @@
 package com.mincho.herb.infra.auth;
 
+import com.mincho.herb.common.util.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -53,5 +53,11 @@ public class JwtAuthProvider {
         collection.add(new SimpleGrantedAuthority(role));
 
         return collection;
+    }
+
+    // 만료 토큰 재생성
+    public String createAccessToken(String email, Long jwtExp) {
+        String role = "ROLE_USER";
+        return jwtUtils.createJwt(email, role, jwtExp);
     }
 }

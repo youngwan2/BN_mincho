@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.user.api;
+package com.mincho.herb.domain.herb.api;
 
 
 import com.mincho.herb.common.config.error.ErrorResponse;
