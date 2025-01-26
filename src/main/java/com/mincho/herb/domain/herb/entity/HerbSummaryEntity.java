@@ -24,6 +24,8 @@ public class HerbSummaryEntity extends BaseEntity {
         private String imgUrl; // 이미지 URL
         private String thumbImgUrl; // 썸네일 이미지 URL
 
+
+
     public static HerbSummaryEntity toEntity(HerbSummary herbSummary){
         HerbSummaryEntity herbSummaryEntity = new HerbSummaryEntity();
         herbSummaryEntity.cntntsNo = herbSummary.getCntntsNo();
