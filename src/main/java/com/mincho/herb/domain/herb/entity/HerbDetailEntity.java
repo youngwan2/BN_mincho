@@ -1,14 +1,21 @@
 package com.mincho.herb.domain.herb.entity;
 
+import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.HerbDetail;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "HerbDetail")
-@Data
-public class HerbDetailEntity {
+@AllArgsConstructor
+@NoArgsConstructor
+public class HerbDetailEntity extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String cntntsNo; // 콘텐츠 번호
     private String bneNm; // 학명
     private String cntntsSj; // 제목
@@ -19,12 +26,17 @@ public class HerbDetailEntity {
     private String imgUrl4; // 추가 이미지 URL 4
     private String imgUrl5; // 추가 이미지 URL 5
     private String imgUrl6; // 추가 이미지 URL 6
+
+    @Column(length = 2000)
     private String prvateTherpy; // 민간요법
+
+    @Column(length = 1000)
     private String stle; // 형태
     private String useeRegn; // 이용 부위
 
     public static HerbDetailEntity toEntity(HerbDetail herbDetail) {
         HerbDetailEntity herbDetailEntity = new HerbDetailEntity();
+
         herbDetailEntity.cntntsNo = herbDetail.getCntntsNo();
         herbDetailEntity.bneNm = herbDetail.getBneNm();
         herbDetailEntity.cntntsSj = herbDetail.getCntntsSj();
