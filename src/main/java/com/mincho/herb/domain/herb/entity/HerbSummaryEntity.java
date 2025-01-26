@@ -1,15 +1,22 @@
 package com.mincho.herb.domain.herb.entity;
 
+import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.HerbSummary;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name = "HerbSummary")
-@Data
-public class HerbSummaryEntity {
+@AllArgsConstructor
+@NoArgsConstructor
+public class HerbSummaryEntity extends BaseEntity {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
         private String cntntsNo; // 콘텐츠 번호
         private String bneNm; // 학명
         private String cntntsSj; // 제목
