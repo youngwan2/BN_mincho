@@ -48,4 +48,5 @@ public class HerbDetailController {
 //        }
 //        return new SuccessResponse<>().getResponse(200, "성공 하였습니다.", HttpSuccessType.OK);
 //    }
+
 }

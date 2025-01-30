@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -44,4 +45,5 @@ public class HerbSummaryController {
 //        }
 //        return new SuccessResponse<>().getResponse(200, "성공 하였습니다.", HttpSuccessType.OK);
 //        }
+
 }

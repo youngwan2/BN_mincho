@@ -8,6 +8,5 @@ import java.util.List;
 public interface HerbDetailRepository {
 
     void saveAll(List<HerbDetailEntity> herbDetailEntities);
-
     HerbDetail findByCntntsSj(String herbName);
 }

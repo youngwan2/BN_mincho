@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.util.List;
@@ -32,7 +31,7 @@ public class HerbSummaryServiceImpl implements HerbSummaryService {
 
     }
 
-    @Override
+  @Override
     public List<HerbSummary> getHerbs(int page, int size) {
         Pageable pageable = (Pageable) PageRequest.of(page, size);
         Page<HerbSummaryEntity> herbSummaryEntities = herbSummaryRepository.findAllPaging(pageable);
