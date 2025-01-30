@@ -10,6 +10,7 @@ import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
     private final FavoriteHerbRepository favoriteHerbRepository;
     private final UserRepository userRepository;
     private final HerbSummaryRepository herbSummaryRepository;
+
 
 
     @Override
@@ -46,5 +48,18 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
                         .build();
         favoriteHerbRepository.save(favoriteHerbEntity);
 
+    }
+
+    // 관심 약초 제거
+    @Override
+    @Transactional
+    public void removeFavoriteHerb(Long favoriteHerbId, String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+
+        if(userEntity == null){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
+        }
+
+        favoriteHerbRepository.deleteMemberIdAndFavoriteHerbId(userEntity.getId(), favoriteHerbId);
     }
 }

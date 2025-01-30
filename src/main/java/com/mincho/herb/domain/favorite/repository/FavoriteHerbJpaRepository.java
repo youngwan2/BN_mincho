@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface FavoriteHerbJpaRepository extends JpaRepository<FavoriteHerbEntity, Long> {
-   Optional<Integer> deleteByMemberIdAndHerbSummaryId(Long memberId, Long herbSummaryId);
+   Optional<Integer> deleteByMemberIdAndId(Long memberId, Long favoriteHerbId);
 }

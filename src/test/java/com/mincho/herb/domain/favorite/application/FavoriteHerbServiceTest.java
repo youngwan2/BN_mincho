@@ -112,4 +112,38 @@ class FavoriteHerbServiceImplTest {
                 .isInstanceOf(CustomHttpException.class)
                 .hasMessageContaining("유효한 url 형식이 아닙니다.");
     }
+
+
+    /* 관심 약초 */
+    @Test
+    void removeFavoriteHerb_Success() {
+        // given
+        Long favoriteHerbId = 100L;
+        String email = "test@example.com";
+
+        when(userRepository.findByEmail(email)).thenReturn(mockUser);
+
+        // when
+        favoriteHerbService.removeFavoriteHerb(favoriteHerbId, email);
+
+        // then
+        verify(favoriteHerbRepository, times(1))
+                .deleteMemberIdAndFavoriteHerbId(mockUser.getId(), favoriteHerbId);
+    }
+
+    @Test
+    void removeFavoriteHerb_Failure() {
+        // given
+        Long favoriteHerbId = 100L;
+        String email = "notfound@example.com";
+
+        when(userRepository.findByEmail(email)).thenReturn(null);
+
+        // when & then
+        assertThatThrownBy(() -> favoriteHerbService.removeFavoriteHerb(favoriteHerbId, email))
+                .isInstanceOf(CustomHttpException.class)
+                .hasMessageContaining("유저 정보를 찾을 수 없습니다.");
+
+        verify(favoriteHerbRepository, never()).deleteMemberIdAndFavoriteHerbId(anyLong(), anyLong());
+    }
 }

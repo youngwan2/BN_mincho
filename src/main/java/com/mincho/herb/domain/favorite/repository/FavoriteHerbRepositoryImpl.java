@@ -18,7 +18,7 @@ public class FavoriteHerbRepositoryImpl implements FavoriteHerbRepository {
     }
 
     @Override
-    public void deleteByMemberIdAndHerbSummaryId(Long memberId, Long herbSummaryId) {
-        favoriteHerbJpaRepository.deleteByMemberIdAndHerbSummaryId(memberId, herbSummaryId).orElseThrow(() -> new CustomHttpException(HttpErrorCode.CONFLICT,"관심허브 삭제 요청이 실패하였습니다."));
+    public void deleteMemberIdAndFavoriteHerbId(Long memberId, Long favoriteHerbId) {
+        favoriteHerbJpaRepository.deleteByMemberIdAndId(memberId, favoriteHerbId).orElseThrow(() -> new CustomHttpException(HttpErrorCode.CONFLICT,"관심허브 삭제 요청이 실패하였습니다."));
     }
 }
