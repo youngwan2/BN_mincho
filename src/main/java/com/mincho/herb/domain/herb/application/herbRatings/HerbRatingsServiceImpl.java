@@ -49,7 +49,10 @@ public class HerbRatingsServiceImpl implements HerbRatingsService {
         if(userEntity == null) {
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "존재하지 않는 유저 입니다.");
         }
+        if(!herbRatings.isScoreValid()){
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"평점은 0 ~ 5점 사이 이어야 합니다.");
 
+        }
        HerbRatingsEntity herbRatingsEntity=  HerbRatingsEntity.builder()
                 .score(herbRatings.getScore())
                 .member(userEntity)

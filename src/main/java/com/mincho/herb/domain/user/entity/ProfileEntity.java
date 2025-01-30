@@ -32,7 +32,7 @@ public class ProfileEntity {
 
     public static ProfileEntity toEntity(Profile profileDomain, UserEntity member){
         ProfileEntity profileEntity = new ProfileEntity();
-        profileEntity.id = profileDomain.getId();
+        profileEntity.id = profileEntity.getId();
         profileEntity.nickname = profileDomain.getNickname();
         profileEntity.introduction = profileDomain.getIntroduction();
         profileEntity.avatarUrl= profileDomain.getAvatarUrl();
@@ -42,7 +42,6 @@ public class ProfileEntity {
 
     public Profile toModel(){
         return Profile.builder()
-                .id(this.id)
                 .nickname(this.nickname)
                 .introduction(this.introduction)
                 .avatarUrl(this.avatarUrl)
