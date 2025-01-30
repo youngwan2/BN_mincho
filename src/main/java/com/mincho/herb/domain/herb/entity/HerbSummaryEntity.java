@@ -4,11 +4,15 @@ import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.HerbSummary;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
 @Table(name = "HerbSummary")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class HerbSummaryEntity extends BaseEntity {
@@ -23,6 +27,8 @@ public class HerbSummaryEntity extends BaseEntity {
         private String hbdcNm; // 한방명
         private String imgUrl; // 이미지 URL
         private String thumbImgUrl; // 썸네일 이미지 URL
+
+
 
     public static HerbSummaryEntity toEntity(HerbSummary herbSummary){
         HerbSummaryEntity herbSummaryEntity = new HerbSummaryEntity();

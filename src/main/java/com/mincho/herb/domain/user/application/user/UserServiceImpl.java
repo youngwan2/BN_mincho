@@ -6,6 +6,7 @@ import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
@@ -69,8 +70,10 @@ public class UserServiceImpl implements  UserService{
             // 토큰 생성
             String accessToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 10* 1000L);
             String refreshToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 24 * 30 * 1000L);
-
-            refreshTokenRepository.saveRefreshToken(refreshToken, userRepository.findByEmail(requestLoginDTO.getEmail()));
+            UserEntity userEntity = userRepository.findByEmail(requestLoginDTO.getEmail());
+            if(userEntity == null){
+                throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
+            }
 
             Map<String, String> map = new HashMap<>();
             map.put("access", accessToken);
@@ -84,8 +87,8 @@ public class UserServiceImpl implements  UserService{
     @Override
     public void deleteUser(String email) {
         boolean hasUser =userRepository.existsByEmail(email);
-
         if(!hasUser) throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
+
         userRepository.deleteByEmail(email);
     }
 
@@ -98,14 +101,20 @@ public class UserServiceImpl implements  UserService{
     // 유저 조회
     @Override
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if(userEntity == null){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
+        }
+        return userEntity.toModel();
     }
 
+    // 로그아웃
     @Override
     public void logout(String refreshToken) {
         refreshTokenRepository.removeRefreshToken(refreshToken);
     }
 
+    // 모든 브라우저 로그아웃
     @Override
     public void logoutAll(Long id) {
         refreshTokenRepository.removeRefreshTokenAllByUserId(id);

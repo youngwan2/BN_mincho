@@ -22,10 +22,7 @@ public class UserRepositoryImpl implements UserRepository{
         return userJpaRepository.existsByEmail(email);
     }
 
-    @Override
-    public User findByEmail(String email) {
-        return userJpaRepository.findByEmail(email).toModel();
-    }
+
 
     @Override
     @Transactional
@@ -38,4 +35,10 @@ public class UserRepositoryImpl implements UserRepository{
     public void updatePasswordByEmail(String password, String email) {
         userJpaRepository.updatePassword(password, email);
     }
+
+    @Override
+    public UserEntity findByEmail(String email) {
+        return userJpaRepository.findByEmail(email);
+    }
+
 }

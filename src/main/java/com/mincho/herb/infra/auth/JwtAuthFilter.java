@@ -36,9 +36,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String accessToken = resolveToken(request);
-
+            logger.info("jwtauthfilter accessToken:"+ accessToken);
             if (accessToken != null) {
-                if (jwtAuthProvider.checkToken(accessToken)) {
+                if (!jwtAuthProvider.checkToken(accessToken)) {
                     // accessToken이 유효한 경우
                     String email = jwtAuthProvider.getEmail(accessToken);
                     logger.info("email: "+ email);
@@ -63,6 +63,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     // 액세스 토큰 만료 시 재발급 처리
     private void handleExpiredToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 클라이언트에서 refreshToken을 쿠키나 헤더로 가져오기
+        if(request.getCookies() == null) {
+            handleException(response, "조회할 쿠키를 찾을 수 없습니다.", HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
         List<Cookie> cookies = Arrays.stream(request.getCookies())
                 .filter(cookie -> Objects.equals(cookie.getName(), "refresh"))
                 .toList();

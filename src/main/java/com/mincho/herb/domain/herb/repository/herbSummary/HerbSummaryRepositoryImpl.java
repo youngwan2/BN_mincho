@@ -1,10 +1,10 @@
 package com.mincho.herb.domain.herb.repository.herbSummary;
 
-import com.mincho.herb.domain.herb.domain.HerbSummary;
 import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Repository
@@ -16,5 +16,15 @@ public class HerbSummaryRepositoryImpl implements  HerbSummaryRepository{
     @Override
     public void saveAll(List<HerbSummaryEntity> herbSummaries) {
         herbSummaryJpaRepository.saveAll(herbSummaries);
+    }
+
+    @Override
+    public Page<HerbSummaryEntity> findAllPaging(Pageable pageable) {
+        return herbSummaryJpaRepository.findAll(pageable);
+    }
+
+    @Override
+    public HerbSummaryEntity findByCntntsSj(String herbName) {
+        return herbSummaryJpaRepository.findByCntntsSj(herbName);
     }
 }
