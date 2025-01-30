@@ -12,6 +12,11 @@ public class HerbRatings extends BaseEntity {
     private Long id;
     private Integer score;
 
+    // 점수 유효성 검사 메소드
+    public boolean isScoreValid() {
+        return score != null && score >= 0 && score <= 5;
+    }
+
     @Override
     public String toString() {
         return "HerbRatings{" +
