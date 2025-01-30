@@ -29,4 +29,9 @@ public class HerbDetailServiceImpl implements HerbDetailService{
         log .info("mapping herb: {}",herbs.get(0));
 
     }
+
+    @Override
+    public HerbDetail getHerbDetail(String herbName) {
+        return herbDetailRepository.findByCntntsSj(herbName);
+    }
 }

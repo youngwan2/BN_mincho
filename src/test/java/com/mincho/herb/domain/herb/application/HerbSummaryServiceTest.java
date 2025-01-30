@@ -1,4 +1,4 @@
-package com.mincho.herb.herb.application;
+package com.mincho.herb.domain.herb.application;
 
 
 import com.mincho.herb.common.config.error.HttpErrorCode;

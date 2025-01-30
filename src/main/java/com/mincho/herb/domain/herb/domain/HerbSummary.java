@@ -17,4 +17,6 @@ public class HerbSummary {
     private String thumbImgUrl; // 썸네일 이미지 URL
 
 
+
+
 }

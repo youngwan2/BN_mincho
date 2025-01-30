@@ -10,4 +10,5 @@ public interface HerbSummaryRepository {
 
     void saveAll(List<HerbSummaryEntity> herbSummaries);
     Page<HerbSummaryEntity> findAllPaging(Pageable pageable);
+    HerbSummaryEntity findByCntntsSj(String herbName);
 }

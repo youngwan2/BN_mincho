@@ -9,4 +9,6 @@ public interface HerbSummaryService {
     void insertMany() throws IOException;
 
     List<HerbSummary> getHerbs(int page, int size);
+
+    HerbSummary getHerbByHerbName(String herbName);
 }

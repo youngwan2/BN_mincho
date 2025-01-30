@@ -10,4 +10,5 @@ import java.util.List;
 public interface HerbSummaryJpaRepository extends JpaRepository<HerbSummaryEntity, Long> {
 
     Page<HerbSummaryEntity> findAll(Pageable pageable);
+    HerbSummaryEntity findByCntntsSj(String herbName);
 }

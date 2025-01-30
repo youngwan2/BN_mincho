@@ -4,11 +4,15 @@ import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.HerbSummary;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
 @Table(name = "HerbSummary")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class HerbSummaryEntity extends BaseEntity {

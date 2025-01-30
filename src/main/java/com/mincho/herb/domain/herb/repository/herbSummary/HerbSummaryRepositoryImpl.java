@@ -23,4 +23,9 @@ public class HerbSummaryRepositoryImpl implements  HerbSummaryRepository{
     public Page<HerbSummaryEntity> findAllPaging(Pageable pageable) {
         return herbSummaryJpaRepository.findAll(pageable);
     }
+
+    @Override
+    public HerbSummaryEntity findByCntntsSj(String herbName) {
+        return herbSummaryJpaRepository.findByCntntsSj(herbName);
+    }
 }

@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.user.repository.user;
 
 import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.entity.UserEntity;
 
 public interface UserRepository {
     User save(User user);
@@ -9,6 +10,6 @@ public interface UserRepository {
 
     boolean existsByEmail(String email);
 
-    User findByEmail(String email);
+    UserEntity findByEmail(String email);
 
 }
