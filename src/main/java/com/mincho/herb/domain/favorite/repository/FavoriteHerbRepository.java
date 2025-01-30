@@ -5,5 +5,5 @@ import com.mincho.herb.domain.favorite.entity.FavoriteHerbEntity;
 public interface FavoriteHerbRepository {
 
     void save(FavoriteHerbEntity favoriteHerbEntity);
-    void deleteByMemberIdAndHerbSummaryId(Long memberId, Long herbSummaryId);
+    void deleteMemberIdAndFavoriteHerbId(Long memberId, Long favoriteHerbId);
 }
