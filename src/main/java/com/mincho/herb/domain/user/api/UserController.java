@@ -7,7 +7,7 @@ import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.common.util.ValidationUtils;
+import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.User;
@@ -31,7 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private final ValidationUtils validationUtils;
+    private final CommonUtils commonUtils;
     private final CookieUtils cookieUtils;
     private final UserService userService;
     private final ProfileService profileService;
@@ -42,7 +42,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> userRegister(@Valid @RequestBody RequestRegisterDTO registerDTO, BindingResult result){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         log.info("userinfo {}", registerDTO);
         User savedUser = userService.register(registerDTO);
@@ -58,7 +58,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> dueCheck(@Valid @RequestBody DuplicateCheckDTO duplicateCheckDTO, BindingResult result){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         boolean isDue = userService.dueCheck(duplicateCheckDTO);
 
@@ -74,7 +74,7 @@ public class UserController {
     public ResponseEntity<?> login(@Valid @RequestBody RequestLoginDTO requestLoginDTO, BindingResult result, HttpServletResponse response){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         Map<String, String> tokenMap= userService.login(requestLoginDTO);
         response.addCookie(cookieUtils.createCookie("refresh", tokenMap.get("refresh"), 60*60*24));
@@ -100,7 +100,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody RequestUpdatePassword requestUpdatePassword, BindingResult result){
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
