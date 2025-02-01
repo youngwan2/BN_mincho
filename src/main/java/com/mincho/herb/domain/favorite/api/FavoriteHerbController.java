@@ -4,7 +4,7 @@ import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
-import com.mincho.herb.common.util.ValidationUtils;
+import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.favorite.application.FavoriteHerbService;
 import com.mincho.herb.domain.favorite.dto.RequestFavoriteHerb;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/users/me/favorite-herbs")
 @RequiredArgsConstructor
 public class FavoriteHerbController {
-    private final ValidationUtils validationUtils;
+    private final CommonUtils commonUtils;
     private final FavoriteHerbService favoriteHerbService;
 
     @PostMapping()
@@ -33,7 +33,7 @@ public class FavoriteHerbController {
         }
 
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
 
         favoriteHerbService.addFavoriteHerb( requestFavoriteHerb.getUrl(), email, herbName) ;

@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.user.application.email;
 
-import com.mincho.herb.common.util.ValidationUtils;
+import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.dto.RequestVerification;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -23,7 +23,7 @@ class EmailServiceImplTest {
     private JavaMailSender javaMailSender;
 
     @Mock
-    private ValidationUtils validationUtils;
+    private CommonUtils commonUtils;
 
     @Mock
     private RedisTemplate<String, Object> redisTemplate;
@@ -37,7 +37,7 @@ class EmailServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        emailService = new EmailServiceImpl(redisTemplate, javaMailSender, validationUtils, SENDER_EMAIL);
+        emailService = new EmailServiceImpl(redisTemplate, javaMailSender, commonUtils, SENDER_EMAIL);
     }
 
     @Test
@@ -45,7 +45,7 @@ class EmailServiceImplTest {
         // Given
         String generatedCode = "12345";
         MimeMessage mimeMessage = mock(MimeMessage.class);
-        when(validationUtils.createAuthCode(5)).thenReturn(generatedCode);
+        when(commonUtils.createAuthCode(5)).thenReturn(generatedCode);
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
 
         // When

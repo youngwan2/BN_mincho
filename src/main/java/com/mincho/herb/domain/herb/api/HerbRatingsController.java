@@ -1,24 +1,19 @@
 package com.mincho.herb.domain.herb.api;
 
 
-import com.mincho.herb.common.config.SecurityConfig;
 import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.common.util.ValidationUtils;
+import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.herb.application.herbRatings.HerbRatingsService;
 import com.mincho.herb.domain.herb.application.herbSummary.HerbSummaryService;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
-import com.mincho.herb.domain.herb.domain.HerbSummary;
 import com.mincho.herb.domain.herb.dto.RequestHerbRatingsDTO;
-import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.domain.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,7 +31,7 @@ public class HerbRatingsController {
 
     private final HerbRatingsService herbRatingsService;
     private final HerbSummaryService herbSummaryService;
-    private final ValidationUtils validationUtils;
+    private final CommonUtils commonUtils;
 
     @GetMapping()
     ResponseEntity<?> getRatings(@RequestParam("herbName") String herbName){
@@ -60,7 +55,7 @@ public class HerbRatingsController {
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "hername 은 필수 입니다.");
         }
         if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
 
         herbRatingsService.addScore(HerbRatings.builder()

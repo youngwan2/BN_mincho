@@ -75,6 +75,8 @@ public class UserServiceImpl implements  UserService{
                 throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
             }
 
+            refreshTokenRepository.saveRefreshToken(refreshToken, userEntity);
+
             Map<String, String> map = new HashMap<>();
             map.put("access", accessToken);
             map.put("refresh", refreshToken);

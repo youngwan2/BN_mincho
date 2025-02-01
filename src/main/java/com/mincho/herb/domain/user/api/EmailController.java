@@ -7,7 +7,7 @@ import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.common.util.ValidationUtils;
+import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.application.email.EmailService;
 import com.mincho.herb.domain.user.dto.RequestVerification;
 import jakarta.mail.MessagingException;
@@ -26,7 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailController {
     private final EmailService emailService;
-    private  final ValidationUtils validationUtils;
+    private  final CommonUtils commonUtils;
 
 
     // 인증번호 발송
@@ -45,7 +45,7 @@ public class EmailController {
     public ResponseEntity<Map<String, String>> emailVerification(@Valid @RequestBody RequestVerification requestVerification, BindingResult result) {
 
         if(result.hasErrors()){
-             return new ErrorResponse().getResponse(400, validationUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
          }
 
         boolean isVer = emailService.emailVerification(requestVerification);

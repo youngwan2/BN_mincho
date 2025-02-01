@@ -1,7 +1,6 @@
 package com.mincho.herb.domain.user.repository.refreshToken;
 
 import com.mincho.herb.domain.user.domain.RefreshToken;
-import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.entity.RefreshTokenEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
@@ -15,8 +14,8 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository{
     private final RefreshTokenJpaRepository refreshTokenJpaRepository;
 
     @Override
-    public void saveRefreshToken(String refreshToken, User user) {
-        refreshTokenJpaRepository.save(RefreshTokenEntity.toEntity(refreshToken, UserEntity.toEntity(user)));
+    public void saveRefreshToken(String refreshToken, UserEntity userEntity) {
+        refreshTokenJpaRepository.save(RefreshTokenEntity.toEntity(refreshToken,userEntity));
     }
 
     @Override

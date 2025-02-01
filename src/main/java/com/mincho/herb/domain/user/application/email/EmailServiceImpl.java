@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.user.application.email;
 
-import com.mincho.herb.common.util.ValidationUtils;
+import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.dto.RequestVerification;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -17,18 +17,18 @@ import java.util.concurrent.TimeUnit;
 public class EmailServiceImpl implements EmailService{
 
     private final JavaMailSender javaMailSender;
-    private final ValidationUtils validationUtils;
+    private final CommonUtils commonUtils;
     private final String senderEmail;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public EmailServiceImpl(
             RedisTemplate<String,Object> redisTemplate,
             JavaMailSender javaMailSender,
-            ValidationUtils validationUtils,
+            CommonUtils commonUtils,
             @Value("${main.sender.email}") String senderEmail) {
         this.redisTemplate = redisTemplate;
         this.javaMailSender = javaMailSender;
-        this.validationUtils = validationUtils;
+        this.commonUtils = commonUtils;
         this.senderEmail = senderEmail;
     }
 
@@ -80,7 +80,7 @@ public class EmailServiceImpl implements EmailService{
     // 이메일 인증 코드 발송
     @Override
     public void sendVerificationCode(String toMail) throws MessagingException {
-        String authCode = validationUtils.createAuthCode(5);
+        String authCode = commonUtils.createAuthCode(5);
 
         MimeMessage message = createMail(toMail, authCode);
         javaMailSender.send(message);
