@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.post.dto;
 
+import com.mincho.herb.domain.post.domain.Author;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +13,9 @@ import java.time.LocalDateTime;
 public class ResponsePostDTO {
     private Long id;
     private String title;
-    private String content;
+    private String contents;
     private String category;
+    private Author author;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

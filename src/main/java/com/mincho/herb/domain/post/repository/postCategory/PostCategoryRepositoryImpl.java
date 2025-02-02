@@ -20,6 +20,11 @@ public class PostCategoryRepositoryImpl implements PostCategoryRepository{
     }
 
     @Override
+    public void deleteById(Long id) {
+        postCategoryJpaRepository.deleteById(id);
+    }
+
+    @Override
     public boolean existsCategory(String category) {
         return postCategoryJpaRepository.existsByCategory(category);
     }

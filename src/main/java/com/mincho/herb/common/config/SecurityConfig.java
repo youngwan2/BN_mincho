@@ -3,6 +3,7 @@ package com.mincho.herb.common.config;
 import com.mincho.herb.infra.auth.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,15 +45,23 @@ public class SecurityConfig {
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers("/api/v1/users/register/**").permitAll()
                             .requestMatchers("/api/v1/users/login/**").permitAll()
-//                            .requestMatchers("/api/v1/users/**").hasRole("USER")
-                            .requestMatchers("/api/v1/herbs/**").permitAll()
-                            .requestMatchers("/api/v1/users/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
+                            .requestMatchers("/api/v1/users/**").hasAnyRole("USER, ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/herbs/**").permitAll()
                             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자만 허용
                             .anyRequest().permitAll()
                 );
 
         return http.build();
     }
+    /*
+    * http.authorizeHttpRequests(auth -> auth
+    .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()  // GET 요청은 모두 허용
+    .requestMatchers(HttpMethod.POST, "/api/posts/**").hasRole("ADMIN")  // POST 요청은 ADMIN만 허용
+    .anyRequest().authenticated()
+);
+    *
+    * */
 
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
