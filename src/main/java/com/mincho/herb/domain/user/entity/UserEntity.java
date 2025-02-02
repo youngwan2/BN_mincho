@@ -3,7 +3,9 @@ package com.mincho.herb.domain.user.entity;
 import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.user.domain.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
 @Table(name = "member")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserEntity extends BaseEntity {
 
     @Id
@@ -30,12 +34,6 @@ public class UserEntity extends BaseEntity {
 
     @OneToOne(mappedBy = "member")
     private ProfileEntity profile;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
 
     public static UserEntity toEntity(User userDomain){

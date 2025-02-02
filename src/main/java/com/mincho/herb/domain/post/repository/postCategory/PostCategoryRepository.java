@@ -6,5 +6,6 @@ public interface PostCategoryRepository {
 
     PostCategoryEntity save(PostCategoryEntity postCategoryEntity);
     PostCategoryEntity findByCategory(String category);
+    void deleteById(Long id);
     boolean existsCategory(String category);
 }
