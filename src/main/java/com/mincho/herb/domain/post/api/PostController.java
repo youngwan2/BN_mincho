@@ -7,6 +7,7 @@ import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.post.PostService;
 import com.mincho.herb.domain.post.dto.RequestPostDTO;
+import com.mincho.herb.domain.post.dto.ResponseDetailPostDTO;
 import com.mincho.herb.domain.post.dto.ResponsePostDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -23,7 +24,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/community/posts")
-public class PostServiceController {
+public class PostController {
 
     private final CommonUtils commonUtils;
     private final PostService postService;
@@ -57,6 +58,18 @@ public class PostServiceController {
         return new SuccessResponse<>().getResponse(201, "추가 되었습니다.", HttpSuccessType.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDetailPost(@PathVariable("id") Long id){
+        if(id == null){
+            return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
+        }
+
+        ResponseDetailPostDTO responseDetailPostDTO =  postService.getDetailPostById(id);
+
+        return new SuccessResponse<>().getResponse(200, "정상적으로 조회되었습니다.", HttpSuccessType.OK, responseDetailPostDTO);
+
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> removePost(@PathVariable("id") Long id){
         if(id == null){
@@ -73,14 +86,26 @@ public class PostServiceController {
         return new SuccessResponse<>().getResponse(200, "정상적으로 삭제처리 되었습니다.", HttpSuccessType.OK);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Map<String, String>> updatePost(
             @PathVariable("id") Long id,
-            @RequestBody RequestPostDTO requestPostDTO){
+            @Valid @RequestBody RequestPostDTO requestPostDTO,
+            BindingResult result){
         if(id == null){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
         }
 
-        return null;
+        if(result.hasErrors()){
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
+        }
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!commonUtils.emailValidation(email)){
+            return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
+        }
+
+        postService.update(requestPostDTO, id, email);
+
+        return new SuccessResponse<>().getResponse(200, "성공적으로 수정되었습니다.", HttpSuccessType.OK);
     }
 }
