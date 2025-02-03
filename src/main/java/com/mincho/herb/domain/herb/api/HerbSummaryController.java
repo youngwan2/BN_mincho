@@ -28,7 +28,7 @@ public class HerbSummaryController {
     @GetMapping()
     public ResponseEntity<?> getHerbs(@RequestParam("page") String page, @RequestParam("size") String size){
         if(page.isEmpty()){
-            return new ErrorResponse().getResponse(400, "page 정보는 필수입니다.", HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, "잘못된 요청입니다. page 정보는 필수입니다.", HttpErrorType.BAD_REQUEST);
         }
        List<HerbSummary> herbSummaries = herbSummaryService.getHerbs(Integer.parseInt(page), Integer.parseInt(size));
        return new SuccessResponse<List<HerbSummary>>().getResponse(200, "성공적으로 조회 되었습니다.",  HttpSuccessType.OK, herbSummaries);

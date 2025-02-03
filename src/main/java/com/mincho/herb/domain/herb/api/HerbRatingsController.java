@@ -2,11 +2,9 @@ package com.mincho.herb.domain.herb.api;
 
 
 import com.mincho.herb.common.config.error.ErrorResponse;
-import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
-import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.herb.application.herbRatings.HerbRatingsService;
 import com.mincho.herb.domain.herb.application.herbSummary.HerbSummaryService;
@@ -36,7 +34,7 @@ public class HerbRatingsController {
     @GetMapping()
     ResponseEntity<?> getRatings(@RequestParam("herbName") String herbName){
         if(herbName.isEmpty()){
-            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "hername 은 필수 입니다.");
+            return new ErrorResponse().getResponse(400, "잘못된 요청입니다. herbName은 필수입니다..", HttpErrorType.BAD_REQUEST);
         }
 
         List<HerbRatings> herbRatings = herbRatingsService.getHerbRatings(herbSummaryService.getHerbByHerbName(herbName));
@@ -48,11 +46,12 @@ public class HerbRatingsController {
     ResponseEntity<Map<String,String>> addScore(@RequestParam("herbName") String herbName, @Valid @RequestBody RequestHerbRatingsDTO requestHerbRatingsDTO, BindingResult result){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("username: {}", email);
-        if(email.isEmpty()){
-            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"평점 등록 요청 권한이 없습니다.");
+
+        if(!commonUtils.emailValidation(email)) {
+            return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
         if(herbName.isEmpty()){
-            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "hername 은 필수 입니다.");
+            return new ErrorResponse().getResponse(400, "잘못된 요청입니다. herbName은 필수입니다..", HttpErrorType.BAD_REQUEST);
         }
         if(result.hasErrors()){
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);

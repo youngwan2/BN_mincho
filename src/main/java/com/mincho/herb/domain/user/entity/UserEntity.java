@@ -3,10 +3,7 @@ package com.mincho.herb.domain.user.entity;
 import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.user.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserEntity extends BaseEntity {
 
     @Id
@@ -53,5 +51,16 @@ public class UserEntity extends BaseEntity {
                 .role(this.role)
                 .build();
 
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", profile=" + profile +
+                '}';
     }
 }

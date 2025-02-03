@@ -26,7 +26,7 @@ public class FavoriteHerbController {
     public ResponseEntity<?> addFavoriteHerb(@RequestParam("herbName") String herbName, @RequestBody RequestFavoriteHerb requestFavoriteHerb, BindingResult result){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if(email.isEmpty()){
-            return new ErrorResponse().getResponse(401, "요청 권한이 없습니다.", HttpErrorType.UNAUTHORIZED);
+            return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
         if(herbName.isEmpty()){
             return new ErrorResponse().getResponse(400, "herbName 은 필수입니다.", HttpErrorType.BAD_REQUEST);
@@ -43,11 +43,11 @@ public class FavoriteHerbController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> removeFavoriteHerb(@PathVariable("id") Long favoriteHerbId){
         if(favoriteHerbId == null){
-            return new ErrorResponse().getResponse(401, "잘못된 요청입니다. 요청 형식을 확인해주세요 ",HttpErrorType.BAD_REQUEST);
+            return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 요청 형식을 확인해주세요 ",HttpErrorType.BAD_REQUEST);
         }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();   if(email.isEmpty()){
-            return new ErrorResponse().getResponse(401, "요청 권한이 없습니다.", HttpErrorType.UNAUTHORIZED);
+            return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
 
         favoriteHerbService.removeFavoriteHerb(favoriteHerbId, email);

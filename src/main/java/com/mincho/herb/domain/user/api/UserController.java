@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -79,9 +80,11 @@ public class UserController {
         Map<String, String> tokenMap= userService.login(requestLoginDTO);
         response.addCookie(cookieUtils.createCookie("refresh", tokenMap.get("refresh"), 60*60*24));
 
+        Map<String, String> body = new HashMap<>();
+        body.put("message", "로그인 되었습니다.");
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION,"Bearer "+tokenMap.get("access"))
-                .body("{\"message\":\"로그인 되었습니다.\"}");
+                .body(body);
     }
 
     // 회원탈퇴

@@ -6,6 +6,7 @@ import com.mincho.herb.domain.post.domain.PostCategory;
 import com.mincho.herb.domain.user.entity.UserEntity; // 사용자 엔티티 임포트
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Builder
 public class PostEntity extends BaseEntity {
 
     @Id

@@ -3,12 +3,12 @@ package com.mincho.herb.domain.post.repository.post;
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.post.entity.PostEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,13 +21,18 @@ public class PostRepositoryImpl implements PostRepository{
     }
 
     @Override
+    public Object[][] findDetailPostById(Long postId) {
+        return postJpaRepository.findByPostId(postId).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 게시글은 존재하지 않습니다."));
+    }
+
+    @Override
     public PostEntity findById(Long postId) {
         return postJpaRepository.findById(postId).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 게시글은 존재하지 않습니다."));
     }
 
     @Override
-    public List<PostEntity> findAllByCategory(String category, Pageable pageable) {
-        return postJpaRepository.findAllByCategory(category, pageable).stream().toList();
+    public List<Object[]> findAllByCategoryWithLikeCount(String category, Pageable pageable) {
+        return postJpaRepository.findAllByCategoryWithLikeCount(category, pageable).stream().toList() ;
     }
 
     // 해당 포스트를 작성한 유저 조회
@@ -35,6 +40,17 @@ public class PostRepositoryImpl implements PostRepository{
     public Long findAuthorIdByPostIdAndEmail(Long postId, String email) {
         return postJpaRepository.findAuthorIdByPostIdAndEmail(postId, email)
                 .orElseThrow(()-> new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 있는 유저가 아닙니다."));
+    }
+
+    @Override
+    public UserEntity findAuthorByPostIdAndEmail(Long postId, String email) {
+        return postJpaRepository.findAuthorByPostIdAndEmail(postId, email)
+                .orElseThrow(()-> new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 있는 유저가 아닙니다."));
+    }
+
+    @Override
+    public void update(PostEntity postEntity) {
+        postJpaRepository.save(postEntity);
     }
 
     @Override
