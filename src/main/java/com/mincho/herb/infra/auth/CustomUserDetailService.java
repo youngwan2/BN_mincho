@@ -1,7 +1,6 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.domain.user.domain.User;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +20,13 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("loadUserGyUsername email:{}", email);
 
-        UserEntity userEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userRepository.findByEmail(email);
 
-        if(userEntity == null){
+        if(memberEntity == null){
             throw new NullPointerException("존재하지 않는 이메일입니다.");
         }
 
-        log.info("loadUserGyUsername User:{}", userEntity.toModel());
-        return new CustomUserDetails(userEntity.toModel());
+        log.info("loadUserGyUsername User:{}", memberEntity.toModel());
+        return new CustomUserDetails(memberEntity.toModel());
     }
 }

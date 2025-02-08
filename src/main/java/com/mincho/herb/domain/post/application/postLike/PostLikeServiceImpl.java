@@ -6,7 +6,7 @@ import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.entity.PostLikeEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postLike.PostLikeRepository;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +30,13 @@ public class PostLikeServiceImpl implements PostLikeService{
     @Override
     @Transactional
     public Boolean addPostLike(Long postId, String email) {
-           UserEntity userEntity = userRepository.findByEmail(email);
+           MemberEntity memberEntity = userRepository.findByEmail(email);
 
-           if(userEntity == null) {
+           if(memberEntity == null) {
                 throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "인증된 사용자의 요청이 아닙니다.");
             }
 
-           Long userId = userEntity.getId();
+           Long userId = memberEntity.getId();
            Boolean hasLike = postLikeRepository.existsByUserIdAndPostId(userId, postId);
 
            if(!hasLike){
@@ -45,7 +45,7 @@ public class PostLikeServiceImpl implements PostLikeService{
                if(postEntity == null  ){
                    throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "존재하지 않는 게시글 입니다.");
                }
-               PostLikeEntity unsavedPostLikeEntity = PostLikeEntity.toEntity(null, userEntity, postEntity);
+               PostLikeEntity unsavedPostLikeEntity = PostLikeEntity.toEntity(null, memberEntity, postEntity);
                postLikeRepository.save(unsavedPostLikeEntity);
 
                return true;

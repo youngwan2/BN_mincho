@@ -1,7 +1,9 @@
 package com.mincho.herb.domain.user.repository.user;
 
-import com.mincho.herb.domain.user.domain.User;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.common.config.error.HttpErrorCode;
+import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,8 +15,8 @@ public class UserRepositoryImpl implements UserRepository{
 
 
     @Override
-    public User save(User user) {
-        return userJpaRepository.save(UserEntity.toEntity(user)).toModel();
+    public Member save(Member member) {
+        return userJpaRepository.save(MemberEntity.toEntity(member)).toModel();
     }
 
     @Override
@@ -37,8 +39,7 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public UserEntity findByEmail(String email) {
-        return userJpaRepository.findByEmail(email);
+    public MemberEntity findByEmail(String email) {
+        return userJpaRepository.findByEmail(email).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 유저는 찾을 수 없습니다."));
     }
-
 }

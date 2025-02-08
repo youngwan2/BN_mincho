@@ -2,7 +2,7 @@ package com.mincho.herb.domain.herb.entity;
 
 import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +24,7 @@ public class HerbRatingsEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
-    private UserEntity member;
+    private MemberEntity member;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "herbSummary_id", nullable = false)

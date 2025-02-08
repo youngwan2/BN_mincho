@@ -9,7 +9,7 @@ import com.mincho.herb.domain.herb.entity.HerbRatingsEntity;
 import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import com.mincho.herb.domain.herb.repository.herbRatings.HerbRatingsRepository;
 import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class HerbRatingsServiceImplTest {
         HerbRatingsEntity herbRatingsEntity = HerbRatingsEntity.builder()
                 .score(5)
                 .herbSummary(herbSummaryEntity)
-                .member(new UserEntity())
+                .member(new MemberEntity())
                 .build();
 
         when(herbRatingsRepository.findAllBy(herbSummaryEntity))
@@ -93,14 +93,14 @@ class HerbRatingsServiceImplTest {
         herbSummaryEntity.setId(5L);
         herbSummaryEntity.setHbdcNm("Sample Herb");
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(5L);
-        userEntity.setEmail("user@example.com");
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setId(5L);
+        memberEntity.setEmail("user@example.com");
 
         when(herbSummaryRepository.findByCntntsSj(herbName))
                 .thenReturn(herbSummaryEntity);
         when(userRepository.findByEmail(email))
-                .thenReturn(userEntity);
+                .thenReturn(memberEntity);
 
         // When
         assertDoesNotThrow(() -> herbRatingsService.addScore(herbRatings, herbName, email));

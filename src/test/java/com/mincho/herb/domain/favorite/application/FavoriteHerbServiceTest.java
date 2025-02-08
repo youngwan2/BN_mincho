@@ -5,7 +5,7 @@ import com.mincho.herb.domain.favorite.entity.FavoriteHerbEntity;
 import com.mincho.herb.domain.favorite.repository.FavoriteHerbRepository;
 import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,12 +33,12 @@ class FavoriteHerbServiceImplTest {
     @Mock
     private HerbSummaryRepository herbSummaryRepository;
 
-    private UserEntity mockUser;
+    private MemberEntity mockUser;
     private HerbSummaryEntity mockHerbSummary;
 
     @BeforeEach
     void setUp() {
-        mockUser = new UserEntity();
+        mockUser = new MemberEntity();
         mockUser.setId(1L);
         mockUser.setEmail("test@example.com");
         mockUser.setPassword("password123");

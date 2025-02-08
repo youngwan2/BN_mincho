@@ -3,7 +3,7 @@ package com.mincho.herb.domain.user.application.profile;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.dto.RequestProfileDTO;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,9 +40,9 @@ class ProfileServiceTest {
         requestProfileDTO.setIntroduction("newIntroduction");
         requestProfileDTO.setAvatarUrl("http://example.com/avatar.jpg");
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(1L);
-        userEntity.setEmail(email);
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setId(1L);
+        memberEntity.setEmail(email);
 
         Profile profile = Profile.builder()
                 .id(1L)
@@ -52,14 +52,14 @@ class ProfileServiceTest {
                 .build();
 
         // Mock 동작 정의
-        when(userService.findUserByEmail(email)).thenReturn(userEntity.toModel());
+        when(userService.findUserByEmail(email)).thenReturn(memberEntity.toModel());
 
         // When
         profileService.updateProfile(requestProfileDTO, email);
 
         // Then
         ArgumentCaptor<Profile> profileCaptor = ArgumentCaptor.forClass(Profile.class);
-        verify(profileRepository).updateProfile(profileCaptor.capture(), eq(userEntity));
+        verify(profileRepository).updateProfile(profileCaptor.capture(), eq(memberEntity));
 
         Profile capturedProfile = profileCaptor.getValue();
         assertEquals("newNickname", capturedProfile.getNickname());

@@ -3,7 +3,7 @@ package com.mincho.herb.domain.post.repository.post;
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.post.entity.PostEntity;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -43,7 +43,7 @@ public class PostRepositoryImpl implements PostRepository{
     }
 
     @Override
-    public UserEntity findAuthorByPostIdAndEmail(Long postId, String email) {
+    public MemberEntity findAuthorByPostIdAndEmail(Long postId, String email) {
         return postJpaRepository.findAuthorByPostIdAndEmail(postId, email)
                 .orElseThrow(()-> new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 있는 유저가 아닙니다."));
     }

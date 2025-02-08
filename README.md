@@ -7,10 +7,10 @@
 ### Entity 구조 예시
 - 아래 구조는 현 프로젝트에서 Entity 를 구성할 때 기본이 되는 틀의 예시 입니다.
 ```java
-package com.mincho.herb.user.entity;
+package com.mincho.herb.member.entity;
 
 
-import domain.com.mincho.herb.domain.user.User;
+import domain.com.mincho.herb.domain.member.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -32,12 +32,12 @@ public class UserEntity {
     private String password;
    
     // Domain -> Entity
-    public static UserEntity toEntity(User userDomain){
-        UserEntity userEntity = new UserEntity();
-        userEntity.id = userDomain.getId();
-        userEntity.email = userDomain.getEmail();
-        userEntity.nickname = userDomain.getNickname();
-        return userEntity;
+    public static UserEntity toEntity(User memberDomain){
+        UserEntity memberEntity = new UserEntity();
+        memberEntity.id = memberDomain.getId();
+        memberEntity.email = memberDomain.getEmail();
+        memberEntity.nickname = memberDomain.getNickname();
+        return memberEntity;
     }
     // Entity -> Domain
     public User toModel(){

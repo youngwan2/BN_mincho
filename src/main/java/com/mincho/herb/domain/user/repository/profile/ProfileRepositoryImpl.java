@@ -3,9 +3,9 @@ package com.mincho.herb.domain.user.repository.profile;
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.user.domain.Profile;
-import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -25,13 +25,13 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     }
 
     @Override
-    public void updateProfile(Profile profile, UserEntity user) {
+    public void updateProfile(Profile profile, MemberEntity user) {
         profileJpaRepository.updateProfile(profile.getNickname(), profile.getIntroduction(), profile.getAvatarUrl(), user.getId());
     }
 
     @Override
-    public Profile findProfileByUser(User user) {
-        Long userId = UserEntity.toEntity(user).getId();
+    public Profile findProfileByUser(Member member) {
+        Long userId = MemberEntity.toEntity(member).getId();
         log.info("userId: {}",userId);
         ProfileEntity profileEntity = profileJpaRepository.findProfileByUser(userId);
         if(profileEntity == null){

@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.entity;
 
 import com.mincho.herb.domain.post.domain.PostLike;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,17 +19,17 @@ public class PostLikeEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private UserEntity member;
+    private MemberEntity member;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     private PostEntity post;
 
-    public static PostLikeEntity toEntity(Long id, UserEntity userEntity, PostEntity postEntity){
+    public static PostLikeEntity toEntity(Long id, MemberEntity memberEntity, PostEntity postEntity){
         PostLikeEntity postLikeEntity = new PostLikeEntity();
         postLikeEntity.id = id;
         postLikeEntity.post = postEntity;
-        postLikeEntity.member = userEntity;
+        postLikeEntity.member = memberEntity;
         return postLikeEntity;
     }
 
