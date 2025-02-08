@@ -10,8 +10,8 @@ import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepository;
 import com.mincho.herb.domain.user.domain.Profile;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
-import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class PostServiceTest {
 
     private RequestPostDTO requestPostDTO;
     private String email;
-    private UserEntity userEntity;
+    private MemberEntity memberEntity;
     private PostEntity postEntity;
 
     @BeforeEach
@@ -53,16 +53,16 @@ class PostServiceTest {
         requestPostDTO = new RequestPostDTO("Test Title", "Test Contents", "정보");
 
         Profile profileDomain = Profile.builder().nickname("testUser").build();
-        userEntity = UserEntity.builder()
+        memberEntity = MemberEntity.builder()
                 .id(1L)
                 .role("ROLE_USER")
                 .email("test@example.com")
-                .profile(ProfileEntity.toEntity(profileDomain, userEntity))
+                .profile(ProfileEntity.toEntity(profileDomain, memberEntity))
                 .build();
         postEntity = PostEntity.builder()
                 .id(1L)
                 .title("Test Title")
-                .member(userEntity)
+                .member(memberEntity)
                 .build();
 
     }
@@ -74,7 +74,7 @@ class PostServiceTest {
         PostCategoryEntity existingPostCategoryEntity = new PostCategoryEntity();
         existingPostCategoryEntity.setCategory("정보");
 
-        when(userRepository.findByEmail(email)).thenReturn(userEntity);
+        when(userRepository.findByEmail(email)).thenReturn(memberEntity);
         when(postCategoryRepository.findByCategory(requestPostDTO.getCategory())).thenReturn(existingPostCategoryEntity);
 
         // when
@@ -88,7 +88,7 @@ class PostServiceTest {
     @Test
     void addPost_WhenCategoryNotExists() {
         // given
-        when(userRepository.findByEmail(email)).thenReturn(userEntity);
+        when(userRepository.findByEmail(email)).thenReturn(memberEntity);
         when(postCategoryRepository.findByCategory(requestPostDTO.getCategory())).thenReturn(null);
 
         // when

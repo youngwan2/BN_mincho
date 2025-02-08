@@ -1,8 +1,6 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
-import com.mincho.herb.domain.user.repository.user.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +27,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtAuthProvider jwtAuthProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

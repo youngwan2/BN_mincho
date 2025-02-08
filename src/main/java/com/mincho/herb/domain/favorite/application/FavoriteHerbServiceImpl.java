@@ -8,7 +8,7 @@ import com.mincho.herb.domain.favorite.entity.FavoriteHerbEntity;
 import com.mincho.herb.domain.favorite.repository.FavoriteHerbRepository;
 import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +27,10 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
     @Override
     public void addFavoriteHerb(String url, String email, String herbName) {
 
-        UserEntity userEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userRepository.findByEmail(email);
         HerbSummaryEntity herbSummaryEntity = herbSummaryRepository.findByCntntsSj(herbName);
 
-        if(userEntity == null){
+        if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
         }
         if(herbSummaryEntity == null){
@@ -42,7 +42,7 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
         }
 
         FavoriteHerbEntity favoriteHerbEntity = FavoriteHerbEntity.builder()
-                        .member(userEntity)
+                        .member(memberEntity)
                         .herbSummary(herbSummaryEntity)
                         .url(url)
                         .build();
@@ -54,12 +54,12 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
     @Override
     @Transactional
     public void removeFavoriteHerb(Long favoriteHerbId, String email) {
-        UserEntity userEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userRepository.findByEmail(email);
 
-        if(userEntity == null){
+        if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
 
-        favoriteHerbRepository.deleteMemberIdAndFavoriteHerbId(userEntity.getId(), favoriteHerbId);
+        favoriteHerbRepository.deleteMemberIdAndFavoriteHerbId(memberEntity.getId(), favoriteHerbId);
     }
 }

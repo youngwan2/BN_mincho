@@ -13,7 +13,7 @@ import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepository;
 import com.mincho.herb.domain.post.repository.postLike.PostLikeRepository;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -100,7 +100,7 @@ public class PostServiceImpl implements PostService{
     @Transactional
     public void addPost(RequestPostDTO requestPostDTO, String email) {
         // 유저 조회
-        UserEntity userEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userRepository.findByEmail(email);
 
         // 카테고리 저장 및 조회
         PostCategory postCategory = PostCategory.builder()
@@ -118,7 +118,7 @@ public class PostServiceImpl implements PostService{
         Post post = Post.builder().title(requestPostDTO.getTitle())
                         .contents(requestPostDTO.getContents())
                         .build();
-        PostEntity unsavedPostEntity =  PostEntity.toEntity(post, userEntity, savedPostCategoryEntity);
+        PostEntity unsavedPostEntity =  PostEntity.toEntity(post, memberEntity, savedPostCategoryEntity);
         
         postRepository.save(unsavedPostEntity);
 
@@ -127,12 +127,12 @@ public class PostServiceImpl implements PostService{
     // 게시글 수정
     @Override
     public void update(RequestPostDTO requestPostDTO, Long id, String email) {
-        UserEntity userEntity = postRepository.findAuthorByPostIdAndEmail(id, email);
+        MemberEntity memberEntity = postRepository.findAuthorByPostIdAndEmail(id, email);
         PostCategoryEntity updatedPostCategoryEntity = postCategoryRepository.findByCategory(requestPostDTO.getCategory());
         PostEntity unsavedPostEntity = PostEntity.builder()
                       .id(id)
                       .category(updatedPostCategoryEntity)
-                      .member(userEntity)
+                      .member(memberEntity)
                       .title(requestPostDTO.getTitle())
                       .contents(requestPostDTO.getContents())
                       .build();

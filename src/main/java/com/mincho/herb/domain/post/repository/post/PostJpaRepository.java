@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.repository.post;
 
 import com.mincho.herb.domain.post.entity.PostEntity;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,5 +41,5 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
         Optional<Long> findAuthorIdByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
 
         @Query("SELECT p.member FROM PostEntity p WHERE p.id = :postId AND p.member.email = :email")
-        Optional<UserEntity> findAuthorByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
+        Optional<MemberEntity> findAuthorByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
 }

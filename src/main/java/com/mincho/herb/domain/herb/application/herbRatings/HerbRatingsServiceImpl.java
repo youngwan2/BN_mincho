@@ -8,7 +8,7 @@ import com.mincho.herb.domain.herb.entity.HerbRatingsEntity;
 import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import com.mincho.herb.domain.herb.repository.herbRatings.HerbRatingsRepository;
 import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +40,13 @@ public class HerbRatingsServiceImpl implements HerbRatingsService {
     @Transactional
     public void addScore(HerbRatings herbRatings, String herbName, String email) {
         HerbSummaryEntity herbSummaryEntity =  herbSummaryRepository.findByCntntsSj(herbName);
-        UserEntity userEntity  = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userRepository.findByEmail(email);
 
         if(herbSummaryEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "존재하지 않는 약초 입니다.");
         }
 
-        if(userEntity == null) {
+        if(memberEntity == null) {
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "존재하지 않는 유저 입니다.");
         }
         if(!herbRatings.isScoreValid()){
@@ -55,7 +55,7 @@ public class HerbRatingsServiceImpl implements HerbRatingsService {
         }
        HerbRatingsEntity herbRatingsEntity=  HerbRatingsEntity.builder()
                 .score(herbRatings.getScore())
-                .member(userEntity)
+                .member(memberEntity)
                 .herbSummary(herbSummaryEntity)
                 .build();
 

@@ -7,7 +7,6 @@ import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.postLike.PostLikeService;
 import com.mincho.herb.domain.post.dto.ResponseLikeDTO;
-import com.mincho.herb.domain.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

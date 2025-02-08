@@ -19,9 +19,9 @@ public class RefreshTokenEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
-    private UserEntity member;
+    private MemberEntity member;
 
-    public static RefreshTokenEntity toEntity(String refreshToken, UserEntity member){
+    public static RefreshTokenEntity toEntity(String refreshToken, MemberEntity member){
         RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
         refreshTokenEntity.refreshToken = refreshToken;
         refreshTokenEntity.member = member;

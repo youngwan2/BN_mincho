@@ -10,7 +10,7 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.*;
 import com.mincho.herb.common.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,8 +46,8 @@ public class UserController {
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         log.info("userinfo {}", registerDTO);
-        User savedUser = userService.register(registerDTO);
-        profileService.insertProfile(savedUser);
+        Member savedMember = userService.register(registerDTO);
+        profileService.insertProfile(savedMember);
 
 
         log.info("state:{}","회원가입 성공!");
@@ -90,7 +90,13 @@ public class UserController {
     // 회원탈퇴
     @DeleteMapping("/me")
     public ResponseEntity<Map<String, String>> deleteUser(HttpServletResponse response){
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!email.contains("@")){
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        }
+
+
         userService.deleteUser(email);
 
         response.addCookie(cookieUtils.createCookie("refresh", "", 0));
@@ -107,6 +113,10 @@ public class UserController {
         }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!email.contains("@")){
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        }
+
         userService.updatePassword(requestUpdatePassword.getPassword(), email);
         return new SuccessResponse<>().getResponse(200, "비밀번호가 수정 되었습니다.", HttpSuccessType.OK);
     }
@@ -119,22 +129,23 @@ public class UserController {
             @RequestParam("action") String action){
 
         log.info("logout refresh: {}", refreshToken);
+
         // 전체 디바이스 로그아웃
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
         if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
         }
+
 
         if(!action.equals("all")){
 
             log.info("logout email: {}",email);
 
-            User user = userService.findUserByEmail(email);
-            if(user == null) {
+            Member member = userService.findUserByEmail(email);
+            if(member == null) {
                 throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
             }
-            userService.logoutAll(user.getId());
+            userService.logoutAll(member.getId());
 
             // 특정 디바이스 로그아웃
         } else {

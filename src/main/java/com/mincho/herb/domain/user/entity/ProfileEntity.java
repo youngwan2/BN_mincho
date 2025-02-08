@@ -26,11 +26,11 @@ public class ProfileEntity {
 
     @OneToOne
     @JoinColumn(name = "member_id")
-    private UserEntity member;
+    private MemberEntity member;
 
 
 
-    public static ProfileEntity toEntity(Profile profileDomain, UserEntity member){
+    public static ProfileEntity toEntity(Profile profileDomain, MemberEntity member){
         ProfileEntity profileEntity = new ProfileEntity();
         profileEntity.id = profileEntity.getId();
         profileEntity.nickname = profileDomain.getNickname();

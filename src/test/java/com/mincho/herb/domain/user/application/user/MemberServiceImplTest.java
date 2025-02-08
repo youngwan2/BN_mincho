@@ -2,7 +2,7 @@ package com.mincho.herb.domain.user.application.user;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-class UserServiceImplTest {
+class MemberServiceImplTest {
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -64,15 +64,15 @@ class UserServiceImplTest {
 
         // Then
         // ArgumentCaptor로 save 메서드에 전달된 인자를 캡처
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<Member> userCaptor = ArgumentCaptor.forClass(Member.class);
         verify(userRepository).save(userCaptor.capture());
 
         // 캡처한 User 객체의 내용을 확인
-        User capturedUser = userCaptor.getValue();
+        Member capturedMember = userCaptor.getValue();
 
         // 원하는 값으로 비교
-        assertEquals(requestRegisterDTO.getEmail(), capturedUser.getEmail());
-        assertEquals(encodedPassword, capturedUser.getPassword());
+        assertEquals(requestRegisterDTO.getEmail(), capturedMember.getEmail());
+        assertEquals(encodedPassword, capturedMember.getPassword());
     }
 
     /* 유저 중복 확인*/

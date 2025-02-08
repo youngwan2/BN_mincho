@@ -1,6 +1,6 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,10 +9,10 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    private final Member member;
 
-    public CustomUserDetails(User user) {
-        this.user = user;
+    public CustomUserDetails(Member member) {
+        this.member = member;
     }
 
     @Override // 허가된 권한 목록을 반환
@@ -23,7 +23,7 @@ public class CustomUserDetails implements UserDetails {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return user.getRole();
+                return member.getRole();
             }
         });
 
@@ -32,12 +32,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return member.getEmail();
     }
 
     @Override

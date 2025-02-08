@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.post.domain;
 
-import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.domain.Member;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,7 +12,7 @@ public class Post {
     private String title;
     private String contents;
     private String category;
-    private User user;
+    private Member member;
 
     public Post withChangePostContents( String contents){
         return  Post.builder()

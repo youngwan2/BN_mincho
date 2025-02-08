@@ -3,7 +3,7 @@ package com.mincho.herb.domain.favorite.entity;
 import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.favorite.domain.FavoriteHerb;
 import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class FavoriteHerbEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private UserEntity member;
+    private MemberEntity member;
 
     @ManyToOne
     @JoinColumn(name = "herbSummary_id")
@@ -34,7 +34,7 @@ public class FavoriteHerbEntity extends BaseEntity {
     public static FavoriteHerbEntity toEntity(FavoriteHerb favoriteHerb){
         FavoriteHerbEntity favoriteHerbEntity = new FavoriteHerbEntity();
         favoriteHerbEntity.id = favoriteHerb.getId();
-        favoriteHerbEntity.member = UserEntity.toEntity(favoriteHerb.getUser());
+        favoriteHerbEntity.member = MemberEntity.toEntity(favoriteHerb.getMember());
         favoriteHerbEntity.herbSummary = HerbSummaryEntity.toEntity(favoriteHerb.getHerbSummary());
         favoriteHerbEntity.url = favoriteHerb.getUrl();
 
@@ -44,7 +44,7 @@ public class FavoriteHerbEntity extends BaseEntity {
     public FavoriteHerb toModel(){
         return FavoriteHerb.builder()
                 .id(this.id)
-                .user(this.member.toModel())
+                .member(this.member.toModel())
                 .herbSummary(this.herbSummary.toModel())
                 .url(this.url)
                 .build();

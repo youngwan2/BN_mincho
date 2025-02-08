@@ -2,11 +2,11 @@ package com.mincho.herb.domain.user.application.user;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.RequestLoginDTO;
 import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements  UserService{
 
 
     @Override
-    public User register(RequestRegisterDTO registerDTO) {
+    public Member register(RequestRegisterDTO registerDTO) {
         DuplicateCheckDTO duplicateCheckDTO = new DuplicateCheckDTO(registerDTO.getEmail());
         boolean hasUser = dueCheck(duplicateCheckDTO);
         if(hasUser){
@@ -41,13 +41,13 @@ public class UserServiceImpl implements  UserService{
         }
         String encodePw = bCryptPasswordEncoder.encode(registerDTO.getPassword());
 
-        User user = User.builder()
+        Member member = Member.builder()
                 .email(registerDTO.getEmail())
                 .password(encodePw)
                 .role("ROLE_USER")
                 .build();
 
-        return userRepository.save(user);
+        return userRepository.save(member);
     }
 
     // 유저 중복 체크
@@ -70,12 +70,12 @@ public class UserServiceImpl implements  UserService{
             // 토큰 생성
             String accessToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 10* 1000L);
             String refreshToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 24 * 30 * 1000L);
-            UserEntity userEntity = userRepository.findByEmail(requestLoginDTO.getEmail());
-            if(userEntity == null){
+            MemberEntity memberEntity = userRepository.findByEmail(requestLoginDTO.getEmail());
+            if(memberEntity == null){
                 throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
             }
 
-            refreshTokenRepository.saveRefreshToken(refreshToken, userEntity);
+            refreshTokenRepository.saveRefreshToken(refreshToken, memberEntity);
 
             Map<String, String> map = new HashMap<>();
             map.put("access", accessToken);
@@ -102,12 +102,12 @@ public class UserServiceImpl implements  UserService{
 
     // 유저 조회
     @Override
-    public User findUserByEmail(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email);
-        if(userEntity == null){
+    public Member findUserByEmail(String email) {
+        MemberEntity memberEntity = userRepository.findByEmail(email);
+        if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
-        return userEntity.toModel();
+        return memberEntity.toModel();
     }
 
     // 로그아웃
