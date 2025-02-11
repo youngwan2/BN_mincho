@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.comment.application;
 
-import com.mincho.herb.domain.comment.dto.RequestCommentDTO;
+import com.mincho.herb.domain.comment.dto.RequestCommentCreateDTO;
+import com.mincho.herb.domain.comment.dto.RequestCommentUpdateDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.post.entity.PostEntity;
@@ -45,13 +46,14 @@ class CommentServiceImplTest {
                 .id(1L)
                 .title("Test Post")
                 .build();
+
     }
 
     // 댓글 추가
     @Test
     void addComment_NoParentComment() {
         // given
-        RequestCommentDTO requestDTO = RequestCommentDTO.builder()
+        RequestCommentCreateDTO requestDTO = RequestCommentCreateDTO.builder()
                         .postId(1L)
                         .parentCommentId(null)
                         .contents("댓글 내용")
@@ -80,7 +82,7 @@ class CommentServiceImplTest {
                 .member(mockMember)
                 .build();
 
-        RequestCommentDTO requestDTO = RequestCommentDTO.builder()
+        RequestCommentCreateDTO requestDTO = RequestCommentCreateDTO.builder()
                 .postId(1L)
                 .parentCommentId(10L)
                 .contents("자식 댓글")
@@ -122,7 +124,7 @@ class CommentServiceImplTest {
                 .build();
         
         // - 추가할 자식 댓글
-        RequestCommentDTO requestDTO = RequestCommentDTO.builder()
+        RequestCommentCreateDTO requestDTO = RequestCommentCreateDTO.builder()
                 .postId(1L)
                 .parentCommentId(10L)
                 .contents("댓글의 댓글의 댓글")
@@ -139,5 +141,37 @@ class CommentServiceImplTest {
         verify(commentRepository, times(1)).save(argThat(comment ->
                 comment.getLevel() == 2L && comment.getContents().equals("댓글의 댓글의 댓글")
         ));
+    }
+
+
+    /* 댓글 논리적 삭제/수정 */
+    @Test
+    void updateComment_shouldModifyCommentDetails(){
+        // given
+
+        RequestCommentUpdateDTO dto = RequestCommentUpdateDTO.builder()
+                .id(5L)
+                .isDeleted(true)
+                .contents("test")
+                .build();
+
+        CommentEntity mockComment = CommentEntity.builder()
+                .id(5L)
+                .level(0L)
+                .contents(dto.getContents())
+                .post(mockPost)
+                .member(mockMember)
+                .deleted(dto.getIsDeleted())
+                .build();
+
+        when(commentRepository.findById(dto.getId())).thenReturn(mockComment);
+
+        // when
+        commentService.updateComment(dto);
+
+        // then
+        verify(commentRepository, times(1)).save(argThat(comment ->
+                comment.getDeleted() && comment.getContents().equalsIgnoreCase("test")
+                ));
     }
 }

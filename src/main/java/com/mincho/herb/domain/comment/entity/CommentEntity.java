@@ -5,18 +5,17 @@ import com.mincho.herb.domain.comment.domain.Comment;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
-@Entity
-@Table(name = "Comment")
+@Entity(name = "Comments")
+@Table(name = "comments")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
+@ToString
 public class CommentEntity extends BaseEntity {
 
     @Id

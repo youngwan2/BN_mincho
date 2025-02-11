@@ -4,6 +4,7 @@ import com.mincho.herb.domain.comment.entity.CommentEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,5 +25,21 @@ public class CommentRepositoryImpl implements CommentRepository{
             return optional.get();
         }
         return null;
+    }
+
+    @Override
+    public List<CommentEntity> findByPostId(Long postId) {
+        return commentJpaRepository.findByPostId(postId);
+
+    }
+
+    @Override
+    public List<CommentEntity> findByParentComment(CommentEntity parentComment) {
+        return commentJpaRepository.findByParentComment(parentComment);
+    }
+
+    @Override
+    public void updateComment(CommentEntity commentEntity) {
+        commentJpaRepository.save(commentEntity);
     }
 }
