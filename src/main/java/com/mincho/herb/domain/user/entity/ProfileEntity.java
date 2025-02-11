@@ -4,10 +4,12 @@ package com.mincho.herb.domain.user.entity;
 import com.mincho.herb.domain.user.domain.Profile;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity(name = "Profile")
 @Table(name = "profile")
 @Data
+@ToString
 public class ProfileEntity {
 
 
