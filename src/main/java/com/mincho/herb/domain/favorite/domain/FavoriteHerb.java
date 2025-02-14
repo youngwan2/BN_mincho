@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.favorite.domain;
 
-import com.mincho.herb.domain.herb.domain.HerbSummary;
+import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.user.domain.Member;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,7 @@ public class FavoriteHerb {
     private Long id;
     private String url;
     private Member member;
-    private HerbSummary herbSummary;
+    private Herb herb;
 
     public static boolean isValidUrl(String url){
         String URL_REGEX = "^(http://|https://).*";

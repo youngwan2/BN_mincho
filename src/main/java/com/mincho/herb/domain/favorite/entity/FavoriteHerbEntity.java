@@ -2,7 +2,7 @@ package com.mincho.herb.domain.favorite.entity;
 
 import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.favorite.domain.FavoriteHerb;
-import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
+import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,8 +26,8 @@ public class FavoriteHerbEntity extends BaseEntity {
     private MemberEntity member;
 
     @ManyToOne
-    @JoinColumn(name = "herbSummary_id")
-    private HerbSummaryEntity herbSummary;
+    @JoinColumn(name = "herb_id")
+    private HerbEntity herb;
     private String url;
 
 
@@ -35,7 +35,7 @@ public class FavoriteHerbEntity extends BaseEntity {
         FavoriteHerbEntity favoriteHerbEntity = new FavoriteHerbEntity();
         favoriteHerbEntity.id = favoriteHerb.getId();
         favoriteHerbEntity.member = MemberEntity.toEntity(favoriteHerb.getMember());
-        favoriteHerbEntity.herbSummary = HerbSummaryEntity.toEntity(favoriteHerb.getHerbSummary());
+        favoriteHerbEntity.herb = HerbEntity.toEntity(favoriteHerb.getHerb());
         favoriteHerbEntity.url = favoriteHerb.getUrl();
 
         return favoriteHerbEntity;
@@ -45,7 +45,7 @@ public class FavoriteHerbEntity extends BaseEntity {
         return FavoriteHerb.builder()
                 .id(this.id)
                 .member(this.member.toModel())
-                .herbSummary(this.herbSummary.toModel())
+                .herb(this.herb.toModel())
                 .url(this.url)
                 .build();
     }

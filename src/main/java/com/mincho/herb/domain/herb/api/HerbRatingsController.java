@@ -6,8 +6,8 @@ import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
+import com.mincho.herb.domain.herb.application.herb.HerbService;
 import com.mincho.herb.domain.herb.application.herbRatings.HerbRatingsService;
-import com.mincho.herb.domain.herb.application.herbSummary.HerbSummaryService;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
 import com.mincho.herb.domain.herb.dto.RequestHerbRatingsDTO;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class HerbRatingsController {
 
     private final HerbRatingsService herbRatingsService;
-    private final HerbSummaryService herbSummaryService;
+    private final HerbService herbService;
     private final CommonUtils commonUtils;
 
     @GetMapping()
@@ -37,7 +37,7 @@ public class HerbRatingsController {
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. herbName은 필수입니다..", HttpErrorType.BAD_REQUEST);
         }
 
-        List<HerbRatings> herbRatings = herbRatingsService.getHerbRatings(herbSummaryService.getHerbByHerbName(herbName));
+        List<HerbRatings> herbRatings = herbRatingsService.getHerbRatings(herbService.getHerbByHerbName(herbName));
 
         return new SuccessResponse<>().getResponse(200, "조회에 성공하였습니다.", HttpSuccessType.OK, herbRatings);
     }

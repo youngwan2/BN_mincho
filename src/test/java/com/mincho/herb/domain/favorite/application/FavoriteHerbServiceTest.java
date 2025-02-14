@@ -3,7 +3,6 @@ package com.mincho.herb.domain.favorite.application;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.favorite.entity.FavoriteHerbEntity;
 import com.mincho.herb.domain.favorite.repository.FavoriteHerbRepository;
-import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;

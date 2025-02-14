@@ -2,12 +2,12 @@ package com.mincho.herb.domain.herb.application.herbRatings;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
-import com.mincho.herb.domain.herb.domain.HerbSummary;
+import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.HerbRatingsEntity;
-import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import com.mincho.herb.domain.herb.repository.herbRatings.HerbRatingsRepository;
-import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
+import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -23,12 +23,12 @@ import java.util.List;
 public class HerbRatingsServiceImpl implements HerbRatingsService {
 
     private final HerbRatingsRepository herbRatingsRepository;
-    private final HerbSummaryRepository herbSummaryRepository;
+    private final HerbRepository herbSummaryRepository;
     private final UserRepository userRepository;
 
     @Override
-    public List<HerbRatings> getHerbRatings(HerbSummary herbSummary) {
-        List<HerbRatingsEntity> list = herbRatingsRepository.findAllBy(HerbSummaryEntity.toEntity(herbSummary));
+    public List<HerbRatings> getHerbRatings(Herb herb) {
+        List<HerbRatingsEntity> list = herbRatingsRepository.findAllBy(HerbEntity.toEntity(herb));
         if(list.isEmpty()){
             log.info("herbRatings: {}",list);
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "평점 정보가 존재하지 않습니다.");
@@ -39,10 +39,10 @@ public class HerbRatingsServiceImpl implements HerbRatingsService {
     @Override
     @Transactional
     public void addScore(HerbRatings herbRatings, String herbName, String email) {
-        HerbSummaryEntity herbSummaryEntity =  herbSummaryRepository.findByCntntsSj(herbName);
+        HerbEntity herbEntity =  herbSummaryRepository.findByCntntsSj(herbName);
         MemberEntity memberEntity = userRepository.findByEmail(email);
 
-        if(herbSummaryEntity == null){
+        if(herbEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "존재하지 않는 약초 입니다.");
         }
 
@@ -56,7 +56,7 @@ public class HerbRatingsServiceImpl implements HerbRatingsService {
        HerbRatingsEntity herbRatingsEntity=  HerbRatingsEntity.builder()
                 .score(herbRatings.getScore())
                 .member(memberEntity)
-                .herbSummary(herbSummaryEntity)
+                .herb(herbEntity)
                 .build();
 
         herbRatingsRepository.save(herbRatingsEntity);

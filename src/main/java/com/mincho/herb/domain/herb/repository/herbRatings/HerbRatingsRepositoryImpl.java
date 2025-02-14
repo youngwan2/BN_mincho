@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.herb.repository.herbRatings;
 
+import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.HerbRatingsEntity;
-import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +20,7 @@ public class HerbRatingsRepositoryImpl implements HerbRatingsRepository {
 
 
     @Override
-    public List<HerbRatingsEntity> findAllBy(HerbSummaryEntity herbSummaryEntity) {
-
-        return herbRatingsJpaRepository.findAllByHerbSummaryId(herbSummaryEntity.getId());
+    public List<HerbRatingsEntity> findAllBy(HerbEntity herbEntity) {
+        return herbRatingsJpaRepository.findAllByHerbId(herbEntity.getId());
     }
 }
