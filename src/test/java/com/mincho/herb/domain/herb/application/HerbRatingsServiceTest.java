@@ -3,12 +3,12 @@ package com.mincho.herb.domain.herb.application;
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.herb.application.herbRatings.HerbRatingsServiceImpl;
+import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
-import com.mincho.herb.domain.herb.domain.HerbSummary;
+import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.HerbRatingsEntity;
-import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
+import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.herb.repository.herbRatings.HerbRatingsRepository;
-import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class HerbRatingsServiceImplTest {
     private HerbRatingsRepository herbRatingsRepository;
 
     @Mock
-    private HerbSummaryRepository herbSummaryRepository;
+    private HerbRepository herbRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -44,18 +44,18 @@ class HerbRatingsServiceImplTest {
     @Test
     void getHerbRatings_Success() {
         // Given
-        HerbSummary herbSummary = HerbSummary.builder().cntntsSj("Sample Herb").build();
-        HerbSummaryEntity herbSummaryEntity = HerbSummaryEntity.toEntity(herbSummary);
+        Herb herb = Herb.builder().cntntsSj("Sample Herb").build();
+        HerbEntity herbSummaryEntity = HerbEntity.toEntity(herb);
         HerbRatingsEntity herbRatingsEntity = HerbRatingsEntity.builder()
                 .score(5)
-                .herbSummary(herbSummaryEntity)
+                .herb(herbSummaryEntity)
                 .member(new MemberEntity())
                 .build();
 
         when(herbRatingsRepository.findAllBy(herbSummaryEntity))
                 .thenReturn(List.of(herbRatingsEntity));
         // When
-        List<HerbRatings> result = herbRatingsService.getHerbRatings(herbSummary);
+        List<HerbRatings> result = herbRatingsService.getHerbRatings(herb);
 
         // Then
         assertNotNull(result);
@@ -67,8 +67,8 @@ class HerbRatingsServiceImplTest {
     @Test
     void getHerbRatings_NotFound() {
         // Given
-        HerbSummary herbSummary = HerbSummary.builder().cntntsSj("Sample Herb").build();
-        HerbSummaryEntity herbSummaryEntity = HerbSummaryEntity.toEntity(herbSummary);
+        Herb herbSummary = Herb.builder().cntntsSj("Sample Herb").build();
+        HerbEntity herbSummaryEntity = HerbEntity.toEntity(herbSummary);
 
         when(herbRatingsRepository.findAllBy(herbSummaryEntity))
                 .thenReturn(List.of());
@@ -89,7 +89,7 @@ class HerbRatingsServiceImplTest {
         String email = "user@example.com";
         HerbRatings herbRatings = HerbRatings.builder().id(5L).build();
 
-        HerbSummaryEntity herbSummaryEntity = new HerbSummaryEntity();
+        HerbEntity herbSummaryEntity = new HerbEntity();
         herbSummaryEntity.setId(5L);
         herbSummaryEntity.setHbdcNm("Sample Herb");
 
@@ -97,7 +97,7 @@ class HerbRatingsServiceImplTest {
         memberEntity.setId(5L);
         memberEntity.setEmail("user@example.com");
 
-        when(herbSummaryRepository.findByCntntsSj(herbName))
+        when(herbRepository.findByCntntsSj(herbName))
                 .thenReturn(herbSummaryEntity);
         when(userRepository.findByEmail(email))
                 .thenReturn(memberEntity);
@@ -106,7 +106,7 @@ class HerbRatingsServiceImplTest {
         assertDoesNotThrow(() -> herbRatingsService.addScore(herbRatings, herbName, email));
 
         // Then
-        verify(herbSummaryRepository, times(1)).findByCntntsSj(herbName);
+        verify(herbRepository, times(1)).findByCntntsSj(herbName);
         verify(userRepository, times(1)).findByEmail(email);
         verify(herbRatingsRepository, times(1)).save(any(HerbRatingsEntity.class));
     }
@@ -118,7 +118,7 @@ class HerbRatingsServiceImplTest {
         String email = "user@example.com";
         HerbRatings herbRatings = HerbRatings.builder().id(5L).build();
 
-        when(herbSummaryRepository.findByCntntsSj(herbName))
+        when(herbRepository.findByCntntsSj(herbName))
                 .thenReturn(null);
 
         // When & Then
@@ -137,11 +137,11 @@ class HerbRatingsServiceImplTest {
         String email = "nonexistent@example.com";
         HerbRatings herbRatings = HerbRatings.builder().id(5L).build();
 
-        HerbSummaryEntity herbSummaryEntity = new HerbSummaryEntity();
+        HerbEntity herbSummaryEntity = new HerbEntity();
         herbSummaryEntity.setId(1L);
         herbSummaryEntity.setBneNm("Sample Herb");
 
-        when(herbSummaryRepository.findByCntntsSj(herbName))
+        when(herbRepository.findByCntntsSj(herbName))
                 .thenReturn(herbSummaryEntity);
         when(userRepository.findByEmail(email))
                 .thenReturn(null);

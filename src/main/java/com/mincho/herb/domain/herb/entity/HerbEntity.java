@@ -1,16 +1,20 @@
 package com.mincho.herb.domain.herb.entity;
 
 import com.mincho.herb.common.base.BaseEntity;
-import com.mincho.herb.domain.herb.domain.HerbDetail;
+import com.mincho.herb.domain.herb.domain.Herb;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "HerbDetail")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class HerbDetailEntity extends BaseEntity {
+@Table(name = "Herbs")
+public class HerbEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,35 +31,40 @@ public class HerbDetailEntity extends BaseEntity {
     private String imgUrl5; // 추가 이미지 URL 5
     private String imgUrl6; // 추가 이미지 URL 6
 
-    @Column(length = 2000)
+    @Column(length = 5000)
     private String prvateTherpy; // 민간요법
 
-    @Column(length = 1000)
+    @Column(length = 1500)
     private String stle; // 형태
     private String useeRegn; // 이용 부위
 
-    public static HerbDetailEntity toEntity(HerbDetail herbDetail) {
-        HerbDetailEntity herbDetailEntity = new HerbDetailEntity();
-
-        herbDetailEntity.cntntsNo = herbDetail.getCntntsNo();
-        herbDetailEntity.bneNm = herbDetail.getBneNm();
-        herbDetailEntity.cntntsSj = herbDetail.getCntntsSj();
-        herbDetailEntity.hbdcNm = herbDetail.getHbdcNm();
-        herbDetailEntity.imgUrl1 = herbDetail.getImgUrl1();
-        herbDetailEntity.imgUrl2 = herbDetail.getImgUrl2();
-        herbDetailEntity.imgUrl3 = herbDetail.getImgUrl3();
-        herbDetailEntity.imgUrl4 = herbDetail.getImgUrl4();
-        herbDetailEntity.imgUrl5 = herbDetail.getImgUrl5();
-        herbDetailEntity.imgUrl6 = herbDetail.getImgUrl6();
-        herbDetailEntity.prvateTherpy = herbDetail.getPrvateTherpy();
-        herbDetailEntity.stle = herbDetail.getStle();
-        herbDetailEntity.useeRegn = herbDetail.getUseeRegn();
-
-        return herbDetailEntity;
+    public HerbEntity(long l, String number, String s, String 가락지나물, String s1, String url, String protocol) {
+        super();
     }
 
-    public HerbDetail toModel() {
-        return HerbDetail.builder()
+    public static HerbEntity toEntity(Herb herb) {
+        HerbEntity herbEntity = new HerbEntity();
+        herbEntity.id = herb.getId();
+        herbEntity.cntntsNo = herb.getCntntsNo();
+        herbEntity.bneNm = herb.getBneNm();
+        herbEntity.cntntsSj = herb.getCntntsSj();
+        herbEntity.hbdcNm = herb.getHbdcNm();
+        herbEntity.imgUrl1 = herb.getImgUrl1();
+        herbEntity.imgUrl2 = herb.getImgUrl2();
+        herbEntity.imgUrl3 = herb.getImgUrl3();
+        herbEntity.imgUrl4 = herb.getImgUrl4();
+        herbEntity.imgUrl5 = herb.getImgUrl5();
+        herbEntity.imgUrl6 = herb.getImgUrl6();
+        herbEntity.prvateTherpy = herb.getPrvateTherpy();
+        herbEntity.stle = herb.getStle();
+        herbEntity.useeRegn = herb.getUseeRegn();
+
+        return herbEntity;
+    }
+
+    public Herb toModel() {
+        return Herb.builder()
+                .id(this.id)
                 .cntntsNo(this.cntntsNo)
                 .bneNm(this.bneNm)
                 .cntntsSj(this.cntntsSj)

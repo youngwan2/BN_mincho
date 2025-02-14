@@ -9,7 +9,7 @@ import lombok.*;
 @Entity
 @Table(
         name = "HerbRatings",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"herbSummary_id", "user_id"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"herb_id", "user_id"})
 )
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,8 +27,8 @@ public class HerbRatingsEntity extends BaseEntity {
     private MemberEntity member;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "herbSummary_id", nullable = false)
-    private HerbSummaryEntity herbSummary;
+    @JoinColumn(name = "herb_id", nullable = false)
+    private HerbEntity herb;
 
     private Integer score;
 

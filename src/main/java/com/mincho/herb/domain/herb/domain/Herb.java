@@ -1,11 +1,13 @@
 package com.mincho.herb.domain.herb.domain;
 
+
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class HerbDetail {
+public class Herb {
+    private Long id;
     private String cntntsNo; // 콘텐츠 번호
     private String bneNm; // 학명
     private String cntntsSj; // 제목

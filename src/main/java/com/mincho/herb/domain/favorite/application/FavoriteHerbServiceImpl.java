@@ -6,8 +6,8 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.favorite.domain.FavoriteHerb;
 import com.mincho.herb.domain.favorite.entity.FavoriteHerbEntity;
 import com.mincho.herb.domain.favorite.repository.FavoriteHerbRepository;
-import com.mincho.herb.domain.herb.entity.HerbSummaryEntity;
-import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
+import com.mincho.herb.domain.herb.entity.HerbEntity;
+import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,7 +20,7 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
 
     private final FavoriteHerbRepository favoriteHerbRepository;
     private final UserRepository userRepository;
-    private final HerbSummaryRepository herbSummaryRepository;
+    private final HerbRepository herbRepository;
 
 
 
@@ -28,12 +28,12 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
     public void addFavoriteHerb(String url, String email, String herbName) {
 
         MemberEntity memberEntity = userRepository.findByEmail(email);
-        HerbSummaryEntity herbSummaryEntity = herbSummaryRepository.findByCntntsSj(herbName);
+        HerbEntity herbEntity = herbRepository.findByCntntsSj(herbName);
 
         if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
         }
-        if(herbSummaryEntity == null){
+        if(herbEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"약초 정보를 찾을 수 없습니다.");
         }
 
@@ -43,7 +43,7 @@ public class FavoriteHerbServiceImpl implements FavoriteHerbService {
 
         FavoriteHerbEntity favoriteHerbEntity = FavoriteHerbEntity.builder()
                         .member(memberEntity)
-                        .herbSummary(herbSummaryEntity)
+                        .herb(herbEntity)
                         .url(url)
                         .build();
         favoriteHerbRepository.save(favoriteHerbEntity);
