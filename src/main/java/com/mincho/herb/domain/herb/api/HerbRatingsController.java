@@ -9,7 +9,7 @@ import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.herb.application.herb.HerbService;
 import com.mincho.herb.domain.herb.application.herbRatings.HerbRatingsService;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
-import com.mincho.herb.domain.herb.dto.RequestHerbRatingsDTO;
+import com.mincho.herb.domain.herb.dto.HerbRatingsRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ public class HerbRatingsController {
     }
 
     @PostMapping()
-    ResponseEntity<Map<String,String>> addScore(@RequestParam("herbName") String herbName, @Valid @RequestBody RequestHerbRatingsDTO requestHerbRatingsDTO, BindingResult result){
+    ResponseEntity<Map<String,String>> addScore(@RequestParam("herbName") String herbName, @Valid @RequestBody HerbRatingsRequestDTO herbRatingsRequestDTO, BindingResult result){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("username: {}", email);
 
@@ -58,7 +58,7 @@ public class HerbRatingsController {
         }
 
         herbRatingsService.addScore(HerbRatings.builder()
-                .score(requestHerbRatingsDTO.getScore())
+                .score(herbRatingsRequestDTO.getScore())
                 .build(),
                 herbName,
                 email

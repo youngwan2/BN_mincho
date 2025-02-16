@@ -7,13 +7,20 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.domain.herb.application.herb.HerbService;
 import com.mincho.herb.domain.herb.domain.Herb;
+import com.mincho.herb.domain.herb.dto.HerbCreateRequestDTO;
+import com.mincho.herb.domain.herb.dto.HerbUpdateRequestDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/herbs")
@@ -38,16 +45,30 @@ public class HerbController {
         return new SuccessResponse<Herb>().getResponse(200, "성공적으로 조회 되었습니다.", HttpSuccessType.OK, herbDetails);
     }
 
+    // 허브 정보 추가
+    @PostMapping()
+    public ResponseEntity<?> createHerb(@Valid @RequestBody HerbCreateRequestDTO herbCreateRequestDTO){
+
+        log.info("herbDTO: {}", herbCreateRequestDTO);
+
+        herbService.createHerb(herbCreateRequestDTO);
+
+        return new SuccessResponse<>().getResponse(200,"정상적으로 등록되었습니다.", HttpSuccessType.OK);
+    }
+
     // 허브 정보 수정
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> updateHerb(){
-        return null;
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateHerb(@PathVariable Long id, @Valid @RequestBody HerbUpdateRequestDTO herbUpdateRequestDTO){
+        herbService.updateHerb(herbUpdateRequestDTO, id);
+        return new SuccessResponse<>().getResponse(200,"정상적으로 수정되었습니다.", HttpSuccessType.OK);
     }
 
     // 허브 정보 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteHerb(){
-        return null;
+    public ResponseEntity<?> deleteHerb(@PathVariable Long id){
+
+        herbService.removeHerb(id);
+        return new SuccessResponse<>().getResponse(200, "성공적으로 삭제처리 되었습니다.", HttpSuccessType.OK);
     }
 
     // 허브 데이터 초기화

@@ -3,17 +3,16 @@ package com.mincho.herb.domain.herb.entity;
 import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.Herb;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
-@Getter
-@Setter
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "Herbs")
+@EqualsAndHashCode(callSuper = false)
 public class HerbEntity extends BaseEntity {
 
     @Id
@@ -38,6 +37,8 @@ public class HerbEntity extends BaseEntity {
     private String stle; // 형태
     private String useeRegn; // 이용 부위
 
+    private Long adminId;
+
     public HerbEntity(long l, String number, String s, String 가락지나물, String s1, String url, String protocol) {
         super();
     }
@@ -58,6 +59,7 @@ public class HerbEntity extends BaseEntity {
         herbEntity.prvateTherpy = herb.getPrvateTherpy();
         herbEntity.stle = herb.getStle();
         herbEntity.useeRegn = herb.getUseeRegn();
+        herbEntity.adminId = herb.getAdminId();
 
         return herbEntity;
     }
