@@ -21,4 +21,5 @@ public class Herb {
     private String prvateTherpy; // 민간요법
     private String stle; // 형태
     private String useeRegn; // 이용 부위
+    private Long adminId;
 }

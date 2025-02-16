@@ -11,12 +11,8 @@ import java.util.Optional;
 
 public interface HerbJpaRepository extends JpaRepository<HerbEntity, Long> {
 
-    // 페이징 처리
+    // 페이징 처리된 약초목록 조회
     Page<HerbEntity> findAll(Pageable pageable);
-
-
-    HerbEntity findByCntntsSj(String herbName);
-
-    @Query("SELECT h FROM HerbEntity h WHERE h.id = :herbId")
-    Optional<HerbEntity> findSummaryById(@Param("herbId") Long herbId);
+    
+    HerbEntity findByCntntsSj(String herbName); // 약초명으로 찾기
 }
