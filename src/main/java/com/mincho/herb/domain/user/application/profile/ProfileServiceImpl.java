@@ -5,7 +5,7 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.domain.Profile;
-import com.mincho.herb.domain.user.dto.RequestProfileDTO;
+import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
@@ -27,9 +27,9 @@ public class ProfileServiceImpl implements ProfileService {
     // 프로필 수정
     @Override
     @Transactional
-    public void updateProfile(RequestProfileDTO requestProfileDTO, String email) {
+    public void updateProfile(ProfileRequestDTO profileRequestDTO, String email) {
         MemberEntity memberEntity = MemberEntity.toEntity(userService.findUserByEmail(email)) ;
-        Profile newProfile = ProfileEntity.toEntity(Profile.withChangeProfile(requestProfileDTO), memberEntity).toModel();
+        Profile newProfile = ProfileEntity.toEntity(Profile.withChangeProfile(profileRequestDTO), memberEntity).toModel();
 
         profileRepository.updateProfile(newProfile, memberEntity);
     }

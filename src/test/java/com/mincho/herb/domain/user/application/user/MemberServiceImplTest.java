@@ -4,8 +4,8 @@ import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
-import com.mincho.herb.domain.user.dto.RequestLoginDTO;
-import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
+import com.mincho.herb.domain.user.dto.LoginRequestDTO;
+import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
 import com.mincho.herb.domain.user.repository.user.UserRepositoryImpl;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,12 +55,12 @@ class MemberServiceImplTest {
         String encodedPassword = "encodedPassword123!";
         when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encodedPassword);
 
-        RequestRegisterDTO requestRegisterDTO = new RequestRegisterDTO();
-        requestRegisterDTO.setEmail("test@example.com");
-        requestRegisterDTO.setPassword("testPassword123!");
+        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO();
+        registerRequestDTO.setEmail("test@example.com");
+        registerRequestDTO.setPassword("testPassword123!");
 
         // When
-        userService.register(requestRegisterDTO);
+        userService.register(registerRequestDTO);
 
         // Then
         // ArgumentCaptor로 save 메서드에 전달된 인자를 캡처
@@ -71,7 +71,7 @@ class MemberServiceImplTest {
         Member capturedMember = userCaptor.getValue();
 
         // 원하는 값으로 비교
-        assertEquals(requestRegisterDTO.getEmail(), capturedMember.getEmail());
+        assertEquals(registerRequestDTO.getEmail(), capturedMember.getEmail());
         assertEquals(encodedPassword, capturedMember.getPassword());
     }
 
@@ -117,7 +117,7 @@ class MemberServiceImplTest {
         // Given
         String email = "test@example.com";
         String password = "password";
-        RequestLoginDTO requestLoginDTO = new RequestLoginDTO(email, password);
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO(email, password);
 
         String mockAccessToken = "mockAccessToken";
         String mockRefreshToken = "mockRefreshToken";
@@ -133,7 +133,7 @@ class MemberServiceImplTest {
                 .thenReturn(mockRefreshToken);
 
         // When
-        Map<String, String> result = userService.login(requestLoginDTO);
+        Map<String, String> result = userService.login(loginRequestDTO);
 
         // Then
         assertNotNull(result);
@@ -151,13 +151,13 @@ class MemberServiceImplTest {
         // Given
         String email = "test@example.com";
         String password = "wrongPassword";
-        RequestLoginDTO requestLoginDTO = new RequestLoginDTO(email, password);
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO(email, password);
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("자격증명 실패"));
 
         // When & Then
-        assertThrows(BadCredentialsException.class, () -> userService.login(requestLoginDTO));
+        assertThrows(BadCredentialsException.class, () -> userService.login(loginRequestDTO));
 
         // Verify
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));

@@ -2,7 +2,7 @@ package com.mincho.herb.domain.user.application.profile;
 
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Profile;
-import com.mincho.herb.domain.user.dto.RequestProfileDTO;
+import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +35,10 @@ class ProfileServiceTest {
     void updateProfile() {
         // Given
         String email = "test@example.com";
-        RequestProfileDTO requestProfileDTO = new RequestProfileDTO();
-        requestProfileDTO.setNickname("newNickname");
-        requestProfileDTO.setIntroduction("newIntroduction");
-        requestProfileDTO.setAvatarUrl("http://example.com/avatar.jpg");
+        ProfileRequestDTO profileRequestDTO = new ProfileRequestDTO();
+        profileRequestDTO.setNickname("newNickname");
+        profileRequestDTO.setIntroduction("newIntroduction");
+        profileRequestDTO.setAvatarUrl("http://example.com/avatar.jpg");
 
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setId(1L);
@@ -55,7 +55,7 @@ class ProfileServiceTest {
         when(userService.findUserByEmail(email)).thenReturn(memberEntity.toModel());
 
         // When
-        profileService.updateProfile(requestProfileDTO, email);
+        profileService.updateProfile(profileRequestDTO, email);
 
         // Then
         ArgumentCaptor<Profile> profileCaptor = ArgumentCaptor.forClass(Profile.class);

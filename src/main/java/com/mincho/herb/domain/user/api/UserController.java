@@ -40,7 +40,7 @@ public class UserController {
     // 회원가입
     @Transactional
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> userRegister(@Valid @RequestBody RequestRegisterDTO registerDTO, BindingResult result){
+    public ResponseEntity<Map<String, String>> userRegister(@Valid @RequestBody RegisterRequestDTO registerDTO, BindingResult result){
 
         if(result.hasErrors()){
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
@@ -51,7 +51,7 @@ public class UserController {
 
 
         log.info("state:{}","회원가입 성공!");
-        return new SuccessResponse<>().getResponse(201,"등록 되었습니다.", HttpSuccessType.OK);
+        return new SuccessResponse<>().getResponse(201,"등록 되었습니다.", HttpSuccessType.CREATED);
     }
 
     // 회원중복 확인
@@ -72,12 +72,12 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody RequestLoginDTO requestLoginDTO, BindingResult result, HttpServletResponse response){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO, BindingResult result, HttpServletResponse response){
 
         if(result.hasErrors()){
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
-        Map<String, String> tokenMap= userService.login(requestLoginDTO);
+        Map<String, String> tokenMap= userService.login(loginRequestDTO);
         response.addCookie(cookieUtils.createCookie("refresh", tokenMap.get("refresh"), 60*60*24));
 
         Map<String, String> body = new HashMap<>();
@@ -106,7 +106,7 @@ public class UserController {
 
     // 비밀번호 수정
     @PatchMapping("/me/password")
-    public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody RequestUpdatePassword requestUpdatePassword, BindingResult result){
+    public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody UpdatePasswordRequestDTO updatePasswordRequestDTO, BindingResult result){
 
         if(result.hasErrors()){
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
@@ -117,7 +117,7 @@ public class UserController {
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
         }
 
-        userService.updatePassword(requestUpdatePassword.getPassword(), email);
+        userService.updatePassword(updatePasswordRequestDTO.getPassword(), email);
         return new SuccessResponse<>().getResponse(200, "비밀번호가 수정 되었습니다.", HttpSuccessType.OK);
     }
 
@@ -125,33 +125,9 @@ public class UserController {
     @DeleteMapping("/me/logout")
     public ResponseEntity<Map<String, String>> logout(
             HttpServletResponse response,
-            @CookieValue("refresh") String refreshToken,
-            @RequestParam("action") String action){
+            @CookieValue("refresh") String refreshToken ){
 
-        log.info("logout refresh: {}", refreshToken);
-
-        // 전체 디바이스 로그아웃
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
-        }
-
-
-        if(!action.equals("all")){
-
-            log.info("logout email: {}",email);
-
-            Member member = userService.findUserByEmail(email);
-            if(member == null) {
-                throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
-            }
-            userService.logoutAll(member.getId());
-
-            // 특정 디바이스 로그아웃
-        } else {
-            userService.logout(refreshToken);
-        }
-        response.addCookie(cookieUtils.createCookie("refresh","", 0));
+        response.addCookie(cookieUtils.createCookie("refresh",null, 0));
         return new SuccessResponse<>().getResponse(200, "로그아웃 되었습니다.", HttpSuccessType.OK);
     }
 }

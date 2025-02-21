@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestVerification {
+public class VerificationRequestDTO {
 
     @NotEmpty(message = "이메일은 필수 입니다.")
     private String email;

@@ -46,7 +46,9 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/users/register/**").permitAll()
                             .requestMatchers("/api/v1/users/login/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
-                            .requestMatchers("/api/v1/users/**").hasAnyRole("USER, ADMIN")
+                            .requestMatchers("/api/v1/users/send-verification").permitAll()
+                            .requestMatchers("/api/v1/users/send-verification-code").permitAll()
+                            .requestMatchers("/api/v1/users/**").hasAnyRole("USER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/herbs/**").permitAll()
                             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자만 허용
                             .anyRequest().permitAll()
@@ -54,6 +56,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     /*
     * http.authorizeHttpRequests(auth -> auth
     .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()  // GET 요청은 모두 허용

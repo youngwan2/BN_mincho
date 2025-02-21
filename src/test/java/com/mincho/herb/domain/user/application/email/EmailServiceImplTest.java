@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.user.application.email;
 
 import com.mincho.herb.common.util.CommonUtils;
-import com.mincho.herb.domain.user.dto.RequestVerification;
+import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +60,7 @@ class EmailServiceImplTest {
     void emailVerification_ShouldReturnTrue_whenCodeMatches() {
         // Given
         String authCode = "12345";
-        RequestVerification request = new RequestVerification(TEST_EMAIL, authCode);
+        VerificationRequestDTO request = new VerificationRequestDTO(TEST_EMAIL, authCode);
         when(redisTemplate.opsForValue().get(TEST_EMAIL)).thenReturn(authCode);
 
         // When
@@ -75,7 +75,7 @@ class EmailServiceImplTest {
     void emailVerification_ShouldReturnFalse_whenCodeDoesNotMatch() {
         // Given
         String authCode = "12345";
-        RequestVerification request = new RequestVerification(TEST_EMAIL, "wrongCode");
+        VerificationRequestDTO request = new VerificationRequestDTO(TEST_EMAIL, "wrongCode");
         when(redisTemplate.opsForValue().get(TEST_EMAIL)).thenReturn(authCode);
 
         // When

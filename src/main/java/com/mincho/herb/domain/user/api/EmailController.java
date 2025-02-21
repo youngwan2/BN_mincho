@@ -7,8 +7,10 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.application.email.EmailService;
-import com.mincho.herb.domain.user.dto.RequestVerification;
+import com.mincho.herb.domain.user.dto.EmailRequestDTO;
+import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
 import jakarta.mail.MessagingException;
+import jakarta.mail.SendFailedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,24 +31,30 @@ public class EmailController {
 
     // 인증번호 발송
     @PostMapping("/send-verification-code")
-    public ResponseEntity<String> sendVerificationCode(@RequestParam("email") String email) {
-        try {
-            emailService.sendVerificationCode(email);
-        } catch (MessagingException ex) {
-            return ResponseEntity.internalServerError().body("메일 전송 중 서버 측에서 문제가 발생하였습니다.");
+    public ResponseEntity<Map<String, String>> sendVerificationCode(@Valid @RequestBody EmailRequestDTO emailRequestDTO, BindingResult result) {
+
+        log.info("email:{}",emailRequestDTO);
+        if(result.hasErrors()){
+            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
-        return ResponseEntity.ok("이메일 인증 코드가 발송되었습니다.");
+
+        try {
+            emailService.sendVerificationCode(emailRequestDTO.getEmail());
+        } catch (MessagingException ex) {
+            return new ErrorResponse().getResponse(500, "인증번호 발송에 실패하였습니다.", HttpErrorType.INTERNAL_SERVER_ERROR);
+        }
+        return new SuccessResponse<>().getResponse(200, "통과 되었습니다.", HttpSuccessType.OK);
     }
 
     // 인증번호 검증
     @PostMapping("/send-verification")
-    public ResponseEntity<Map<String, String>> emailVerification(@Valid @RequestBody RequestVerification requestVerification, BindingResult result) {
+    public ResponseEntity<Map<String, String>> emailVerification(@Valid @RequestBody VerificationRequestDTO verificationRequestDTO, BindingResult result) {
 
         if(result.hasErrors()){
              return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
          }
 
-        boolean isVer = emailService.emailVerification(requestVerification);
+        boolean isVer = emailService.emailVerification(verificationRequestDTO);
         if(isVer){
             return new SuccessResponse<>().getResponse(200, "통과 되었습니다.", HttpSuccessType.OK);
         }

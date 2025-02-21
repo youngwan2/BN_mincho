@@ -1,7 +1,10 @@
 package com.mincho.herb.domain.user.application.email;
 
+import com.mincho.herb.common.config.error.HttpErrorCode;
+import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.CommonUtils;
-import com.mincho.herb.domain.user.dto.RequestVerification;
+import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
+import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -10,22 +13,30 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 public class EmailServiceImpl implements EmailService{
 
+    private final UserRepository userRepository;
     private final JavaMailSender javaMailSender;
     private final CommonUtils commonUtils;
     private final String senderEmail;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public EmailServiceImpl(
-            RedisTemplate<String,Object> redisTemplate,
+            UserRepository userRepository, RedisTemplate<String,Object> redisTemplate,
             JavaMailSender javaMailSender,
             CommonUtils commonUtils,
             @Value("${main.sender.email}") String senderEmail) {
+        this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.javaMailSender = javaMailSender;
         this.commonUtils = commonUtils;
@@ -65,14 +76,14 @@ public class EmailServiceImpl implements EmailService{
 
     // 이메일 인증
     @Override
-    public boolean emailVerification(RequestVerification requestVerification) {
-        String value = (String) redisTemplate.opsForValue().get(requestVerification.getEmail());
-        log.info("input code: {}, auth code: {}", requestVerification.getCode(), value);
-        boolean isVer =requestVerification.getCode().equals(value);
+    public boolean emailVerification(VerificationRequestDTO verificationRequestDTO) {
+        String value = (String) redisTemplate.opsForValue().get(verificationRequestDTO.getEmail());
+        log.info("input code: {}, auth code: {}", verificationRequestDTO.getCode(), value);
+        boolean isVer = verificationRequestDTO.getCode().equals(value);
         
         // 인증 성공 시 레디스에서 키 제거
         if(isVer){
-            redisTemplate.delete(requestVerification.getEmail());
+            redisTemplate.delete(verificationRequestDTO.getEmail());
         }
         return isVer ;
     }
@@ -80,11 +91,46 @@ public class EmailServiceImpl implements EmailService{
     // 이메일 인증 코드 발송
     @Override
     public void sendVerificationCode(String toMail) throws MessagingException {
-        String authCode = commonUtils.createAuthCode(5);
 
-        MimeMessage message = createMail(toMail, authCode);
-        javaMailSender.send(message);
-        redisTemplate.opsForValue().set(toMail, authCode, 300, TimeUnit.SECONDS); // 5분 간 유효
+         Boolean isUser = userRepository.existsByEmail(toMail);
 
+         if(isUser){
+             throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"잘못된 요청입니다. 이전 단계를 완료 후 요청해주세요");
+         }
+
+        boolean isValidMx = this.validateMx(toMail.split("@")[1]);
+        if(isValidMx){
+            String authCode = commonUtils.createAuthCode(5);
+
+            MimeMessage message = createMail(toMail, authCode);
+            javaMailSender.send(message);
+
+            // 이메일 인증번호 5분 간 캐싱
+            redisTemplate.opsForValue().set(toMail, authCode, 300, TimeUnit.SECONDS); // 5분 간 유효
+
+        } else {
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"유효한 도메인이 아닙니다.");
+        }
+
+    }
+
+    // reference: https://velog.io/@danielyang-95/%EC%9D%B4%EB%A9%94%EC%9D%BC-%EC%9C%A0%ED%9A%A8%EC%84%B1-%EA%B2%80%EC%A6%9D-by-MX-%EB%A0%88%EC%BD%94%EB%93%9C
+    @Override
+    public boolean validateMx(String domain) {
+        try {
+                Hashtable<String, String> env = new Hashtable<>();
+                env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
+                DirContext ictx = new InitialDirContext(env);
+                Attributes attrs = ictx.getAttributes(domain, new String[]{"MX"});
+                Attribute attr = attrs.get("MX");
+
+                if (attr == null) {
+                    return false;
+                }
+
+                return true;
+            } catch (NamingException e) {
+                return false;
+            }
     }
 }
