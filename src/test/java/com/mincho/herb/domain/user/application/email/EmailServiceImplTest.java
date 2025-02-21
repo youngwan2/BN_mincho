@@ -2,6 +2,7 @@ package com.mincho.herb.domain.user.application.email;
 
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
+import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,9 @@ class EmailServiceImplTest {
     private CommonUtils commonUtils;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private RedisTemplate<String, Object> redisTemplate;
 
     @InjectMocks
@@ -37,7 +41,7 @@ class EmailServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        emailService = new EmailServiceImpl(redisTemplate, javaMailSender, commonUtils, SENDER_EMAIL);
+        emailService = new EmailServiceImpl(userRepository, redisTemplate, javaMailSender, commonUtils, SENDER_EMAIL);
     }
 
     @Test
