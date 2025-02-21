@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.user.domain;
 
 
-import com.mincho.herb.domain.user.dto.RequestProfileDTO;
+import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import lombok.*;
 
 @Getter
@@ -14,11 +14,11 @@ public class Profile {
     private String introduction;
     private String avatarUrl;
 
-    public static Profile withChangeProfile(RequestProfileDTO requestProfileDTO){
+    public static Profile withChangeProfile(ProfileRequestDTO profileRequestDTO){
         return Profile.builder()
-                .nickname(requestProfileDTO.getNickname())
-                .avatarUrl(requestProfileDTO.getAvatarUrl())
-                .introduction(requestProfileDTO.getIntroduction())
+                .nickname(profileRequestDTO.getNickname())
+                .avatarUrl(profileRequestDTO.getAvatarUrl())
+                .introduction(profileRequestDTO.getIntroduction())
                 .build();
     }
 }

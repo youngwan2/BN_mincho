@@ -107,7 +107,6 @@ public class HerbServiceImpl implements HerbService{
 
         }
 
-
         log.info("roles: {}", roles);
         herbRepository.deleteById(id);
     }
@@ -151,9 +150,6 @@ public class HerbServiceImpl implements HerbService{
                 .build();
 
         herbRepository.save(unsavedHerbEntity);
-
-
-        
     }
 
     // 값 초기화

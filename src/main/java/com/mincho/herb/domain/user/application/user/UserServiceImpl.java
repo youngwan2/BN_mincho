@@ -4,8 +4,8 @@ import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
-import com.mincho.herb.domain.user.dto.RequestLoginDTO;
-import com.mincho.herb.domain.user.dto.RequestRegisterDTO;
+import com.mincho.herb.domain.user.dto.LoginRequestDTO;
+import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class UserServiceImpl implements  UserService{
 
 
     @Override
-    public Member register(RequestRegisterDTO registerDTO) {
+    public Member register(RegisterRequestDTO registerDTO) {
         DuplicateCheckDTO duplicateCheckDTO = new DuplicateCheckDTO(registerDTO.getEmail());
         boolean hasUser = dueCheck(duplicateCheckDTO);
         if(hasUser){
@@ -58,10 +59,10 @@ public class UserServiceImpl implements  UserService{
 
     // 로그인
     @Override
-    public Map<String, String> login(RequestLoginDTO requestLoginDTO) {
+    public Map<String, String> login(LoginRequestDTO loginRequestDTO) {
 
             UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(requestLoginDTO.getEmail(), requestLoginDTO.getPassword());
+                    new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
 
             // 인증 시도
             Authentication authentication = authenticationManager.authenticate(authToken);
@@ -70,7 +71,7 @@ public class UserServiceImpl implements  UserService{
             // 토큰 생성
             String accessToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 10* 1000L);
             String refreshToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 24 * 30 * 1000L);
-            MemberEntity memberEntity = userRepository.findByEmail(requestLoginDTO.getEmail());
+            MemberEntity memberEntity = userRepository.findByEmail(loginRequestDTO.getEmail());
             if(memberEntity == null){
                 throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
             }
@@ -110,15 +111,20 @@ public class UserServiceImpl implements  UserService{
         return memberEntity.toModel();
     }
 
-    // 로그아웃
-    @Override
-    public void logout(String refreshToken) {
-        refreshTokenRepository.removeRefreshToken(refreshToken);
-    }
-
     // 모든 브라우저 로그아웃
     @Override
     public void logoutAll(Long id) {
-        refreshTokenRepository.removeRefreshTokenAllByUserId(id);
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!email.contains("@")){
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        }
+
+        MemberEntity memberEntity = userRepository.findByEmail(email);
+        if(memberEntity == null) {
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
+        }
+
+        refreshTokenRepository.removeRefreshTokenAllByUserId(memberEntity.getId());
     }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class RequestProfileDTO {
+public class ProfileRequestDTO {
     private String nickname;
     private String introduction;
     private String avatarUrl;

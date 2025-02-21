@@ -13,7 +13,7 @@ public class CookieUtils {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(maxAge);
         //cookie.setSecure(true); // 활성화 시 HTTS 에서만
-        //cookie.setPath("/");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;

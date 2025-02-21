@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestLoginDTO {
+public class LoginRequestDTO {
 
     @NotEmpty(message = "이메일 입력은 필수 입니다.")
     String email;

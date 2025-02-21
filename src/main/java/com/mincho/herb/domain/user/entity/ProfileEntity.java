@@ -44,9 +44,9 @@ public class ProfileEntity {
 
     public Profile toModel(){
         return Profile.builder()
-                .nickname(this.nickname)
-                .introduction(this.introduction)
-                .avatarUrl(this.avatarUrl)
+                .nickname(this.nickname != null ? this.nickname : "")
+                .introduction(this.introduction != null ? this.introduction : "")
+                .avatarUrl(this.avatarUrl != null ? this.avatarUrl : "")
                 .build();
     }
 }

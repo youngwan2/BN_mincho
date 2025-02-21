@@ -1,7 +1,8 @@
 package com.mincho.herb.domain.user.application.email;
 
 import com.mincho.herb.common.util.CommonUtils;
-import com.mincho.herb.domain.user.dto.RequestVerification;
+import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
+import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,9 @@ class EmailServiceImplTest {
     private CommonUtils commonUtils;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private RedisTemplate<String, Object> redisTemplate;
 
     @InjectMocks
@@ -37,7 +41,7 @@ class EmailServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        emailService = new EmailServiceImpl(redisTemplate, javaMailSender, commonUtils, SENDER_EMAIL);
+        emailService = new EmailServiceImpl(userRepository, redisTemplate, javaMailSender, commonUtils, SENDER_EMAIL);
     }
 
     @Test
@@ -60,7 +64,7 @@ class EmailServiceImplTest {
     void emailVerification_ShouldReturnTrue_whenCodeMatches() {
         // Given
         String authCode = "12345";
-        RequestVerification request = new RequestVerification(TEST_EMAIL, authCode);
+        VerificationRequestDTO request = new VerificationRequestDTO(TEST_EMAIL, authCode);
         when(redisTemplate.opsForValue().get(TEST_EMAIL)).thenReturn(authCode);
 
         // When
@@ -75,7 +79,7 @@ class EmailServiceImplTest {
     void emailVerification_ShouldReturnFalse_whenCodeDoesNotMatch() {
         // Given
         String authCode = "12345";
-        RequestVerification request = new RequestVerification(TEST_EMAIL, "wrongCode");
+        VerificationRequestDTO request = new VerificationRequestDTO(TEST_EMAIL, "wrongCode");
         when(redisTemplate.opsForValue().get(TEST_EMAIL)).thenReturn(authCode);
 
         // When

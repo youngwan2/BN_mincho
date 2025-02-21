@@ -4,6 +4,7 @@ import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import io.jsonwebtoken.ExpiredJwtException;
 
+import jakarta.mail.SendFailedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,11 @@ public class GlobalException {
     @ExceptionHandler(InternalAuthenticationServiceException .class)
     public ResponseEntity<Map<String, String>> handleInternalAuthenticationServiceException(InternalAuthenticationServiceException ex){
         return new ErrorResponse().getResponse(400  ,ex.getMessage(), HttpErrorType.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SendFailedException.class)
+    public ResponseEntity<Map<String, String>> handleSendFailedException(SendFailedException ex){
+        return new ErrorResponse().getResponse(400  ,"이메일 전송에 실패하였습니다. 유효한 도메인인지 확인해주세요.", HttpErrorType.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
