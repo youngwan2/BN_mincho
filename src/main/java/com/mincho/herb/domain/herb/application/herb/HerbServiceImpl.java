@@ -1,12 +1,12 @@
 package com.mincho.herb.domain.herb.application.herb;
 
-import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.MapperUtils;
 import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.dto.HerbCreateRequestDTO;
+import com.mincho.herb.domain.herb.dto.HerbDTO;
+import com.mincho.herb.domain.herb.dto.HerbDetailResponseDTO;
 import com.mincho.herb.domain.herb.dto.HerbUpdateRequestDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -88,8 +89,31 @@ public class HerbServiceImpl implements HerbService{
     
     // 상세 페이지
     @Override
-    public Herb getHerbDetails(Long id) {
-        return herbRepository.findById(id).toModel();
+    public HerbDetailResponseDTO getHerbDetails(Long id) {
+
+         HerbEntity herbEntity = herbRepository.findById(id);
+
+         List<String> images = List.of(
+                 herbEntity.getImgUrl1(),
+                 herbEntity.getImgUrl2(),
+                 herbEntity.getImgUrl3(),
+                 herbEntity.getImgUrl4(),
+                 herbEntity.getImgUrl5(),
+                 herbEntity.getImgUrl6()
+         );
+
+        return HerbDetailResponseDTO.builder()
+                .id(herbEntity.getId())
+                .bneNm(herbEntity.getBneNm())
+                .cntntsNo(herbEntity.getCntntsNo())
+                .cntntsSj(herbEntity.getCntntsSj())
+                .prvateTherpy(herbEntity.getPrvateTherpy())
+                .hbdcNm(herbEntity.getHbdcNm())
+                .stle(herbEntity.getStle())
+                .imgUrls(images)
+                .useeRegn(herbEntity.getUseeRegn())
+                .build();
+
     }
 
     // 약초 제거
@@ -121,7 +145,6 @@ public class HerbServiceImpl implements HerbService{
         }
 
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("로그인된 유저의 이메일:{}", email);
 
         Long adminId = userRepository.findByEmail(email).getId();
 
@@ -133,19 +156,9 @@ public class HerbServiceImpl implements HerbService{
 
         HerbEntity unsavedHerbEntity =  HerbEntity.builder()
                 .id(herbId)
-                .cntntsNo(herbUpdateRequestDTO.getCntntsNo())
                 .cntntsSj(herbUpdateRequestDTO.getCntntsSj())
                 .imgUrl1(herbUpdateRequestDTO.getImgUrl1())
-                .imgUrl2(herbUpdateRequestDTO.getImgUrl2())
-                .imgUrl3(herbUpdateRequestDTO.getImgUrl3())
-                .imgUrl4(herbUpdateRequestDTO.getImgUrl4())
-                .imgUrl5(herbUpdateRequestDTO.getImgUrl5())
-                .imgUrl6(herbUpdateRequestDTO.getImgUrl6())
-                .stle(herbUpdateRequestDTO.getStle())
                 .hbdcNm(herbUpdateRequestDTO.getHbdcNm())
-                .useeRegn(herbUpdateRequestDTO.getUseeRegn())
-                .prvateTherpy(herbUpdateRequestDTO.getPrvateTherpy())
-                .adminId(adminId)
                 .bneNm(herbUpdateRequestDTO.getBneNm())
                 .build();
 
@@ -163,5 +176,65 @@ public class HerbServiceImpl implements HerbService{
         herbRepository.saveAll(herbsEntity);
 
         log.info("mapping herb: {}",herbs.get(0));
+    }
+
+    @Override
+    public List<HerbDTO> getRandomHerbs(Long herbId) {
+
+        // 현재 조회중인 허브를 제외한 모든 허브 id 목록 조회
+        List<Long> herbIds = herbRepository.findHerbIds()
+                .stream()
+                .filter(id -> id != herbId)
+                .toList();
+
+        // 랜덤하게 3개 뽑기
+        List<Integer> randomIds = new ArrayList<>();
+
+        // 뽑았는데 중복이라면? 중복된 값이 안 나올 때 까지 반복 돌려야 하는거 아님?
+        while(randomIds.size() <3){
+                int random0to3 = (int) (Math.random() * herbIds.size()); // 랜덤하게 한 개 뽑고.
+                randomIds.add(random0to3);
+
+                // 뽑은 값이 기존 리스트에 있는감? 중복이 아니면 추가
+                if(!randomIds.contains(random0to3)){
+                    int random = (int) (Math.random() * herbIds.size()); // 다시 뽑아서
+                    randomIds.add(random);
+                }
+        }
+
+
+        int index1 = randomIds.get(0);
+        int index2 = randomIds.get(1);
+        int index3 = randomIds.get(2);
+
+         List<HerbEntity> herbEntities = herbRepository.findRandom(herbIds.get(index1), herbIds.get(index2), herbIds.get(index3));
+
+         return herbEntities.stream().map((herbEntity)->{
+             return HerbDTO.builder()
+                     .id(herbEntity.getId())
+                     .bneNm(herbEntity.getBneNm())
+                     .imgUrl1(herbEntity.getImgUrl1())
+                     .cntntsSj(herbEntity.getCntntsSj())
+                     .hbdcNm(herbEntity.getHbdcNm())
+                     .build();
+
+         }).toList();
+    }
+
+    @Override
+    public List<HerbDTO> getHerbsBloomingThisMonth(String month) {
+
+        List<HerbEntity> herbEntities  = herbRepository.findByMonth(month);
+        return herbEntities.stream().map((herbEntity)->{
+            return HerbDTO.builder()
+                    .id(herbEntity.getId())
+                    .bneNm(herbEntity.getBneNm())
+                    .imgUrl1(herbEntity.getImgUrl1())
+                    .cntntsSj(herbEntity.getCntntsSj())
+                    .hbdcNm(herbEntity.getHbdcNm())
+                    .build();
+
+        }).toList();
+
     }
 }

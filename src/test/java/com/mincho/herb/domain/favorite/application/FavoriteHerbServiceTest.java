@@ -3,7 +3,8 @@ package com.mincho.herb.domain.favorite.application;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.favorite.entity.FavoriteHerbEntity;
 import com.mincho.herb.domain.favorite.repository.FavoriteHerbRepository;
-import com.mincho.herb.domain.herb.repository.herbSummary.HerbSummaryRepository;
+import com.mincho.herb.domain.herb.entity.HerbEntity;
+import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,10 +31,10 @@ class FavoriteHerbServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private HerbSummaryRepository herbSummaryRepository;
+    private HerbRepository herbSummaryRepository;
 
     private MemberEntity mockUser;
-    private HerbSummaryEntity mockHerbSummary;
+    private HerbEntity mockHerbSummary;
 
     @BeforeEach
     void setUp() {
@@ -42,7 +43,7 @@ class FavoriteHerbServiceImplTest {
         mockUser.setEmail("test@example.com");
         mockUser.setPassword("password123");
 
-        mockHerbSummary = new HerbSummaryEntity();
+        mockHerbSummary = new HerbEntity();
         mockHerbSummary.setId(1L);
         mockHerbSummary.setCntntsSj("인삼");
     }

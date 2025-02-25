@@ -7,8 +7,7 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.domain.herb.application.herb.HerbService;
 import com.mincho.herb.domain.herb.domain.Herb;
-import com.mincho.herb.domain.herb.dto.HerbCreateRequestDTO;
-import com.mincho.herb.domain.herb.dto.HerbUpdateRequestDTO;
+import com.mincho.herb.domain.herb.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -33,17 +34,34 @@ public class HerbController {
         if(page.isEmpty()){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. page 정보는 필수입니다.", HttpErrorType.BAD_REQUEST);
         }
+        Integer pageNum = Integer.parseInt(page);
+        Integer pageSize = Integer.parseInt(size);
+        List<Herb> herbs = herbService.getHerbSummary(pageNum, pageSize);
 
-        List<Herb> herbSummaries = herbService.getHerbSummary(Integer.parseInt(page), Integer.parseInt(size));
-        return new SuccessResponse<List<Herb>>().getResponse(200, "성공적으로 조회 되었습니다.",  HttpSuccessType.OK, herbSummaries);
+        HerbResponseDTO herbResponseDTO = HerbResponseDTO.builder()
+                .herbs(herbs)
+                .nextPage(++pageNum)
+                .build();
+
+        return ResponseEntity.ok(herbResponseDTO);
     }
 
     // 상세 페이지 조회
     @GetMapping("/{id}")
     public ResponseEntity<?> getHerbDetails(@PathVariable Long id){
-        Herb herbDetails = herbService.getHerbDetails(id);
-        return new SuccessResponse<Herb>().getResponse(200, "성공적으로 조회 되었습니다.", HttpSuccessType.OK, herbDetails);
+        HerbDetailResponseDTO herbDetails = herbService.getHerbDetails(id);
+
+        return new SuccessResponse<HerbDetailResponseDTO>().getResponse(200, "성공적으로 조회 되었습니다.", HttpSuccessType.OK, herbDetails);
     }
+
+    // 허브 랜덤 조회
+    @GetMapping("/{id}/random")
+    public ResponseEntity<?> getHerbRandom(@PathVariable Long id){
+        List<HerbDTO> herbs = herbService.getRandomHerbs(id);
+
+        return new SuccessResponse<List<HerbDTO>>().getResponse(200, "성공적으로 조회 되었습니다.", HttpSuccessType.OK, herbs);
+    }
+
 
     // 허브 정보 추가
     @PostMapping()
@@ -71,6 +89,17 @@ public class HerbController {
         return new SuccessResponse<>().getResponse(200, "성공적으로 삭제처리 되었습니다.", HttpSuccessType.OK);
     }
 
+    // 이달의 개화 약초(허브)
+    @GetMapping("/blooming")
+    public ResponseEntity<?> getHerbsBloomingThisMonth(
+            @RequestParam String month
+    ){
+        if(month == null){
+            return new ErrorResponse().getResponse(400, "month 는 필수입니다.", HttpErrorType.BAD_REQUEST);
+        }
+        List<HerbDTO> herbs = herbService.getHerbsBloomingThisMonth(month);
+        return new SuccessResponse<>().getResponse(200, "성공적으로 조회되었습니다.", HttpSuccessType.OK, herbs);
+    }
     // 허브 데이터 초기화
     @PostMapping("/settings")
     public ResponseEntity<?> init() throws IOException {

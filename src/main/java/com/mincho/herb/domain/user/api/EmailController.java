@@ -10,7 +10,6 @@ import com.mincho.herb.domain.user.application.email.EmailService;
 import com.mincho.herb.domain.user.dto.EmailRequestDTO;
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
 import jakarta.mail.MessagingException;
-import jakarta.mail.SendFailedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -31,7 +31,7 @@ public class EmailController {
 
     // 인증번호 발송
     @PostMapping("/send-verification-code")
-    public ResponseEntity<Map<String, String>> sendVerificationCode(@Valid @RequestBody EmailRequestDTO emailRequestDTO, BindingResult result) {
+    public ResponseEntity<?> sendVerificationCode(@Valid @RequestBody EmailRequestDTO emailRequestDTO, BindingResult result) {
 
         log.info("email:{}",emailRequestDTO);
         if(result.hasErrors()){
@@ -43,7 +43,8 @@ public class EmailController {
         } catch (MessagingException ex) {
             return new ErrorResponse().getResponse(500, "인증번호 발송에 실패하였습니다.", HttpErrorType.INTERNAL_SERVER_ERROR);
         }
-        return new SuccessResponse<>().getResponse(200, "통과 되었습니다.", HttpSuccessType.OK);
+
+        return new SuccessResponse<>().getResponse(200, "해당 이메일로 인증번호를 발송하였습니다. 확인 후 인증번호를 입력해주세요.", HttpSuccessType.OK);
     }
 
     // 인증번호 검증
