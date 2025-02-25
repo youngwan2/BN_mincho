@@ -13,4 +13,7 @@ public interface HerbRepository {
     HerbEntity findByCntntsSj(String herbName);
     HerbEntity findById(Long id);
     void deleteById(Long id);
+    List<HerbEntity> findRandom(Long id1, Long id2, Long id3);
+    List<Long> findHerbIds();
+    List<HerbEntity> findByMonth(String month);
 }
