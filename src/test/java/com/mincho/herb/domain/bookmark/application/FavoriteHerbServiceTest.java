@@ -1,8 +1,8 @@
-package com.mincho.herb.domain.favorite.application;
+package com.mincho.herb.domain.bookmark.application;
 
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.domain.favorite.entity.FavoriteHerbEntity;
-import com.mincho.herb.domain.favorite.repository.FavoriteHerbRepository;
+import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
+import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class FavoriteHerbServiceImplTest {
+class HerbBookmarkServiceImplTest {
 
     @InjectMocks
-    private FavoriteHerbServiceImpl favoriteHerbService;
+    private HerbBookmarkServiceImpl favoriteHerbService;
 
     @Mock
-    private FavoriteHerbRepository favoriteHerbRepository;
+    private HerbBookmarkRepository herbBookmarkRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -50,25 +50,27 @@ class FavoriteHerbServiceImplTest {
 
 
     @Test
-    void addFavoriteHerb_Success() {
+    void addHerb_Bookmark_Success() {
         // Given
+        Long herbId = 1L;
         String email = "test@example.com";
         String herbName = "인삼";
         String url = "https://example.com";
 
         when(userRepository.findByEmail(email)).thenReturn(mockUser);
-        when(herbSummaryRepository.findByCntntsSj(herbName)).thenReturn(mockHerbSummary);
+        when(herbSummaryRepository.findById(herbId)).thenReturn(mockHerbSummary);
 
         // When
-        favoriteHerbService.addFavoriteHerb(url, email, herbName);
+        favoriteHerbService.addHerbBookmark(url, herbId);
 
         // Then
-        verify(favoriteHerbRepository, times(1)).save(Mockito.any(FavoriteHerbEntity.class));
+        verify(herbBookmarkRepository, times(1)).save(Mockito.any(HerbBookmarkEntity.class));
     }
 
     @Test
-    void addFavoriteHerb_UserNotFound() {
+    void addHerb_Bookmark_UserNotFound() {
         // Given
+        Long herbId = 1L;
         String email = "notfound@example.com";
         String herbName = "인삼";
         String url = "https://example.com";
@@ -76,14 +78,15 @@ class FavoriteHerbServiceImplTest {
         when(userRepository.findByEmail(email)).thenReturn(null);
 
         // Then
-        assertThatThrownBy(() -> favoriteHerbService.addFavoriteHerb(url, email, herbName))
+        assertThatThrownBy(() -> favoriteHerbService.addHerbBookmark(url, herbId))
                 .isInstanceOf(CustomHttpException.class)
                 .hasMessageContaining("유저 정보를 찾을 수 없습니다.");
     }
 
     @Test
-    void addFavoriteHerb_HerbNotFound() {
+    void addHerb_HerbBookmarkNotFound() {
         // Given
+        Long herbId = 1L;
         String email = "test@example.com";
         String herbName = "없는 약초";
         String url = "https://example.com";
@@ -92,14 +95,15 @@ class FavoriteHerbServiceImplTest {
         when(herbSummaryRepository.findByCntntsSj(herbName)).thenReturn(null);
 
         // Then
-        assertThatThrownBy(() -> favoriteHerbService.addFavoriteHerb(url, email, herbName))
+        assertThatThrownBy(() -> favoriteHerbService.addHerbBookmark(url, herbId))
                 .isInstanceOf(CustomHttpException.class)
                 .hasMessageContaining("약초 정보를 찾을 수 없습니다.");
     }
 
     @Test
-    void addFavoriteHerb_InvalidUrl() {
+    void addHerb_Bookmark_InvalidUrl() {
         // Given
+        Long herbId = 1L;
         String email = "test@example.com";
         String herbName = "인삼";
         String invalidUrl = "invalid-url"; // 잘못된 URL
@@ -108,7 +112,7 @@ class FavoriteHerbServiceImplTest {
         when(herbSummaryRepository.findByCntntsSj(herbName)).thenReturn(mockHerbSummary);
 
         // Then
-        assertThatThrownBy(() -> favoriteHerbService.addFavoriteHerb(invalidUrl, email, herbName))
+        assertThatThrownBy(() -> favoriteHerbService.addHerbBookmark(invalidUrl, herbId))
                 .isInstanceOf(CustomHttpException.class)
                 .hasMessageContaining("유효한 url 형식이 아닙니다.");
     }
@@ -116,7 +120,7 @@ class FavoriteHerbServiceImplTest {
 
     /* 관심 약초 */
     @Test
-    void removeFavoriteHerb_Success() {
+    void removeHerb_Bookmark_Success() {
         // given
         Long favoriteHerbId = 100L;
         String email = "test@example.com";
@@ -124,15 +128,15 @@ class FavoriteHerbServiceImplTest {
         when(userRepository.findByEmail(email)).thenReturn(mockUser);
 
         // when
-        favoriteHerbService.removeFavoriteHerb(favoriteHerbId, email);
+        favoriteHerbService.removeHerbBookmark(favoriteHerbId);
 
         // then
-        verify(favoriteHerbRepository, times(1))
-                .deleteMemberIdAndFavoriteHerbId(mockUser.getId(), favoriteHerbId);
+        verify(herbBookmarkRepository, times(1))
+                .deleteMemberIdAndHerbBookmarkId(mockUser.getId(), favoriteHerbId);
     }
 
     @Test
-    void removeFavoriteHerb_Failure() {
+    void removeHerb_Bookmark_Failure() {
         // given
         Long favoriteHerbId = 100L;
         String email = "notfound@example.com";
@@ -140,10 +144,10 @@ class FavoriteHerbServiceImplTest {
         when(userRepository.findByEmail(email)).thenReturn(null);
 
         // when & then
-        assertThatThrownBy(() -> favoriteHerbService.removeFavoriteHerb(favoriteHerbId, email))
+        assertThatThrownBy(() -> favoriteHerbService.removeHerbBookmark(favoriteHerbId))
                 .isInstanceOf(CustomHttpException.class)
                 .hasMessageContaining("유저 정보를 찾을 수 없습니다.");
 
-        verify(favoriteHerbRepository, never()).deleteMemberIdAndFavoriteHerbId(anyLong(), anyLong());
+        verify(herbBookmarkRepository, never()).deleteMemberIdAndHerbBookmarkId(anyLong(), anyLong());
     }
 }

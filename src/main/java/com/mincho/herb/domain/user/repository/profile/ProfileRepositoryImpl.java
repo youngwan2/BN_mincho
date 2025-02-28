@@ -24,19 +24,24 @@ public class ProfileRepositoryImpl implements ProfileRepository {
         return null;
     }
 
+    // 프로필 수정
     @Override
     public void updateProfile(Profile profile, MemberEntity user) {
         profileJpaRepository.updateProfile(profile.getNickname(), profile.getIntroduction(), profile.getAvatarUrl(), user.getId());
     }
 
+    // 사용자 정보로 프로필 조회
     @Override
-    public Profile findProfileByUser(Member member) {
+    public ProfileEntity findProfileByUser(Member member) {
         Long userId = MemberEntity.toEntity(member).getId();
-        log.info("userId: {}",userId);
+
+        log.info("profile-userId: {}",userId);
+
         ProfileEntity profileEntity = profileJpaRepository.findProfileByUser(userId);
+
         if(profileEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "프로파일 정보가 존재하지 않습니다.");
         }
-        return profileEntity.toModel() ;
+        return profileEntity;
     }
 }

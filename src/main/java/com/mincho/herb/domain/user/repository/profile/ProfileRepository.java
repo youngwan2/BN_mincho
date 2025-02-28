@@ -8,6 +8,6 @@ import com.mincho.herb.domain.user.entity.MemberEntity;
 public interface ProfileRepository {
     Profile saveProfile(ProfileEntity profileEntity);
     void updateProfile(Profile profile, MemberEntity user);
-    Profile findProfileByUser(Member member);
+    ProfileEntity findProfileByUser(Member member);
 
 }
