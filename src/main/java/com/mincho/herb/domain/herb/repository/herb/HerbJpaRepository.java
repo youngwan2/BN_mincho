@@ -14,7 +14,8 @@ public interface HerbJpaRepository extends JpaRepository<HerbEntity, Long> {
 
     // 페이징 처리된 약초목록 조회
     Page<HerbEntity> findAll(Pageable pageable);
-    
+
+    // SELECT * FROM herb WHERE
     HerbEntity findByCntntsSj(String herbName); // 약초명으로 찾기
 
     @Query("SELECT h FROM HerbEntity h WHERE id IN(:id1, :id2, :id3)")

@@ -92,8 +92,8 @@ public class UserController {
     public ResponseEntity<Map<String, String>> deleteUser(HttpServletResponse response){
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        if(!commonUtils.emailValidation(email)){
+            return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
 
 
@@ -113,8 +113,8 @@ public class UserController {
         }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        if(!commonUtils.emailValidation(email)){
+            return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
 
         userService.updatePassword(updatePasswordRequestDTO.getPassword(), email);

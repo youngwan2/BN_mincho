@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.favorite.dto;
+package com.mincho.herb.domain.bookmark.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class ResponseFavoriteHerb {
+public class ResponseHerbBookmark {
     private Long id;
     private String url;
 

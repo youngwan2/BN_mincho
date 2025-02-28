@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.favorite.domain;
+package com.mincho.herb.domain.bookmark.domain;
 
 import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.user.domain.Member;
@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 @Builder
 @Data
-public class FavoriteHerb {
+public class HerbBookmark {
     private Long id;
     private String url;
     private Member member;

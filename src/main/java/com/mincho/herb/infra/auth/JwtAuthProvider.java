@@ -28,10 +28,13 @@ public class JwtAuthProvider {
         return jwtUtils.createJwt(email, role, jwtExp);
     }
 
-    // JWT 토큰 검증
-    public boolean checkToken(String token){
+    /** 만료된 JWT 토큰인지  검증 | 만료 되면 true 를 반환함 */
+    public Boolean checkToken(String token){
+
+        Boolean validToken =jwtUtils.isExpired(token);
         log.info("checkToken: {}", token);
-        return jwtUtils.isExpired(token);
+        log.info("isExpiredToken?: {}", validToken);
+        return validToken;
     }
 
     // 유저 이메일

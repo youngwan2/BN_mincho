@@ -34,9 +34,12 @@ public class HerbController {
         if(page.isEmpty()){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. page 정보는 필수입니다.", HttpErrorType.BAD_REQUEST);
         }
+
         Integer pageNum = Integer.parseInt(page);
         Integer pageSize = Integer.parseInt(size);
         List<Herb> herbs = herbService.getHerbSummary(pageNum, pageSize);
+
+
 
         HerbResponseDTO herbResponseDTO = HerbResponseDTO.builder()
                 .herbs(herbs)

@@ -6,6 +6,7 @@ import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
+import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
@@ -36,12 +37,19 @@ public class ProfileServiceImpl implements ProfileService {
 
     // 프로필 조회
     @Override
-    public Profile getUserProfile(String email) {
+    public ProfileResponseDTO getUserProfile(String email) {
         Member member = userService.findUserByEmail(email);
         if(member == null){
             throw  new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "회원이 아닙니다.");
         }
-        return profileRepository.findProfileByUser(member);
+
+        ProfileEntity profileEntity=  profileRepository.findProfileByUser(member);
+
+        return ProfileResponseDTO.builder()
+                .nickname(profileEntity.getNickname())
+                .avatarUrl(profileEntity.getAvatarUrl())
+                .introduction(profileEntity.getIntroduction())
+                .build();
     }
 
     // 프로필 생성
