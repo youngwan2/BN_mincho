@@ -10,4 +10,5 @@ public interface HerbBookmarkRepository {
     void deleteMemberIdAndHerbBookmarkId(Long memberId, Long herbBookmarkId);
     HerbBookmarkEntity findByMemberIdAndHerbId(Long memberId, Long herbId);
     Integer countByHerbId(Long herbId);
+    Boolean isBookmarked(Long herbId, Long memberId);
 }
