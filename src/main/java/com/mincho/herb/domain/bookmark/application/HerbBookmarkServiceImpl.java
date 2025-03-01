@@ -69,10 +69,23 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
         return count;
     }
 
+    // 북마크 등록 유무
+    @Override
+    public Boolean isBookmarked(Long herbId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        MemberEntity memberEntity = null;
+        if(email.contains("@")){
+            memberEntity = userRepository.findByEmail(email);
+            return herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbId) != null ? true : false;
+        }
+
+        return false;
+    }
+
     // 관심 약초 제거
     @Override
     @Transactional
-    public void removeHerbBookmark(Long favoriteHerbId) {
+    public void removeHerbBookmark(Long herbId) {
 
         String email = commonUtils.userCheck();
         MemberEntity memberEntity = userRepository.findByEmail(email);
@@ -80,6 +93,6 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
         if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
-        herbBookmarkRepository.deleteMemberIdAndHerbBookmarkId(memberEntity.getId(), favoriteHerbId);
+        herbBookmarkRepository.deleteMemberIdAndHerbBookmarkId(memberEntity.getId(), herbId);
     }
 }

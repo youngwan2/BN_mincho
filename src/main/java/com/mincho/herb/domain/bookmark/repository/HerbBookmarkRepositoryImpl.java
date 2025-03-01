@@ -6,8 +6,6 @@ import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 @RequiredArgsConstructor
 public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
@@ -19,9 +17,14 @@ public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
         herbBookmarkJpaRepository.save(herbBookmarkEntity);
     }
 
+    // 북마크 제거
     @Override
     public void deleteMemberIdAndHerbBookmarkId(Long memberId, Long herbBookmarkId) {
-        herbBookmarkJpaRepository.deleteByMemberIdAndId(memberId, herbBookmarkId).orElseThrow(() -> new CustomHttpException(HttpErrorCode.CONFLICT,"관심허브 삭제 요청이 실패하였습니다."));
+        int num = herbBookmarkJpaRepository.deleteByMemberIdAndHerbId(memberId, herbBookmarkId);
+
+        if(num ==0){
+            new CustomHttpException(HttpErrorCode.CONFLICT,"관심허브 삭제 요청이 실패하였습니다.");
+        }
     }
 
 
@@ -35,5 +38,14 @@ public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
     @Override
     public Integer countByHerbId(Long herbId) {
         return herbBookmarkJpaRepository.countByHerbId(herbId);
+    }
+
+    // 사용자의 해당 약초 북마크 유뮤 체크
+    @Override
+    public Boolean isBookmarked(Long herbId, Long memberId) {
+        if(herbBookmarkJpaRepository.findByMemberIdAndHerbId(herbId, memberId) == null){
+            return false;
+        }
+        return true;
     }
 }

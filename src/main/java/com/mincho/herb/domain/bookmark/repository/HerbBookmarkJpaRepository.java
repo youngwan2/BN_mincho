@@ -7,10 +7,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface HerbBookmarkJpaRepository extends JpaRepository<HerbBookmarkEntity, Long> {
-   Optional<Integer> deleteByMemberIdAndId(Long memberId, Long favoriteHerbId);
+   int deleteByMemberIdAndHerbId(Long memberId, Long herbId);
 
 
-   @Query("SELECT hb.id, hb.url FROM HerbBookmarkEntity hb WHERE hb.member.id = :memberId AND hb.herb.id = :herbId")
+   @Query("SELECT hb FROM HerbBookmarkEntity hb WHERE hb.member.id = :memberId AND hb.herb.id = :herbId")
    HerbBookmarkEntity findByMemberIdAndHerbId(
                                                 @Param("memberId") Long memberId,
                                                 @Param("herbId") Long herbId
@@ -18,4 +18,5 @@ public interface HerbBookmarkJpaRepository extends JpaRepository<HerbBookmarkEnt
 
    @Query("SELECT COUNT(hb) FROM HerbBookmarkEntity hb WHERE hb.herb.id = :herbId")
    Integer countByHerbId(@Param("herbId") Long herbId);
+
 }

@@ -6,6 +6,7 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.bookmark.application.HerbBookmarkService;
+import com.mincho.herb.domain.bookmark.dto.HerbBookmarkCountResponse;
 import com.mincho.herb.domain.bookmark.dto.RequestHerbBookmark;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,12 +44,13 @@ public class HerbBookmarkController {
         return new SuccessResponse<>().getResponse(201, "성공적으로 등록되었습니다.", HttpSuccessType.CREATED);
     }
 
-    @DeleteMapping("/users/me/herbs/{herbId}/herb-bookmarks/{bookmarkId}")
-    public ResponseEntity<Map<String, String>> removeFavoriteHerb(@PathVariable("bookmarkId") Long bookmarkId){
-        if(bookmarkId == null){
+    // 허브 북마크 제거
+    @DeleteMapping("/users/me/herbs/{herbId}/herb-bookmarks")
+    public ResponseEntity<Map<String, String>> removeFavoriteHerb(@PathVariable("herbId") Long herbId){
+        if(herbId == null){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 요청 형식을 확인해주세요 ",HttpErrorType.BAD_REQUEST);
         }
-        herbBookmarkService.removeHerbBookmark(bookmarkId);
+        herbBookmarkService.removeHerbBookmark(herbId);
 
         return new SuccessResponse<>().getResponse(200, "성공적으로 제거 되었습니다.",HttpSuccessType.OK);
     }
@@ -59,10 +61,15 @@ public class HerbBookmarkController {
         if(herbId == null){
             return new ErrorResponse().getResponse(400, "herbId는 필수입니다.", HttpErrorType.BAD_REQUEST);
         }
+        Boolean isBookmarked = herbBookmarkService.isBookmarked(herbId);
        Integer bookmarkCount = herbBookmarkService.getBookmarkCount(herbId);
-       Map<String, Integer> map = new HashMap<>();
-       map.put("count", bookmarkCount);
 
-       return new SuccessResponse<>().getResponse(200, "성공적으로 조회 되었습니다.", HttpSuccessType.OK, map);
+        HerbBookmarkCountResponse bookmarkCountResponse = HerbBookmarkCountResponse.builder()
+                .count(bookmarkCount)
+                .isBookmarked(isBookmarked)
+                .build();
+
+
+       return new SuccessResponse<>().getResponse(200, "성공적으로 조회 되었습니다.", HttpSuccessType.OK, bookmarkCountResponse);
     }
 }

@@ -50,6 +50,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/users/send-verification").permitAll()
                             .requestMatchers("/api/v1/users/send-verification-code").permitAll()
                             .requestMatchers("/api/v1/users/**").hasAnyRole("USER")
+                            .requestMatchers("/api/v1/users/**").hasAnyRole("USER")
                             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자만 허용
                             .anyRequest().permitAll()
                 );

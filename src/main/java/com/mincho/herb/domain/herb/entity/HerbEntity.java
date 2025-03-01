@@ -43,6 +43,10 @@ public class HerbEntity extends BaseEntity {
         super();
     }
 
+    public HerbEntity(long l, String number, String s, String 가락지나물, String s1, String url, String url1, String url2, String url3, String url4, String url5, String space, String space1, String space2) {
+        super();
+    }
+
     public static HerbEntity toEntity(Herb herb) {
         HerbEntity herbEntity = new HerbEntity();
         herbEntity.id = herb.getId();
