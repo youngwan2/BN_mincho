@@ -31,7 +31,6 @@ public class CommentController {
 
     private final CommonUtils commonUtils;
     private final CommentService commentService;
-
     @PostMapping("/posts/{postId}/comments/{commentId}")
     public ResponseEntity<?> addComment(@PathVariable @NotNull(message ="postId 는 필수입니다.") Long postId,
                                         @PathVariable @Nullable Long commentId,

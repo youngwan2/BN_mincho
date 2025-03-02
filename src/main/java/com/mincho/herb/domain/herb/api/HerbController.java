@@ -12,14 +12,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -30,16 +26,25 @@ public class HerbController {
 
     // 허브 목록 조회
     @GetMapping()
-    public ResponseEntity<?> getHerbs(@RequestParam("page") String page, @RequestParam("size") String size){
+    public ResponseEntity<?> getHerbs(
+            @RequestParam("page") String page,
+            @RequestParam("size") String size,
+            @RequestParam("month") String month,
+            @RequestParam("bneNm") String bneNm,
+            @RequestParam("orderBy") String orderBy
+            ){
         if(page.isEmpty()){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. page 정보는 필수입니다.", HttpErrorType.BAD_REQUEST);
         }
 
         Integer pageNum = Integer.parseInt(page);
         Integer pageSize = Integer.parseInt(size);
-        List<Herb> herbs = herbService.getHerbSummary(pageNum, pageSize);
 
 
+        List<HerbDTO> herbs = herbService.getHerbs(
+                PageInfoDTO.builder().page(pageNum.longValue()).size(pageSize.longValue()).build(),
+                HerbFilteringRequestDTO.builder().bneNm(bneNm).month(month).orderBy(orderBy).build()
+        );
 
         HerbResponseDTO herbResponseDTO = HerbResponseDTO.builder()
                 .herbs(herbs)

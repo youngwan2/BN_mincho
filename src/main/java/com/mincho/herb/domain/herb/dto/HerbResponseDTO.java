@@ -1,6 +1,5 @@
 package com.mincho.herb.domain.herb.dto;
 
-import com.mincho.herb.domain.herb.domain.Herb;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +9,6 @@ import java.util.List;
 @Builder
 public class HerbResponseDTO {
 
-    private List<Herb> herbs;
+    private List<HerbDTO> herbs;
     private Integer nextPage;
 }
