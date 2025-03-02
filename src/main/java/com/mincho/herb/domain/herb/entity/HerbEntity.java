@@ -63,7 +63,6 @@ public class HerbEntity extends BaseEntity {
         herbEntity.prvateTherpy = herb.getPrvateTherpy();
         herbEntity.stle = herb.getStle();
         herbEntity.useeRegn = herb.getUseeRegn();
-        herbEntity.adminId = herb.getAdminId();
 
         return herbEntity;
     }

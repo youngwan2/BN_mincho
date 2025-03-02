@@ -4,18 +4,12 @@ import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.MapperUtils;
 import com.mincho.herb.domain.herb.domain.Herb;
-import com.mincho.herb.domain.herb.dto.HerbCreateRequestDTO;
-import com.mincho.herb.domain.herb.dto.HerbDTO;
-import com.mincho.herb.domain.herb.dto.HerbDetailResponseDTO;
-import com.mincho.herb.domain.herb.dto.HerbUpdateRequestDTO;
+import com.mincho.herb.domain.herb.dto.*;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -74,19 +68,22 @@ public class HerbServiceImpl implements HerbService{
         return herbEntity.toModel();
     }
 
+
     // 약초 목록 조회(페이징)
     @Override
-    public List<Herb> getHerbSummary(int page, int size) {
-        Pageable pageable = (Pageable) PageRequest.of(page, size);
-        Page<HerbEntity> herbEntities = herbRepository.findAllPaging(pageable);
+    public List<HerbDTO> getHerbs(PageInfoDTO pageInfoDTO, HerbFilteringRequestDTO herbFilteringRequestDTO) {
 
-        if(herbEntities.isEmpty()){
+        List<HerbDTO> herbs = herbRepository.findByFiltering(herbFilteringRequestDTO, pageInfoDTO);
+
+        if(herbs.isEmpty()){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"조회 데이터가 없습니다.");
         }
 
-        return herbEntities.stream().map(HerbEntity::toModel).toList();
+        return herbs;
+
     }
-    
+
+
     // 상세 페이지
     @Override
     public HerbDetailResponseDTO getHerbDetails(Long id) {

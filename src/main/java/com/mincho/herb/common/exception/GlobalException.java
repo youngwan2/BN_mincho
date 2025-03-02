@@ -6,6 +6,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 
 import jakarta.mail.SendFailedException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -66,6 +67,11 @@ public class GlobalException {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleBadCredentialException(BadCredentialsException ex){
         return new ErrorResponse().getResponse(401  ,ex.getMessage()+" 자격증명을 확인 후 다시시도 해주세요.", HttpErrorType.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegerityViolationException(DataIntegrityViolationException ex){
+        return new ErrorResponse().getResponse(409  ,"중복 요청은 불가능합니다.", HttpErrorType.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

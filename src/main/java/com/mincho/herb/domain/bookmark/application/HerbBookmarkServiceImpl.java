@@ -34,6 +34,10 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     public void addHerbBookmark(String url, Long herbId) {
         String email = commonUtils.userCheck();
 
+        if(email == null){
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다.");
+        }
+
         MemberEntity memberEntity = userRepository.findByEmail(email);
         HerbEntity herbEntity = herbRepository.findById(herbId);
         
@@ -72,14 +76,16 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     // 북마크 등록 유무
     @Override
     public Boolean isBookmarked(Long herbId) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        MemberEntity memberEntity = null;
-        if(email.contains("@")){
-            memberEntity = userRepository.findByEmail(email);
-            return herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbId) != null ? true : false;
+        String email = commonUtils.userCheck();
+
+        if(email == null){
+            return false;
         }
 
-        return false;
+        MemberEntity memberEntity = memberEntity = userRepository.findByEmail(email);
+
+        return herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbId) != null ? true : false;
+
     }
 
     // 관심 약초 제거

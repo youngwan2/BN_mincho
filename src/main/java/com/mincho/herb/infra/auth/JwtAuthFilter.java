@@ -67,7 +67,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // 클라이언트에서 refreshToken을 쿠키나 헤더로 가져오기
 
         if(request.getCookies() == null) {
-            handleException(response, "조회할 쿠키를 찾을 수 없습니다.", HttpServletResponse.SC_NOT_FOUND);
+            handleException(response, "해당 요청을 처리할 권한이 없습니다.", HttpServletResponse.SC_FORBIDDEN);
             return;
         }
         List<Cookie> cookies = Arrays.stream(request.getCookies())

@@ -24,8 +24,6 @@ public class UserRepositoryImpl implements UserRepository{
         return userJpaRepository.existsByEmail(email);
     }
 
-
-
     @Override
     @Transactional
     public void deleteByEmail(String email) { // 회원탈퇴
