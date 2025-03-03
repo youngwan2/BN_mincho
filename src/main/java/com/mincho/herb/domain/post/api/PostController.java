@@ -29,6 +29,7 @@ public class PostController {
     private final CommonUtils commonUtils;
     private final PostService postService;
 
+    // 게시글 조회
     @GetMapping()
     @Valid
     public ResponseEntity<?> getPostsByCategory(
@@ -42,6 +43,7 @@ public class PostController {
 
     }
 
+    // 게시글 추가
     @PostMapping()
     public ResponseEntity<Map<String,String>> addPost(@RequestBody RequestPostDTO requestPostDTO, BindingResult result){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -58,6 +60,7 @@ public class PostController {
         return new SuccessResponse<>().getResponse(201, "추가 되었습니다.", HttpSuccessType.CREATED);
     }
 
+    // 게시글 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<?> getDetailPost(@PathVariable("id") Long id){
         if(id == null){
@@ -70,6 +73,7 @@ public class PostController {
 
     }
 
+    // 게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> removePost(@PathVariable("id") Long id){
         if(id == null){
@@ -86,6 +90,7 @@ public class PostController {
         return new SuccessResponse<>().getResponse(200, "정상적으로 삭제처리 되었습니다.", HttpSuccessType.OK);
     }
 
+    // 게시글 수정
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, String>> updatePost(
             @PathVariable("id") Long id,

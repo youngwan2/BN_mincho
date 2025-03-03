@@ -30,21 +30,10 @@ public class HerbBookmarkEntity extends BaseEntity {
     private HerbEntity herb;
     private String url;
 
-    public static HerbBookmarkEntity toEntity(HerbBookmark herbBookmark){
-        HerbBookmarkEntity herbBookmarkEntity = new HerbBookmarkEntity();
-        herbBookmarkEntity.id = herbBookmark.getId();
-        herbBookmarkEntity.member = MemberEntity.toEntity(herbBookmark.getMember());
-        herbBookmarkEntity.herb = HerbEntity.toEntity(herbBookmark.getHerb());
-        herbBookmarkEntity.url = herbBookmark.getUrl();
-
-        return herbBookmarkEntity;
-    }
 
     public HerbBookmark toModel(){
         return HerbBookmark.builder()
                 .id(this.id)
-                .member(this.member.toModel())
-                .herb(this.herb.toModel())
                 .url(this.url)
                 .build();
     }

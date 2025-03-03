@@ -4,7 +4,10 @@ import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,5 +50,15 @@ public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int countByMemberId(Long memberId) {
+        return herbBookmarkJpaRepository.countByMemberId(memberId);
+    }
+
+    @Override
+    public List<HerbBookmarkEntity> findByMemberId(Long memberId, Pageable pageable) {
+        return herbBookmarkJpaRepository.findByMemberId(memberId, pageable).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"북마크 목록이 존재하지 않습니다.")).stream().toList();
     }
 }

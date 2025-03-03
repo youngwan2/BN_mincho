@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
 public class HerbBookmark {
     private Long id;
     private String url;
-    private Member member;
-    private Herb herb;
 
     public static boolean isValidUrl(String url){
         String URL_REGEX = "^(http://|https://).*";

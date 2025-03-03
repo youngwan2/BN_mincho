@@ -98,6 +98,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // 새로운 accessToken을 헤더로 클라이언트에 전달
                 response.setHeader("Authorization","Bearer "+newAccessToken);
 
+                logger.info("JwtAuthFilter - new token:"+ newAccessToken);
                 logger.info("JwtAuthFilter - refreshToken으로 accessToken 재발급 완료");
             } else {
                 handleException(response, "refreshToken이 유효하지 않습니다.", HttpServletResponse.SC_UNAUTHORIZED);
