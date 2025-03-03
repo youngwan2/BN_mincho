@@ -12,7 +12,6 @@ import java.util.List;
 public interface HerbRepository {
     void save(HerbEntity herbEntity);
     void saveAll(List<HerbEntity> herbs);
-    Page<HerbEntity> findAllPaging(Pageable pageable);
     HerbEntity findByCntntsSj(String herbName);
     HerbEntity findById(Long id);
     void deleteById(Long id);

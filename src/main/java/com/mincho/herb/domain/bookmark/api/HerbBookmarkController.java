@@ -7,14 +7,13 @@ import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.bookmark.application.HerbBookmarkService;
 import com.mincho.herb.domain.bookmark.dto.HerbBookmarkCountResponse;
-import com.mincho.herb.domain.bookmark.dto.RequestHerbBookmark;
+import com.mincho.herb.domain.bookmark.dto.HerbBookmarkRequestDTO;
+import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -24,11 +23,11 @@ public class HerbBookmarkController {
     private final CommonUtils commonUtils;
     private final HerbBookmarkService herbBookmarkService;
 
-    // 허브 북마크 추가
+    // 관심약초 추가
     @PostMapping("/users/me/herbs/{herbId}/herb-bookmarks")
     public ResponseEntity<?> addHerbBookmark(
             @PathVariable Long herbId,
-            @RequestBody RequestHerbBookmark requestHerbBookmark,
+            @RequestBody HerbBookmarkRequestDTO herbBookmarkRequestDTO,
             BindingResult result){
 
 
@@ -40,11 +39,11 @@ public class HerbBookmarkController {
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
 
-        herbBookmarkService.addHerbBookmark(requestHerbBookmark.getUrl(), herbId ) ;
+        herbBookmarkService.addHerbBookmark(herbBookmarkRequestDTO.getUrl(), herbId ) ;
         return new SuccessResponse<>().getResponse(201, "성공적으로 등록되었습니다.", HttpSuccessType.CREATED);
     }
 
-    // 허브 북마크 제거
+    // 관심약초 제거
     @DeleteMapping("/users/me/herbs/{herbId}/herb-bookmarks")
     public ResponseEntity<Map<String, String>> removeFavoriteHerb(@PathVariable("herbId") Long herbId){
         if(herbId == null){
@@ -55,7 +54,7 @@ public class HerbBookmarkController {
         return new SuccessResponse<>().getResponse(200, "성공적으로 제거 되었습니다.",HttpSuccessType.OK);
     }
 
-    // 허브 북마크 전체 개수
+    // 관심약초 전체 개수(약초 별)
     @GetMapping("/herbs/{herbId}/herb-bookmarks/count")
     public ResponseEntity<?> getHerbBookmarkCount(@PathVariable("herbId") Long herbId){
         if(herbId == null){
@@ -71,5 +70,16 @@ public class HerbBookmarkController {
 
 
        return new SuccessResponse<>().getResponse(200, "성공적으로 조회 되었습니다.", HttpSuccessType.OK, bookmarkCountResponse);
+    }
+
+    // 관심약초 조회(사용자 별)
+    @GetMapping("/users/me/herbs/herb-bookmarks")
+    public ResponseEntity<HerbBookmarkResponseDTO> getBookmarks(
+            @RequestParam int page,
+            @RequestParam int size
+    ){
+        HerbBookmarkResponseDTO herbBookmarkResponseDTO = herbBookmarkService.getBookmarks(page,size);
+
+        return ResponseEntity.ok(herbBookmarkResponseDTO);
     }
 }

@@ -37,11 +37,6 @@ public class HerbRepositoryImpl implements HerbRepository {
     }
 
     @Override
-    public Page<HerbEntity> findAllPaging(Pageable pageable) {
-        return herbJpaRepository.findAll(pageable);
-    }
-
-    @Override
     public HerbEntity findByCntntsSj(String herbName) {
         return herbJpaRepository.findByCntntsSj(herbName);
     }
