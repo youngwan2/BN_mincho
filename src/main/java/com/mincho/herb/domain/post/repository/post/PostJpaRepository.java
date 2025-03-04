@@ -12,6 +12,13 @@ import java.util.Optional;
 
 
 public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
+
+        // 게시글 조회
+
+
+
+
+        // 카테고리별 게시글 조회
         @Query("""
                    SELECT p,
                           (
@@ -24,7 +31,7 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
                 """)
         Page<Object[]> findAllByCategoryWithLikeCount(@Param("category") String category, Pageable pageable);
                 
-        /* 상세 페이지 조회 부분 추가해야 함*/
+
         @Query("""
                     SELECT p,
                           (
@@ -42,4 +49,9 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
 
         @Query("SELECT p.member FROM PostEntity p WHERE p.id = :postId AND p.member.email = :email")
         Optional<MemberEntity> findAuthorByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
+
+        // 카테고리별 포스트 개수 조회
+        @Query("SELECT COUNT(p) FROM PostEntity p WHERE p.category.id = :categoryId")
+        int countByCategory(@Param("categoryId") Long categoryId);
+
 }

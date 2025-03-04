@@ -21,7 +21,7 @@ public class PostRepositoryImpl implements PostRepository{
     }
 
     @Override
-    public Object[][] findDetailPostById(Long postId) {
+    public Object[][] findByPostId(Long postId) {
         return postJpaRepository.findByPostId(postId).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 게시글은 존재하지 않습니다."));
     }
 

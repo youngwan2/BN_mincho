@@ -5,9 +5,10 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.post.domain.Author;
 import com.mincho.herb.domain.post.domain.Post;
 import com.mincho.herb.domain.post.domain.PostCategory;
-import com.mincho.herb.domain.post.dto.RequestPostDTO;
-import com.mincho.herb.domain.post.dto.ResponseDetailPostDTO;
-import com.mincho.herb.domain.post.dto.ResponsePostDTO;
+import com.mincho.herb.domain.post.dto.PostDTO;
+import com.mincho.herb.domain.post.dto.PostRequestDTO;
+import com.mincho.herb.domain.post.dto.DetailPostResponseDTO;
+import com.mincho.herb.domain.post.dto.PostResponseDTO;
 import com.mincho.herb.domain.post.entity.PostCategoryEntity;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
@@ -35,7 +36,7 @@ public class PostServiceImpl implements PostService{
 
     // 카테고리 별 게시글 조회
     @Override
-    public List<ResponsePostDTO> getPostsByCategory(int page, int size, String category) {
+    public List<PostResponseDTO> getPostsByCategory(int page, int size, String category) {
         Pageable pageable = (Pageable) PageRequest.of(page, size);
         List<Object[]> postEntities = postRepository.findAllByCategoryWithLikeCount(category, pageable);
 
@@ -43,27 +44,33 @@ public class PostServiceImpl implements PostService{
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 목록이 존재하지 않습니다.");
         }
 
-        return postEntities.stream().map((row)-> {
+         List<PostDTO> posts = postEntities.stream().map((row)-> {
             PostEntity postEntity = (PostEntity) row[0]; // 게시글 정보
             Long likeCount = (Long) row[1]; // 좋아요
             Author author = Author.builder()
-                    .id(postEntity.getMember().getId())
                     .nickname(postEntity.getMember().getProfile().getNickname())
                     .build();
-            return ResponsePostDTO.builder()
+            PostDTO post = PostDTO.builder()
                     .id(postEntity.getId())
-                    .category(category)
                     .title(postEntity.getTitle())
-                    .author(author)
+                    .category(postEntity.getCategory().getCategory())
                     .likeCount(likeCount)
-                    .createdAt(postEntity.getCreatedAt())
+                    .author(author)
                     .build();
+            return post;
+
         }).toList();
+
+        PostResponseDTO.builder()
+                .posts(posts)
+                .c
+
+        return null;
     }
 
     @Override
-    public ResponseDetailPostDTO getDetailPostById(Long id) {
-        Object[][] objects = postRepository.findDetailPostById(id);
+    public DetailPostResponseDTO getDetailPostById(Long id) {
+        Object[][] objects = postRepository.findByPostId(id);
         PostEntity postEntity = null;
         Long likeCount =0L;
         for(Object[] o : objects){
@@ -75,11 +82,10 @@ public class PostServiceImpl implements PostService{
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
         Author author = Author.builder()
-                .id(postEntity.getMember().getId())
                 .nickname(postEntity.getMember().getProfile().getNickname())
                 .build();
 
-        return ResponseDetailPostDTO.builder()
+        return DetailPostResponseDTO.builder()
                 .id(postEntity.getId())
                 .title(postEntity.getTitle())
                 .contents(postEntity.getContents())
@@ -98,16 +104,16 @@ public class PostServiceImpl implements PostService{
     // 게시글 추가
     @Override
     @Transactional
-    public void addPost(RequestPostDTO requestPostDTO, String email) {
+    public void addPost(PostRequestDTO postRequestDTO, String email) {
         // 유저 조회
         MemberEntity memberEntity = userRepository.findByEmail(email);
 
         // 카테고리 저장 및 조회
         PostCategory postCategory = PostCategory.builder()
-                .category(requestPostDTO.getCategory())
+                .category(postRequestDTO.getCategory())
                 .build();
 
-        PostCategoryEntity savedPostCategoryEntity = postCategoryRepository.findByCategory(requestPostDTO.getCategory());
+        PostCategoryEntity savedPostCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
 
         if(savedPostCategoryEntity == null) {
             PostCategoryEntity unsavedPostCategoryEntity = PostCategoryEntity.toEntity(postCategory);
@@ -115,8 +121,8 @@ public class PostServiceImpl implements PostService{
         }
 
         // 포스트 저장
-        Post post = Post.builder().title(requestPostDTO.getTitle())
-                        .contents(requestPostDTO.getContents())
+        Post post = Post.builder().title(postRequestDTO.getTitle())
+                        .contents(postRequestDTO.getContents())
                         .build();
         PostEntity unsavedPostEntity =  PostEntity.toEntity(post, memberEntity, savedPostCategoryEntity);
         
@@ -126,15 +132,15 @@ public class PostServiceImpl implements PostService{
 
     // 게시글 수정
     @Override
-    public void update(RequestPostDTO requestPostDTO, Long id, String email) {
+    public void update(PostRequestDTO postRequestDTO, Long id, String email) {
         MemberEntity memberEntity = postRepository.findAuthorByPostIdAndEmail(id, email);
-        PostCategoryEntity updatedPostCategoryEntity = postCategoryRepository.findByCategory(requestPostDTO.getCategory());
+        PostCategoryEntity updatedPostCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
         PostEntity unsavedPostEntity = PostEntity.builder()
                       .id(id)
                       .category(updatedPostCategoryEntity)
                       .member(memberEntity)
-                      .title(requestPostDTO.getTitle())
-                      .contents(requestPostDTO.getContents())
+                      .title(postRequestDTO.getTitle())
+                      .contents(postRequestDTO.getContents())
                       .build();
 
         postRepository.save(unsavedPostEntity);

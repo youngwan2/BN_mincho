@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestPostDTO {
+public class PostRequestDTO {
 
     @Size(min = 2, max = 30, message = "제목은 2자 이상 30자 이하로 입력해야 합니다.")
     private String title;

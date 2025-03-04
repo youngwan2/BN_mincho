@@ -6,9 +6,9 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.post.PostService;
-import com.mincho.herb.domain.post.dto.RequestPostDTO;
-import com.mincho.herb.domain.post.dto.ResponseDetailPostDTO;
-import com.mincho.herb.domain.post.dto.ResponsePostDTO;
+import com.mincho.herb.domain.post.dto.PostRequestDTO;
+import com.mincho.herb.domain.post.dto.DetailPostResponseDTO;
+import com.mincho.herb.domain.post.dto.PostResponseDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -38,14 +38,14 @@ public class PostController {
             @RequestParam("size") @Min(value = 5, message = "size 는 최소 5 이상이어야 합니다.") Integer size
             ){
 
-        List<ResponsePostDTO> posts = postService.getPostsByCategory(page, size, category);
+        List<PostResponseDTO> posts = postService.getPostsByCategory(page, size, category);
         return new SuccessResponse<>().getResponse(200, "조회되었습니다.", HttpSuccessType.OK, posts);
 
     }
 
     // 게시글 추가
     @PostMapping()
-    public ResponseEntity<Map<String,String>> addPost(@RequestBody RequestPostDTO requestPostDTO, BindingResult result){
+    public ResponseEntity<Map<String,String>> addPost(@RequestBody PostRequestDTO postRequestDTO, BindingResult result){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(!commonUtils.emailValidation(email)){
@@ -55,7 +55,7 @@ public class PostController {
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
 
-        postService.addPost(requestPostDTO, email);
+        postService.addPost(postRequestDTO, email);
 
         return new SuccessResponse<>().getResponse(201, "추가 되었습니다.", HttpSuccessType.CREATED);
     }
@@ -67,9 +67,9 @@ public class PostController {
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
         }
 
-        ResponseDetailPostDTO responseDetailPostDTO =  postService.getDetailPostById(id);
+        DetailPostResponseDTO detailPostResponseDTO =  postService.getDetailPostById(id);
 
-        return new SuccessResponse<>().getResponse(200, "정상적으로 조회되었습니다.", HttpSuccessType.OK, responseDetailPostDTO);
+        return new SuccessResponse<>().getResponse(200, "정상적으로 조회되었습니다.", HttpSuccessType.OK, detailPostResponseDTO);
 
     }
 
@@ -94,7 +94,7 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, String>> updatePost(
             @PathVariable("id") Long id,
-            @Valid @RequestBody RequestPostDTO requestPostDTO,
+            @Valid @RequestBody PostRequestDTO postRequestDTO,
             BindingResult result){
         if(id == null){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
@@ -109,7 +109,7 @@ public class PostController {
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
 
-        postService.update(requestPostDTO, id, email);
+        postService.update(postRequestDTO, id, email);
 
         return new SuccessResponse<>().getResponse(200, "성공적으로 수정되었습니다.", HttpSuccessType.OK);
     }

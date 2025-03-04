@@ -9,7 +9,7 @@ public interface PostRepository {
 
     void save(PostEntity postEntity);
     List<Object[]> findAllByCategoryWithLikeCount(String category, Pageable pageable);
-    Object[][] findDetailPostById(Long postId);
+    Object[][] findByPostId(Long postId);
     PostEntity findById(Long postId);
     Long findAuthorIdByPostIdAndEmail(Long postId, String email);
     MemberEntity findAuthorByPostIdAndEmail(Long postId, String email);
