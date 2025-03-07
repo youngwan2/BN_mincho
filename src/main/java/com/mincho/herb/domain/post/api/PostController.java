@@ -38,7 +38,7 @@ public class PostController {
             @RequestParam("size") @Min(value = 5, message = "size 는 최소 5 이상이어야 합니다.") Integer size
             ){
 
-        List<PostResponseDTO> posts = postService.getPostsByCategory(page, size, category);
+        PostResponseDTO posts = postService.getPostsByCategory(page, size, category);
         return new SuccessResponse<>().getResponse(200, "조회되었습니다.", HttpSuccessType.OK, posts);
 
     }

@@ -15,4 +15,6 @@ public interface PostRepository {
     MemberEntity findAuthorByPostIdAndEmail(Long postId, String email);
     void update(PostEntity postEntity);
     void deleteById(Long id);
+    int countByCategory(String category);
+    int countByMemberId(Long memberId);
 }

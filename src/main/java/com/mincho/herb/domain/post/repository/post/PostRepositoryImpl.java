@@ -57,4 +57,17 @@ public class PostRepositoryImpl implements PostRepository{
     public void deleteById(Long id) {
         postJpaRepository.deleteById(id);
     }
+
+    // 카테고리 별 게시글 개수
+    @Override
+    public int countByCategory(String category) {
+        return 0;
+    }
+
+    // 사용자 별 게시글 수
+    @Override
+    public int countByMemberId(Long memberId) {
+        int count = postJpaRepository.countByMemberId(memberId);
+        return count;
+    }
 }

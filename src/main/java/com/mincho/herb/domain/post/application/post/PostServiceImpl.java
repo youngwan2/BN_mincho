@@ -36,7 +36,7 @@ public class PostServiceImpl implements PostService{
 
     // 카테고리 별 게시글 조회
     @Override
-    public List<PostResponseDTO> getPostsByCategory(int page, int size, String category) {
+    public PostResponseDTO getPostsByCategory(int page, int size, String category) {
         Pageable pageable = (Pageable) PageRequest.of(page, size);
         List<Object[]> postEntities = postRepository.findAllByCategoryWithLikeCount(category, pageable);
 
@@ -44,12 +44,16 @@ public class PostServiceImpl implements PostService{
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 목록이 존재하지 않습니다.");
         }
 
+         int postCount = postRepository.countByCategory(category);
+        
          List<PostDTO> posts = postEntities.stream().map((row)-> {
             PostEntity postEntity = (PostEntity) row[0]; // 게시글 정보
             Long likeCount = (Long) row[1]; // 좋아요
+
             Author author = Author.builder()
                     .nickname(postEntity.getMember().getProfile().getNickname())
                     .build();
+
             PostDTO post = PostDTO.builder()
                     .id(postEntity.getId())
                     .title(postEntity.getTitle())
@@ -57,17 +61,19 @@ public class PostServiceImpl implements PostService{
                     .likeCount(likeCount)
                     .author(author)
                     .build();
+
             return post;
 
         }).toList();
 
-        PostResponseDTO.builder()
+        // 포스트 + 개수
+        return PostResponseDTO.builder()
                 .posts(posts)
-                .c
-
-        return null;
+                .count(Long.valueOf(postCount))
+                .build();
     }
 
+    // 포스트 상세 조회
     @Override
     public DetailPostResponseDTO getDetailPostById(Long id) {
         Object[][] objects = postRepository.findByPostId(id);

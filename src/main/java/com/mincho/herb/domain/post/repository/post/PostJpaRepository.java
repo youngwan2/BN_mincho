@@ -13,11 +13,6 @@ import java.util.Optional;
 
 public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
 
-        // 게시글 조회
-
-
-
-
         // 카테고리별 게시글 조회
         @Query("""
                    SELECT p,
@@ -52,6 +47,9 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
 
         // 카테고리별 포스트 개수 조회
         @Query("SELECT COUNT(p) FROM PostEntity p WHERE p.category.id = :categoryId")
-        int countByCategory(@Param("categoryId") Long categoryId);
+        int countByCategoryId(@Param("categoryId") Long categoryId);
+
+        // 사용자가 작성한 게시글의 수
+        int countByMemberId(Long memberId);
 
 }
