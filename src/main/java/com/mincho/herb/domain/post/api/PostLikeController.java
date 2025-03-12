@@ -6,7 +6,7 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.postLike.PostLikeService;
-import com.mincho.herb.domain.post.dto.ResponseLikeDTO;
+import com.mincho.herb.domain.post.dto.LikeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +31,8 @@ public class PostLikeController {
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
         boolean state = postLikeService.addPostLike(id, email);
-        ResponseLikeDTO responseLikeDTO = new ResponseLikeDTO(state);
-        return new SuccessResponse<>().getResponse(200, "성공적으로 반영되었습니다.", HttpSuccessType.OK, responseLikeDTO);
+        LikeResponseDTO likeResponseDTO = new LikeResponseDTO(state);
+        return new SuccessResponse<>().getResponse(200, "성공적으로 반영되었습니다.", HttpSuccessType.OK, likeResponseDTO);
 
     }
 }

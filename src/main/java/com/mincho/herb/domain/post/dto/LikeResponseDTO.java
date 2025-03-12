@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseLikeDTO {
+public class LikeResponseDTO {
 
     private Boolean isLike;
 }

@@ -33,6 +33,7 @@ public class HerbController {
             @RequestParam("bneNm") String bneNm,
             @RequestParam("orderBy") String orderBy
             ){
+
         if(page.isEmpty()){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. page 정보는 필수입니다.", HttpErrorType.BAD_REQUEST);
         }
@@ -42,8 +43,15 @@ public class HerbController {
 
 
         List<HerbDTO> herbs = herbService.getHerbs(
-                PageInfoDTO.builder().page(pageNum.longValue()).size(pageSize.longValue()).build(),
-                HerbFilteringRequestDTO.builder().bneNm(bneNm).month(month).orderBy(orderBy).build()
+                PageInfoDTO.builder()
+                        .page(pageNum.longValue())
+                        .size(pageSize.longValue())
+                        .build(),
+                HerbFilteringRequestDTO.builder()
+                        .bneNm(bneNm)
+                        .month(month)
+                        .orderBy(orderBy)
+                        .build()
         );
 
         HerbResponseDTO herbResponseDTO = HerbResponseDTO.builder()

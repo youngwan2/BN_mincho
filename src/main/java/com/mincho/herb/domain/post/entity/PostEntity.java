@@ -47,7 +47,7 @@ public class PostEntity extends BaseEntity {
                 .id(this.id)
                 .title(this.title)
                 .contents(this.contents)
-                .category(null)
+                .category(this.category.getCategory())
                 .member(this.member.toModel())
                 .build();
     }

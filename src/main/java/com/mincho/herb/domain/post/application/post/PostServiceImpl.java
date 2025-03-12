@@ -5,9 +5,7 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.post.domain.Author;
 import com.mincho.herb.domain.post.domain.Post;
 import com.mincho.herb.domain.post.domain.PostCategory;
-import com.mincho.herb.domain.post.dto.RequestPostDTO;
-import com.mincho.herb.domain.post.dto.ResponseDetailPostDTO;
-import com.mincho.herb.domain.post.dto.ResponsePostDTO;
+import com.mincho.herb.domain.post.dto.*;
 import com.mincho.herb.domain.post.entity.PostCategoryEntity;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
@@ -35,7 +33,7 @@ public class PostServiceImpl implements PostService{
 
     // 카테고리 별 게시글 조회
     @Override
-    public List<ResponsePostDTO> getPostsByCategory(int page, int size, String category) {
+    public PostResponseDTO getPostsByCategory(int page, int size, String category) {
         Pageable pageable = (Pageable) PageRequest.of(page, size);
         List<Object[]> postEntities = postRepository.findAllByCategoryWithLikeCount(category, pageable);
 
@@ -43,27 +41,35 @@ public class PostServiceImpl implements PostService{
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 목록이 존재하지 않습니다.");
         }
 
-        return postEntities.stream().map((row)-> {
-            PostEntity postEntity = (PostEntity) row[0]; // 게시글 정보
-            Long likeCount = (Long) row[1]; // 좋아요
-            Author author = Author.builder()
-                    .id(postEntity.getMember().getId())
+
+         List<PostDTO> posts = postEntities.stream().map((row)-> {
+            PostEntity postEntity = (PostEntity) row[0]; // 게시글 목록
+            Long likeCount = (Long) row[1]; // 좋아요 개수
+
+            Author author = Author.builder() // 사용자 프로필 닉네임
                     .nickname(postEntity.getMember().getProfile().getNickname())
                     .build();
-            return ResponsePostDTO.builder()
+
+             return PostDTO.builder()
                     .id(postEntity.getId())
-                    .category(category)
-                    .title(postEntity.getTitle())
-                    .author(author)
-                    .likeCount(likeCount)
-                    .createdAt(postEntity.getCreatedAt())
+                    .title(postEntity.getTitle()) // 제목
+                    .category(postEntity.getCategory().getCategory()) // 카테고리
+                    .likeCount(likeCount) // 좋아요 개수
+                    .author(author) // 작성자 
                     .build();
+
         }).toList();
+
+        // 포스트 + 개수
+        return PostResponseDTO.builder()
+                .posts(posts) // 게시글 목록
+                .build();
     }
 
+    // 포스트 상세 조회
     @Override
-    public ResponseDetailPostDTO getDetailPostById(Long id) {
-        Object[][] objects = postRepository.findDetailPostById(id);
+    public DetailPostResponseDTO getDetailPostById(Long id) {
+        Object[][] objects = postRepository.findByPostId(id);
         PostEntity postEntity = null;
         Long likeCount =0L;
         for(Object[] o : objects){
@@ -75,11 +81,10 @@ public class PostServiceImpl implements PostService{
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
         Author author = Author.builder()
-                .id(postEntity.getMember().getId())
                 .nickname(postEntity.getMember().getProfile().getNickname())
                 .build();
 
-        return ResponseDetailPostDTO.builder()
+        return DetailPostResponseDTO.builder()
                 .id(postEntity.getId())
                 .title(postEntity.getTitle())
                 .contents(postEntity.getContents())
@@ -90,24 +95,36 @@ public class PostServiceImpl implements PostService{
                 .build();
     }
 
+    // 게시글 상세 조회
     @Override
     public PostEntity getPostById(Long id) {
         return postRepository.findById(id);
     }
 
+
+    // 카테고리별 게시글 통계
+    @Override
+    public List<PostCountDTO> getPostStatistics() {
+        List<PostCountDTO> counts = postRepository.countsByCategory();
+        if(counts.isEmpty()){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "조회할 게시글 통계가 존재하지 않습니다.");
+        }
+        return counts;
+    }
+
     // 게시글 추가
     @Override
     @Transactional
-    public void addPost(RequestPostDTO requestPostDTO, String email) {
+    public void addPost(PostRequestDTO postRequestDTO, String email) {
         // 유저 조회
         MemberEntity memberEntity = userRepository.findByEmail(email);
 
         // 카테고리 저장 및 조회
         PostCategory postCategory = PostCategory.builder()
-                .category(requestPostDTO.getCategory())
+                .category(postRequestDTO.getCategory())
                 .build();
 
-        PostCategoryEntity savedPostCategoryEntity = postCategoryRepository.findByCategory(requestPostDTO.getCategory());
+        PostCategoryEntity savedPostCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
 
         if(savedPostCategoryEntity == null) {
             PostCategoryEntity unsavedPostCategoryEntity = PostCategoryEntity.toEntity(postCategory);
@@ -115,8 +132,8 @@ public class PostServiceImpl implements PostService{
         }
 
         // 포스트 저장
-        Post post = Post.builder().title(requestPostDTO.getTitle())
-                        .contents(requestPostDTO.getContents())
+        Post post = Post.builder().title(postRequestDTO.getTitle())
+                        .contents(postRequestDTO.getContents())
                         .build();
         PostEntity unsavedPostEntity =  PostEntity.toEntity(post, memberEntity, savedPostCategoryEntity);
         
@@ -126,15 +143,15 @@ public class PostServiceImpl implements PostService{
 
     // 게시글 수정
     @Override
-    public void update(RequestPostDTO requestPostDTO, Long id, String email) {
+    public void update(PostRequestDTO postRequestDTO, Long id, String email) {
         MemberEntity memberEntity = postRepository.findAuthorByPostIdAndEmail(id, email);
-        PostCategoryEntity updatedPostCategoryEntity = postCategoryRepository.findByCategory(requestPostDTO.getCategory());
+        PostCategoryEntity updatedPostCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
         PostEntity unsavedPostEntity = PostEntity.builder()
                       .id(id)
                       .category(updatedPostCategoryEntity)
                       .member(memberEntity)
-                      .title(requestPostDTO.getTitle())
-                      .contents(requestPostDTO.getContents())
+                      .title(postRequestDTO.getTitle())
+                      .contents(postRequestDTO.getContents())
                       .build();
 
         postRepository.save(unsavedPostEntity);

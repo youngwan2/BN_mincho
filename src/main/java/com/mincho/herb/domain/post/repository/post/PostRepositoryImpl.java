@@ -2,6 +2,7 @@ package com.mincho.herb.domain.post.repository.post;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class PostRepositoryImpl implements PostRepository{
     }
 
     @Override
-    public Object[][] findDetailPostById(Long postId) {
+    public Object[][] findByPostId(Long postId) {
         return postJpaRepository.findByPostId(postId).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 게시글은 존재하지 않습니다."));
     }
 
@@ -56,5 +57,24 @@ public class PostRepositoryImpl implements PostRepository{
     @Override
     public void deleteById(Long id) {
         postJpaRepository.deleteById(id);
+    }
+
+    // 카테고리 별 게시글 개수
+    @Override
+    public int countByCategory(String category) {
+        return 0;
+    }
+
+    // 사용자 별 게시글 수
+    @Override
+    public int countByMemberId(Long memberId) {
+        int count = postJpaRepository.countByMemberId(memberId);
+        return count;
+    }
+
+    // 카테고리 별 게시글 수 통계
+    @Override
+    public List<PostCountDTO> countsByCategory() {
+        return postJpaRepository.countPostsByCategory();
     }
 }

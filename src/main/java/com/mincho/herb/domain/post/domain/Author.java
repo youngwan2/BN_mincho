@@ -8,6 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class Author {
-    private Long id;
     private String nickname;
 }
