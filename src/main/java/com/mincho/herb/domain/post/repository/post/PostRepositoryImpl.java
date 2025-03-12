@@ -2,6 +2,7 @@ package com.mincho.herb.domain.post.repository.post;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
@@ -69,5 +70,11 @@ public class PostRepositoryImpl implements PostRepository{
     public int countByMemberId(Long memberId) {
         int count = postJpaRepository.countByMemberId(memberId);
         return count;
+    }
+
+    // 카테고리 별 게시글 수 통계
+    @Override
+    public List<PostCountDTO> countsByCategory() {
+        return postJpaRepository.countPostsByCategory();
     }
 }

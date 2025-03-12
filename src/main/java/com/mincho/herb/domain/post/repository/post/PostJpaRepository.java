@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.post.repository.post;
 
+import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -48,6 +50,10 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
         // 카테고리별 포스트 개수 조회
         @Query("SELECT COUNT(p) FROM PostEntity p WHERE p.category.id = :categoryId")
         int countByCategoryId(@Param("categoryId") Long categoryId);
+
+        // 카테고리별 포스트 통계
+        @Query("SELECT new com.mincho.herb.domain.post.dto.PostCountDTO(p.category.category, COUNT(p)) FROM PostEntity p GROUP BY p.category")
+        List<PostCountDTO> countPostsByCategory();
 
         // 사용자가 작성한 게시글의 수
         int countByMemberId(Long memberId);

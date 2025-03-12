@@ -5,10 +5,7 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.post.domain.Author;
 import com.mincho.herb.domain.post.domain.Post;
 import com.mincho.herb.domain.post.domain.PostCategory;
-import com.mincho.herb.domain.post.dto.PostDTO;
-import com.mincho.herb.domain.post.dto.PostRequestDTO;
-import com.mincho.herb.domain.post.dto.DetailPostResponseDTO;
-import com.mincho.herb.domain.post.dto.PostResponseDTO;
+import com.mincho.herb.domain.post.dto.*;
 import com.mincho.herb.domain.post.entity.PostCategoryEntity;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
@@ -44,32 +41,28 @@ public class PostServiceImpl implements PostService{
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 목록이 존재하지 않습니다.");
         }
 
-         int postCount = postRepository.countByCategory(category);
-        
-         List<PostDTO> posts = postEntities.stream().map((row)-> {
-            PostEntity postEntity = (PostEntity) row[0]; // 게시글 정보
-            Long likeCount = (Long) row[1]; // 좋아요
 
-            Author author = Author.builder()
+         List<PostDTO> posts = postEntities.stream().map((row)-> {
+            PostEntity postEntity = (PostEntity) row[0]; // 게시글 목록
+            Long likeCount = (Long) row[1]; // 좋아요 개수
+
+            Author author = Author.builder() // 사용자 프로필 닉네임
                     .nickname(postEntity.getMember().getProfile().getNickname())
                     .build();
 
-            PostDTO post = PostDTO.builder()
+             return PostDTO.builder()
                     .id(postEntity.getId())
-                    .title(postEntity.getTitle())
-                    .category(postEntity.getCategory().getCategory())
-                    .likeCount(likeCount)
-                    .author(author)
+                    .title(postEntity.getTitle()) // 제목
+                    .category(postEntity.getCategory().getCategory()) // 카테고리
+                    .likeCount(likeCount) // 좋아요 개수
+                    .author(author) // 작성자 
                     .build();
-
-            return post;
 
         }).toList();
 
         // 포스트 + 개수
         return PostResponseDTO.builder()
-                .posts(posts)
-                .count(Long.valueOf(postCount))
+                .posts(posts) // 게시글 목록
                 .build();
     }
 
@@ -102,9 +95,21 @@ public class PostServiceImpl implements PostService{
                 .build();
     }
 
+    // 게시글 상세 조회
     @Override
     public PostEntity getPostById(Long id) {
         return postRepository.findById(id);
+    }
+
+
+    // 카테고리별 게시글 통계
+    @Override
+    public List<PostCountDTO> getPostStatistics() {
+        List<PostCountDTO> counts = postRepository.countsByCategory();
+        if(counts.isEmpty()){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "조회할 게시글 통계가 존재하지 않습니다.");
+        }
+        return counts;
     }
 
     // 게시글 추가

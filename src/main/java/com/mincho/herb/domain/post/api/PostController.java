@@ -6,6 +6,7 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.post.PostService;
+import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.dto.PostRequestDTO;
 import com.mincho.herb.domain.post.dto.DetailPostResponseDTO;
 import com.mincho.herb.domain.post.dto.PostResponseDTO;
@@ -95,17 +96,17 @@ public class PostController {
     public ResponseEntity<Map<String, String>> updatePost(
             @PathVariable("id") Long id,
             @Valid @RequestBody PostRequestDTO postRequestDTO,
-            BindingResult result){
-        if(id == null){
+            BindingResult result) {
+        if (id == null) {
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
         }
 
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!commonUtils.emailValidation(email)){
+        if (!commonUtils.emailValidation(email)) {
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
 
@@ -113,4 +114,5 @@ public class PostController {
 
         return new SuccessResponse<>().getResponse(200, "성공적으로 수정되었습니다.", HttpSuccessType.OK);
     }
+
 }
