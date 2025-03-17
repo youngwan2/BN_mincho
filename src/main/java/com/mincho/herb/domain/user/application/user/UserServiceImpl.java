@@ -2,10 +2,14 @@ package com.mincho.herb.domain.user.application.user;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.domain.comment.domain.Comment;
+import com.mincho.herb.domain.comment.entity.CommentEntity;
+import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
+import com.mincho.herb.domain.user.dto.UserCommentInfoDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
@@ -19,7 +23,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -30,6 +36,7 @@ public class UserServiceImpl implements  UserService{
     private final AuthenticationManager authenticationManager;
     private final JwtAuthProvider jwtAuthProvider;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
 
@@ -126,5 +133,38 @@ public class UserServiceImpl implements  UserService{
         }
 
         refreshTokenRepository.removeRefreshTokenAllByUserId(memberEntity.getId());
+    }
+
+    // 유저 댓글 + 개수
+    @Override
+    public UserCommentInfoDTO getUserCommentInfo() {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!email.contains("@")){
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        }
+
+        MemberEntity memberEntity = userRepository.findByEmail(email);
+        if(memberEntity == null) {
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
+        }
+
+        Long memberId = memberEntity.getId();
+
+        List<CommentEntity> commentEntities = commentRepository.findByMemberId(memberId);
+        Long count = commentRepository.countByMemberId(memberId);
+
+        // 작성한 댓글이 없다면
+        if(commentEntities.isEmpty()){
+            commentEntities = null;
+        }
+
+        // 엔티티 -> 도메인
+        List<Comment> comments = Objects.requireNonNull(commentEntities).stream().map(CommentEntity::toModel).toList();
+
+        return UserCommentInfoDTO.builder()
+                .comments(comments)
+                .count(count)
+                .build();
     }
 }

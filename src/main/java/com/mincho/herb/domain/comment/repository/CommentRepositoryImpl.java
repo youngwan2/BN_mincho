@@ -42,4 +42,14 @@ public class CommentRepositoryImpl implements CommentRepository{
     public void updateComment(CommentEntity commentEntity) {
         commentJpaRepository.save(commentEntity);
     }
+
+    @Override
+    public Long countByMemberId(Long memberId) {
+        return commentJpaRepository.countByMemberId(memberId);
+    }
+
+    @Override
+    public List<CommentEntity> findByMemberId(Long memberId) {
+        return commentJpaRepository.findByMemberId(memberId);
+    }
 }

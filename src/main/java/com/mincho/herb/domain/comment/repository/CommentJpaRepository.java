@@ -23,5 +23,11 @@ public interface CommentJpaRepository  extends JpaRepository<CommentEntity, Long
     List<CommentEntity> findByParentComment(@Param("parentComment") CommentEntity parentComment);
 
 
+    // 사용자 별 댓글 통계
+    @Query("SELECT COUNT(c) FROM Comments c WHERE c.member.id = :memberId")
+    Long countByMemberId(@Param("memberId") Long memberId);
 
+    // 사용자 별 댓글
+    @Query("SELECT c FROM Comments c WHERE c.member.id = :memberId")
+    List<CommentEntity> findByMemberId(@Param("memberId") Long memberId);
 }

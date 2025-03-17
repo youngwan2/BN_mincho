@@ -28,7 +28,6 @@ public class PostServiceImpl implements PostService{
 
     private final PostRepository postRepository;
     private final PostCategoryRepository postCategoryRepository;
-    private final PostLikeRepository postLikeRepository;
     private final UserRepository userRepository;
 
     // 카테고리 별 게시글 조회
@@ -118,6 +117,14 @@ public class PostServiceImpl implements PostService{
     public void addPost(PostRequestDTO postRequestDTO, String email) {
         // 유저 조회
         MemberEntity memberEntity = userRepository.findByEmail(email);
+
+
+        // 해당 카테고리가 실제로 존재하는지 검증
+        PostCategoryEntity postCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
+
+        if(postCategoryEntity == null){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 카테고리는 존재하지 않습니다.");
+        }
 
         // 카테고리 저장 및 조회
         PostCategory postCategory = PostCategory.builder()

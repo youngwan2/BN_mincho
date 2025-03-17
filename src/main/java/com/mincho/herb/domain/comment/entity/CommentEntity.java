@@ -53,10 +53,8 @@ public class CommentEntity extends BaseEntity {
         return Comment.builder()
                 .id(this.id)
                 .contents(this.contents)
-                .member(this.member.toModel())
-                .post(this.post.toModel())
-                .parentComment(this.parentComment.toModel())
                 .level(this.level)
+                .postId(this.post.getId())
                 .deleted(this.deleted)
                 .build();
 
