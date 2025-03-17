@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/community/posts")
+@Slf4j
 public class PostController {
 
     private final CommonUtils commonUtils;
@@ -38,7 +40,6 @@ public class PostController {
             @RequestParam("page") @Min(value = 0, message = "page 는 최소 0 이상이어야 합니다.") Integer page,
             @RequestParam("size") @Min(value = 5, message = "size 는 최소 5 이상이어야 합니다.") Integer size
             ){
-
         PostResponseDTO posts = postService.getPostsByCategory(page, size, category);
         return new SuccessResponse<>().getResponse(200, "조회되었습니다.", HttpSuccessType.OK, posts);
 

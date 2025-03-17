@@ -25,7 +25,6 @@ public class PostStatisticsController {
     @GetMapping()
     public ResponseEntity<?> getPostStatistics(){
 
-
         List<PostCountDTO> postCountDTOs = postStatisticsService.getPostStatistics();
 
         log.info("post 통계: {}", postCountDTOs);
@@ -33,5 +32,4 @@ public class PostStatisticsController {
         return new SuccessResponse<>().getResponse(200, "성공적으로 조회되었습니다.", HttpSuccessType.OK, postCountDTOs);
 
     }
-
 }
