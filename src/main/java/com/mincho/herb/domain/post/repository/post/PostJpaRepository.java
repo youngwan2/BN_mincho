@@ -44,6 +44,7 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
         @Query("SELECT p.member.id FROM PostEntity p WHERE p.id = :postId AND p.member.email = :email")
         Optional<Long> findAuthorIdByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
 
+        // 이메일과 게시글 ID 에 따른 유저ID 조회
         @Query("SELECT p.member FROM PostEntity p WHERE p.id = :postId AND p.member.email = :email")
         Optional<MemberEntity> findAuthorByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
 
@@ -52,9 +53,10 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
         int countByCategoryId(@Param("categoryId") Long categoryId);
 
         // 카테고리별 포스트 통계
-        @Query("SELECT new com.mincho.herb.domain.post.dto.PostCountDTO(p.category.category, COUNT(p)) FROM PostEntity p GROUP BY p.category")
+        @Query("SELECT new com.mincho.herb.domain.post.dto.PostCountDTO(c.category, COUNT(p)) " +
+                "FROM PostCategoryEntity c LEFT JOIN PostEntity p ON p.category = c " +
+                "GROUP BY c.category")
         List<PostCountDTO> countPostsByCategory();
-
         // 사용자가 작성한 게시글의 수
         int countByMemberId(Long memberId);
 
