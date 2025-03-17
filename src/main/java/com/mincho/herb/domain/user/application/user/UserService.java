@@ -4,6 +4,7 @@ import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
+import com.mincho.herb.domain.user.dto.UserCommentInfoDTO;
 
 import java.util.Map;
 
@@ -16,5 +17,7 @@ public interface UserService {
     void updatePassword(String password, String email);
     Member findUserByEmail(String email);
     void logoutAll(Long id);
+
+    UserCommentInfoDTO getUserCommentInfo();
     
 }

@@ -19,4 +19,6 @@ public interface PostRepository {
     int countByCategory(String category);
     int countByMemberId(Long memberId);
     List<PostCountDTO> countsByCategory();
+
+
 }

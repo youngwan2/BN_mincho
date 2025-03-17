@@ -14,5 +14,12 @@ public interface CommentRepository {
 
     void updateComment(CommentEntity commentEntity);
 
+    
+    // 사용자별 댓글 개수
+    Long countByMemberId(Long memberId);
+
+    // 사용자 별 댓글 조회
+    List<CommentEntity> findByMemberId(Long memberId);
+
 
 }
