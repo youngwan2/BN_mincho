@@ -13,6 +13,7 @@ public class Comment {
     private Long id;
     private String contents;
     private Long postId;
+    private Long level;
     private Boolean deleted;
 
 
