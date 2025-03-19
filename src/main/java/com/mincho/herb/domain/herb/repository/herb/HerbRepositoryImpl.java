@@ -4,7 +4,7 @@ import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.herb.dto.HerbDTO;
 import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
-import com.mincho.herb.domain.herb.dto.PageInfoDTO;
+import com.mincho.herb.common.dto.PageInfoDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbEntity;
 import com.querydsl.core.BooleanBuilder;
@@ -12,8 +12,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

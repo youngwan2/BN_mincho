@@ -1,6 +1,5 @@
 package com.mincho.herb.domain.post.dto;
 
-import com.mincho.herb.domain.post.domain.Author;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,7 +11,7 @@ public class PostDTO {
     private Long id;
     private String title;
     private String category;
-    private Author author;
+    private String nickname;
     private Long likeCount;
     private LocalDateTime createdAt;
 }

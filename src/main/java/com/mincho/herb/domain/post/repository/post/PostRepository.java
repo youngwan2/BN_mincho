@@ -1,15 +1,17 @@
 package com.mincho.herb.domain.post.repository.post;
 
+import com.mincho.herb.common.dto.PageInfoDTO;
 import com.mincho.herb.domain.post.dto.PostCountDTO;
+import com.mincho.herb.domain.post.dto.PostDTO;
+import com.mincho.herb.domain.post.dto.SearchConditionDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface PostRepository {
 
     void save(PostEntity postEntity);
-    List<Object[]> findAllByCategoryWithLikeCount(String category, Pageable pageable);
+    List<PostDTO> findAllByConditions(SearchConditionDTO searchConditionDTO, PageInfoDTO pageInfoDTO);
     Object[][] findByPostId(Long postId);
     PostEntity findById(Long postId);
     Long findAuthorIdByPostIdAndEmail(Long postId, String email);
@@ -19,6 +21,4 @@ public interface PostRepository {
     int countByCategory(String category);
     int countByMemberId(Long memberId);
     List<PostCountDTO> countsByCategory();
-
-
 }
