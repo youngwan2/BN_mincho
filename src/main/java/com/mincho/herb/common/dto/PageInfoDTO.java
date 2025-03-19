@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.herb.dto;
+package com.mincho.herb.common.dto;
 
 import lombok.Builder;
 import lombok.Data;

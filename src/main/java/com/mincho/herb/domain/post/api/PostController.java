@@ -6,10 +6,10 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.post.PostService;
-import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.dto.PostRequestDTO;
 import com.mincho.herb.domain.post.dto.DetailPostResponseDTO;
 import com.mincho.herb.domain.post.dto.PostResponseDTO;
+import com.mincho.herb.domain.post.dto.SearchConditionDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,11 +35,22 @@ public class PostController {
     @GetMapping()
     @Valid
     public ResponseEntity<?> getPostsByCategory(
-            @RequestParam("category") @NotEmpty(message = "category 는 필수입니다.") String category,
+            @RequestParam("category") @NotEmpty(message= "category 는 필수입니다.") String category,
+            @RequestParam("query") String query,
+            @RequestParam("sort") @NotEmpty(message= "sort 는 필수입니다.") String sort,
+            @RequestParam("order") @NotEmpty(message="order 는 필수입니다.") String order,
             @RequestParam("page") @Min(value = 0, message = "page 는 최소 0 이상이어야 합니다.") Integer page,
             @RequestParam("size") @Min(value = 5, message = "size 는 최소 5 이상이어야 합니다.") Integer size
             ){
-        PostResponseDTO posts = postService.getPostsByCategory(page, size, category);
+
+        SearchConditionDTO searchCondition = SearchConditionDTO.builder()
+                .order(order)
+                .query(query)
+                .sort(sort)
+                .category(category)
+                .build();
+
+        PostResponseDTO posts = postService.getPostsByCondition(page, size, searchCondition);
         return new SuccessResponse<>().getResponse(200, "조회되었습니다.", HttpSuccessType.OK, posts);
 
     }

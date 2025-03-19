@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.herb.application.herb;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
+import com.mincho.herb.common.dto.PageInfoDTO;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.MapperUtils;
 import com.mincho.herb.domain.herb.domain.Herb;

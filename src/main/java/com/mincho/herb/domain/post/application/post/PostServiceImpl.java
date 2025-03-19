@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.post.application.post;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
+import com.mincho.herb.common.dto.PageInfoDTO;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.post.domain.Author;
 import com.mincho.herb.domain.post.domain.Post;
@@ -10,14 +11,11 @@ import com.mincho.herb.domain.post.entity.PostCategoryEntity;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepository;
-import com.mincho.herb.domain.post.repository.postLike.PostLikeRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -30,34 +28,20 @@ public class PostServiceImpl implements PostService{
     private final PostCategoryRepository postCategoryRepository;
     private final UserRepository userRepository;
 
-    // 카테고리 별 게시글 조회
+    // 조건 별 게시글 조회
     @Override
-    public PostResponseDTO getPostsByCategory(int page, int size, String category) {
-        Pageable pageable = (Pageable) PageRequest.of(page, size);
-        List<Object[]> postEntities = postRepository.findAllByCategoryWithLikeCount(category, pageable);
+    public PostResponseDTO getPostsByCondition(int page, int size, SearchConditionDTO searchConditionDTO) {
+        ;
+        PageInfoDTO pageInfoDTO = PageInfoDTO.builder().page((long) page).size((long) size).build();
+        
+        // 포스트 엔티티 목록
+        List<PostDTO> posts = postRepository.findAllByConditions(searchConditionDTO, pageInfoDTO);
 
-        if(postEntities.isEmpty()){
+        // 포스트가 비어 있는 경우
+        if(posts.isEmpty()){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 목록이 존재하지 않습니다.");
         }
 
-
-         List<PostDTO> posts = postEntities.stream().map((row)-> {
-            PostEntity postEntity = (PostEntity) row[0]; // 게시글 목록
-            Long likeCount = (Long) row[1]; // 좋아요 개수
-
-            Author author = Author.builder() // 사용자 프로필 닉네임
-                    .nickname(postEntity.getMember().getProfile().getNickname())
-                    .build();
-
-             return PostDTO.builder()
-                    .id(postEntity.getId())
-                    .title(postEntity.getTitle()) // 제목
-                    .category(postEntity.getCategory().getCategory()) // 카테고리
-                    .likeCount(likeCount) // 좋아요 개수
-                    .author(author) // 작성자 
-                    .build();
-
-        }).toList();
 
         // 포스트 + 개수
         return PostResponseDTO.builder()
