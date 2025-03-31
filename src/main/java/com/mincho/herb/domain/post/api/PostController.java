@@ -43,10 +43,12 @@ public class PostController {
             @RequestParam("size") @Min(value = 5, message = "size 는 최소 5 이상이어야 합니다.") Integer size
             ){
 
+        log.info("category {} query {} sort {}  order{} page{} size{}", category, query, sort, order, page, size);
+
         SearchConditionDTO searchCondition = SearchConditionDTO.builder()
-                .order(order)
+                .order(order) // asc, desc
                 .query(query)
-                .sort(sort)
+                .sort(sort) // 정렬 기준 post_id, like_count 등등
                 .category(category)
                 .build();
 

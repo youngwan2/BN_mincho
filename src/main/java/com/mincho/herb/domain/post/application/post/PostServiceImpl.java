@@ -9,8 +9,10 @@ import com.mincho.herb.domain.post.domain.PostCategory;
 import com.mincho.herb.domain.post.dto.*;
 import com.mincho.herb.domain.post.entity.PostCategoryEntity;
 import com.mincho.herb.domain.post.entity.PostEntity;
+import com.mincho.herb.domain.post.entity.PostViewsEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepository;
+import com.mincho.herb.domain.post.repository.postViews.PostViewsRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -26,6 +28,7 @@ public class PostServiceImpl implements PostService{
 
     private final PostRepository postRepository;
     private final PostCategoryRepository postCategoryRepository;
+    private final PostViewsRepository postViewsRepository;
     private final UserRepository userRepository;
 
     // 조건 별 게시글 조회
@@ -127,8 +130,15 @@ public class PostServiceImpl implements PostService{
                         .contents(postRequestDTO.getContents())
                         .build();
         PostEntity unsavedPostEntity =  PostEntity.toEntity(post, memberEntity, savedPostCategoryEntity);
-        
-        postRepository.save(unsavedPostEntity);
+        PostEntity savedPostEntity = postRepository.save(unsavedPostEntity);
+
+        // 포스트 조회수 초기 상태 설정
+        PostViewsEntity unsavedViewsEntity = PostViewsEntity.builder()
+                .post(savedPostEntity)
+                .viewCount(0L)
+                .build();
+        postViewsRepository.save(unsavedViewsEntity);
+
 
     }
 

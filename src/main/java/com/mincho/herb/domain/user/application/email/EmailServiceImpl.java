@@ -92,7 +92,7 @@ public class EmailServiceImpl implements EmailService{
     @Override
     public void sendVerificationCode(String toMail) throws MessagingException {
 
-         Boolean isUser = userRepository.existsByEmail(toMail);
+         boolean isUser = userRepository.existsByEmail(toMail);
 
          if(isUser){
              throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"잘못된 요청입니다. 이전 단계를 완료 후 요청해주세요");

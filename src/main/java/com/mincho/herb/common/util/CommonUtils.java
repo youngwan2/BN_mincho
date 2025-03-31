@@ -1,7 +1,5 @@
 package com.mincho.herb.common.util;
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.exception.CustomHttpException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

@@ -12,22 +12,26 @@ import com.mincho.herb.domain.post.entity.QPostLikeEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.QMemberEntity;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class PostRepositoryImpl implements PostRepository{
     private final PostJpaRepository postJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public void save(PostEntity postEntity) {
-        postJpaRepository.save(postEntity);
+    public PostEntity save(PostEntity postEntity) {
+        return postJpaRepository.save(postEntity);
     }
 
     @Override
@@ -47,42 +51,54 @@ public class PostRepositoryImpl implements PostRepository{
         QPostLikeEntity postLikeEntity = QPostLikeEntity.postLikeEntity;
         QMemberEntity memberEntity = QMemberEntity.memberEntity;
 
-        BooleanBuilder builder = new BooleanBuilder();
+        log.info("검색 조건: {}", searchConditionDTO);
 
+        BooleanBuilder builder = new BooleanBuilder();
         String category = searchConditionDTO.getCategory();
         String sort = searchConditionDTO.getSort();
         String order = searchConditionDTO.getOrder();
         String query = searchConditionDTO.getQuery();
 
-        // 페이징 오프셋
+        // 페이징 오프셋 및 제한
         long offset = (long) (pageInfoDTO.getPage() * pageInfoDTO.getSize());
+        long limit = pageInfoDTO.getSize();
 
-        // 카테고리 조건
-        builder.and(postEntity.category.category.contains(searchConditionDTO.getCategory()));
-
-        // 검색 조건
-        if(searchConditionDTO.getQuery() != null && !searchConditionDTO.getQuery().isEmpty()){
-        builder.and(postEntity.contents.contains(searchConditionDTO.getQuery()));
+        // 카테고리 필터 (정확한 매칭)
+        if (category != null && !category.trim().isEmpty()) {
+            builder.and(postEntity.category.category.eq(category));
         }
 
-        // 조건이 하나도 없으면 모든 목록 반환 아니면 필터링 조건에 맞게 처리
+        // 검색 조건 (내용 포함 여부)
+        if (query != null && !query.trim().isEmpty()) {
+            builder.and(postEntity.contents.like("%" + query.trim() + "%"));
+        }
+
+        // 정렬 조건 설정
+        OrderSpecifier<?> orderSpecifier;
+        if ("desc".equalsIgnoreCase(order)) {
+            orderSpecifier = postEntity.id.desc(); // 기본값: id 내림차순
+        } else {
+            orderSpecifier = postEntity.id.asc(); // 오름차순
+        }
+
         return jpaQueryFactory
                 .select(Projections.constructor(PostDTO.class,
-                        postEntity.id,
-                        postEntity.title,
-                        postEntity.category.category,
-                        postEntity.member.profile.nickname,
-                        postLikeEntity.count().as("likeCount"),
-                        postEntity.createdAt
-                        ))
+                        postEntity.id, // 포스트 ID
+                        postEntity.title, // 제목
+                        postEntity.category.category, // 카테고리
+                        postEntity.member.profile.nickname, // 사용자 닉네임
+                        Expressions.numberTemplate(Long.class, "coalesce({0}, 0)", postLikeEntity.count()).as("likeCount"), // 좋아요 개수 (null 방지)
+                        postEntity.createdAt // 생성 날짜
+                ))
                 .from(postEntity)
                 .leftJoin(postLikeEntity).on(postLikeEntity.post.id.eq(postEntity.id))
                 .fetchJoin()
                 .where(builder)
-                .groupBy(postEntity.id)
+                .groupBy(postEntity.id, postEntity.category, postEntity.member.profile.nickname)
+                .orderBy(orderSpecifier)
                 .offset(offset)
+                .limit(limit)
                 .fetch();
-
     }
 
     // 해당 포스트를 작성한 유저 조회
@@ -91,6 +107,7 @@ public class PostRepositoryImpl implements PostRepository{
         return postJpaRepository.findAuthorIdByPostIdAndEmail(postId, email)
                 .orElseThrow(()-> new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 있는 유저가 아닙니다."));
     }
+
 
     @Override
     public MemberEntity findAuthorByPostIdAndEmail(Long postId, String email) {
