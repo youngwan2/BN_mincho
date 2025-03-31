@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface PostRepository {
 
-    void save(PostEntity postEntity);
+    PostEntity save(PostEntity postEntity);
     List<PostDTO> findAllByConditions(SearchConditionDTO searchConditionDTO, PageInfoDTO pageInfoDTO);
     Object[][] findByPostId(Long postId);
     PostEntity findById(Long postId);

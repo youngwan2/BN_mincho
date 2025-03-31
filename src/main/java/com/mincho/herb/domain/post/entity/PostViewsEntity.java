@@ -1,11 +1,13 @@
 package com.mincho.herb.domain.post.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
 @Table(name = "PostViews")
 @Data
+@Builder
 public class PostViewsEntity {
 
     @Id
