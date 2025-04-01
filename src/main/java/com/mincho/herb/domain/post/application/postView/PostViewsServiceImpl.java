@@ -19,7 +19,7 @@ public class PostViewsServiceImpl implements PostViewsService{
 
         Long newPostView = ViewCount.builder().build().increase(oldPostView);
 
-        return  postViewsRepository.updatePostViewCount(newPostView, postId);;
+        return  postViewsRepository.updatePostViewCount(newPostView, postId);
     }
 
     // 포스트 조회수 조회

@@ -39,6 +39,7 @@ public class PostLikeServiceImpl implements PostLikeService{
            Long userId = memberEntity.getId();
            Boolean hasLike = postLikeRepository.existsByUserIdAndPostId(userId, postId);
 
+           // 좋아요가 없으면 좋아요를 추가
            if(!hasLike){
                PostEntity postEntity = postRepository.findById(postId);
 
@@ -49,6 +50,7 @@ public class PostLikeServiceImpl implements PostLikeService{
                postLikeRepository.save(unsavedPostLikeEntity);
 
                return true;
+               // 좋아요가 존재하면 좋아요를 제거
            } else {
                postLikeRepository.deleteByUserIdAndPostId(userId, postId);
 
