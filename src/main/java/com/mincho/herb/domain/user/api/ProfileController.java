@@ -60,6 +60,6 @@ public class ProfileController {
         log.info("profile 정보: {}", profile);
 
         return new SuccessResponse<>().getResponse(200, "성공적으로 프로필 정보를 조회 하였습니다.", HttpSuccessType.OK, profile);
-
     }
+
 }

@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 
 public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
@@ -57,7 +58,18 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
                 "FROM PostCategoryEntity c LEFT JOIN PostEntity p ON p.category = c " +
                 "GROUP BY c.category")
         List<PostCountDTO> countPostsByCategory();
+
+        /** 마이페이지 */
         // 사용자가 작성한 게시글의 수
-        int countByMemberId(Long memberId);
+        Long countByMemberId(Long memberId);
+
+        // 사용자가 작성한 게시글 목록
+        @Query("""
+                   SELECT p
+                   FROM PostEntity p
+                   WHERE p.member.id =:memberId
+                """)
+        Page<PostEntity> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
 
 }

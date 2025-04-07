@@ -18,6 +18,8 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -127,20 +129,28 @@ public class PostRepositoryImpl implements PostRepository{
 
     // 카테고리 별 게시글 개수
     @Override
-    public int countByCategory(String category) {
-        return 0;
+    public Long countByCategory(String category) {
+        return 0L;
     }
 
-    // 사용자 별 게시글 수
-    @Override
-    public int countByMemberId(Long memberId) {
-        int count = postJpaRepository.countByMemberId(memberId);
-        return count;
-    }
+
 
     // 카테고리 별 게시글 수 통계
     @Override
     public List<PostCountDTO> countsByCategory() {
         return postJpaRepository.countPostsByCategory();
+    }
+
+    /** 마이페이지 */
+    // 사용자 별 게시글 수
+    @Override
+    public Long countByMemberId(Long memberId) {
+        return  postJpaRepository.countByMemberId(memberId);
+    }
+
+    // 사용자별 게시글 목록
+    @Override
+    public Page<PostEntity> findByMemberId(Long memberId, Pageable pageable) {
+        return postJpaRepository.findByMemberId(memberId, pageable);
     }
 }

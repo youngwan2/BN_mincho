@@ -26,7 +26,7 @@ public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
         int num = herbBookmarkJpaRepository.deleteByMemberIdAndHerbId(memberId, herbBookmarkId);
 
         if(num ==0){
-            new CustomHttpException(HttpErrorCode.CONFLICT,"관심허브 삭제 요청이 실패하였습니다.");
+            throw new CustomHttpException(HttpErrorCode.CONFLICT, "관심허브 삭제 요청이 실패하였습니다.");
         }
     }
 
@@ -39,7 +39,7 @@ public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
 
     // 해당 약초 id 를 가진 모든 아이템의 개수를 조회
     @Override
-    public Integer countByHerbId(Long herbId) {
+    public Long countByHerbId(Long herbId) {
         return herbBookmarkJpaRepository.countByHerbId(herbId);
     }
 
@@ -53,7 +53,7 @@ public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
     }
 
     @Override
-    public int countByMemberId(Long memberId) {
+    public Long countByMemberId(Long memberId) {
         return herbBookmarkJpaRepository.countByMemberId(memberId);
     }
 

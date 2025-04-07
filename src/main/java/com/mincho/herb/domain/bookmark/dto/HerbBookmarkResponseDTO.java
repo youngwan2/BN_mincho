@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @Builder
 public class HerbBookmarkResponseDTO {
-    private Integer count;
+    private Long count;
     private List<HerbBookmark> bookmarks;
 }

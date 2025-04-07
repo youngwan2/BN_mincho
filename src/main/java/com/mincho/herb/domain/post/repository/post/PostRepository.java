@@ -6,6 +6,9 @@ import com.mincho.herb.domain.post.dto.PostDTO;
 import com.mincho.herb.domain.post.dto.SearchConditionDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface PostRepository {
@@ -18,7 +21,11 @@ public interface PostRepository {
     MemberEntity findAuthorByPostIdAndEmail(Long postId, String email);
     void update(PostEntity postEntity);
     void deleteById(Long id);
-    int countByCategory(String category);
-    int countByMemberId(Long memberId);
+    Long countByCategory(String category);
     List<PostCountDTO> countsByCategory();
+
+    /** 마이페이지 */
+    Long countByMemberId(Long memberId);
+    Page<PostEntity> findByMemberId(Long memberId, Pageable pageable);
+
 }

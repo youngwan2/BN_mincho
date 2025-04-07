@@ -12,4 +12,6 @@ public interface UserRepository {
 
     MemberEntity findByEmail(String email);
 
+    MemberEntity findByEmail2(String email);
+
 }

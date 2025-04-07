@@ -1,20 +1,14 @@
 package com.mincho.herb.domain.comment.dto;
 
-import lombok.*;
+
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Builder
 public class ResponseCommentDTO {
-    private Long id;
-    private String contents;
-    private String nickname;
-    private Boolean isDeleted;
-    private Long parentCommentId;
-    private Long level;
-    private List<ResponseCommentDTO> replies;
+    private List<CommentsDTO> comments;
+    private Long totalCount;
 }

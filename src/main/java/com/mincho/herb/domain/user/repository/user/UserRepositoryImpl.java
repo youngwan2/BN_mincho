@@ -40,4 +40,9 @@ public class UserRepositoryImpl implements UserRepository{
     public MemberEntity findByEmail(String email) {
         return userJpaRepository.findByEmail(email).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 유저는 찾을 수 없습니다."));
     }
+
+    @Override
+    public MemberEntity findByEmail2(String email) {
+        return userJpaRepository.findByEmail(email).orElse(null);
+    }
 }

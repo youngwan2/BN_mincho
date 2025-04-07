@@ -12,5 +12,9 @@ public interface PostService {
     PostResponseDTO getPostsByCondition(int page, int size, SearchConditionDTO searchConditionDTO);
     DetailPostResponseDTO getDetailPostById(Long id);
     PostEntity getPostById(Long id);
+
+
+    /** 마이페이지 */
     List<PostCountDTO> getPostStatistics();
+    List<MypagePostsDTO> getUserPosts(int page, int size);
 }

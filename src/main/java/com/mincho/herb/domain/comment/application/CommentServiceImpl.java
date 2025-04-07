@@ -2,9 +2,8 @@ package com.mincho.herb.domain.comment.application;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.domain.comment.dto.RequestCommentCreateDTO;
-import com.mincho.herb.domain.comment.dto.RequestCommentUpdateDTO;
-import com.mincho.herb.domain.comment.dto.ResponseCommentDTO;
+import com.mincho.herb.common.util.CommonUtils;
+import com.mincho.herb.domain.comment.dto.*;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.post.entity.PostEntity;
@@ -26,7 +25,9 @@ public class CommentServiceImpl implements CommentService{
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommonUtils commonUtils;
 
+    // 댓글 추가
     @Override
     public void addComment(RequestCommentCreateDTO requestCommentCreateDTO, String email) {
 
@@ -61,48 +62,94 @@ public class CommentServiceImpl implements CommentService{
         commentRepository.save(unsavedCommentEntity);
     }
 
-    @Override
-    public List<ResponseCommentDTO> getCommentsByPostId(Long postId) {
-        // 부모 댓글과 자식 댓글을 모두 가져오는 페치 조인 쿼리 실행
-        List<CommentEntity> parentCommentEntities = commentRepository.findByPostId(postId);
-
-
-        return parentCommentEntities.stream().map((commentEntity)-> {
-                 List<ResponseCommentDTO> replies =  commentRepository.findByParentComment(commentEntity).stream().map(replyEntity -> {
-                     return ResponseCommentDTO.builder()
-                             .id(replyEntity.getId())
-                             .contents(replyEntity.getContents())
-                             .nickname(replyEntity.getMember().getProfile().getNickname())
-                             .isDeleted(replyEntity.getDeleted())
-                             .level(replyEntity.getLevel())
-                             .build();
-                 }).toList();
-
-
-                return ResponseCommentDTO.builder()
-                        .id(commentEntity.getId())
-                        .contents(commentEntity.getContents())
-                        .nickname(commentEntity.getMember().getProfile().getNickname())
-                        .isDeleted(commentEntity.getDeleted())
-                        .level(commentEntity.getLevel())
-                        .replies(replies)
-                        .build();
-                }
-
-                ).toList();
-    }
+    
+    // 댓글 수정
     @Override
     public void updateComment(RequestCommentUpdateDTO requestCommentUpdateDTO) {
       Long commentId  = requestCommentUpdateDTO.getId();
       CommentEntity commentEntity = commentRepository.findById(commentId);
 
-      if(commentEntity == null){
+      // 삭제 상태가 이미 true 라면 삭제된 댓글이라고 예외 던짐
+      if(commentEntity.getDeleted()){
           throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "이미 삭제된 댓글입니다.");
       }
 
-      commentEntity.setDeleted(requestCommentUpdateDTO.getIsDeleted());
       commentEntity.setContents(requestCommentUpdateDTO.getContents());
 
       commentRepository.save(commentEntity);
+    }
+
+    // 댓글 삭제
+    @Override
+    public void deleteComment(Long commentId) {
+        CommentEntity commentEntity = commentRepository.findById(commentId);
+        
+        // 삭제 상태가 이미 true 라면 삭제된 댓글이라고 예외 던짐
+        if(commentEntity.getDeleted()){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "이미 삭제된 댓글입니다.");
+        }
+        
+        // 삭제 상태로 변경
+        commentEntity.setDeleted(true);
+        
+        commentRepository.save(commentEntity);
+
+    }
+
+    /* 댓글 조회*/
+    @Override
+    public ResponseCommentDTO getCommentsByPostId(Long postId) {
+        // 부모 댓글과 자식 댓글을 모두 가져오는 페치 조인 쿼리 실행
+        String email = commonUtils.userCheck();
+        MemberEntity member = userRepository.findByEmail2(email);
+        Long memberId;
+
+        if(member != null){
+            memberId = member.getId();
+        } else {
+            memberId = null;
+        }
+
+        List<CommentDTO> parentCommentDtos = commentRepository.findByPostIdAndMemberId(postId,memberId );
+
+        // 댓글 목록
+        List<CommentsDTO> comments = parentCommentDtos.stream().map((commentDto)-> {
+                    // 부모 댓글의 ID
+                    Long parentCommentId = commentDto.getId();
+
+                    // parentId 를 가지고 있는 자식 댓글 조회
+                    List<CommentDTO> replies =  commentRepository.findByParentCommentIdAndMemberId(parentCommentId, memberId);
+
+                    // 대체 텍스트
+                    String contents = "사용자에 의해 삭제된 댓글입니다.";
+                    String nickname ="알 수 없는 사용자";
+                    if(!commentDto.getIsDeleted()){
+                        contents = commentDto.getContents();
+                        nickname = commentDto.getNickname();
+                    }
+
+                    return CommentsDTO.builder()
+                            .id(commentDto.getId())
+                            .contents(contents)
+                            .nickname(nickname)
+                            .parentCommentId(commentDto.getParentCommentId())
+                            .isDeleted(commentDto.getIsDeleted())
+                            .isMine(commentDto.getIsMine())
+                            .createdAt(commentDto.getCreatedAt())
+                            .updatedAt(commentDto.getUpdatedAt())
+                            .level(commentDto.getLevel())
+                            .replies(replies)
+                            .build();
+                }
+        ).toList();
+
+        // 댓글 개수
+        Long totalCount = commentRepository.countByPostId(postId);
+
+        return ResponseCommentDTO.builder()
+                .comments(comments)
+                .totalCount(totalCount)
+                .build();
+
     }
 }

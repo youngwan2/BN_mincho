@@ -23,7 +23,7 @@ public class PostLikeController {
     private final CommonUtils commonUtils;
 
     // 좋아요 추가
-    @PostMapping("/{id}/like")
+    @PostMapping("/{id}/likes")
     public ResponseEntity<?> addPostLike(@PathVariable("id") Long id){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -34,6 +34,5 @@ public class PostLikeController {
 
         LikeResponseDTO likeResponseDTO = new LikeResponseDTO(state);
         return new SuccessResponse<>().getResponse(200, "성공적으로 반영되었습니다.", HttpSuccessType.OK, likeResponseDTO);
-
     }
 }

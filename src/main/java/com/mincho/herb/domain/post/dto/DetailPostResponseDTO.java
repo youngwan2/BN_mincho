@@ -19,6 +19,7 @@ public class DetailPostResponseDTO {
     private String contents;
     private String category;
     private Author author;
+    private Boolean isMine;
     private Long likeCount;
     private LocalDateTime createdAt;
 

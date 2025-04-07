@@ -62,8 +62,8 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
     // 관심약초 개수 조회(약초별)
     @Override
-    public Integer getBookmarkCount(Long herbId) {
-        Integer count = herbBookmarkRepository.countByHerbId(herbId);
+    public Long getBookmarkCount(Long herbId) {
+        Long count = herbBookmarkRepository.countByHerbId(herbId);
         return count;
     }
 
@@ -100,7 +100,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
 
-        Integer totalCount = herbBookmarkRepository.countByMemberId(memberEntity.getId());
+        Long totalCount = herbBookmarkRepository.countByMemberId(memberEntity.getId());
         List<HerbBookmark> bookmarks = herbBookmarkRepository.findByMemberId(memberEntity.getId(), pageable)
                         .stream().map((bookmarkEntity)->{
                             return bookmarkEntity.toModel();

@@ -10,9 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestCommentUpdateDTO {
-
     private Long id;
     private String contents;
-    private Boolean isDeleted;
-
 }

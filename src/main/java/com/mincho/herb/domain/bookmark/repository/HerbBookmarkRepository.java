@@ -12,13 +12,13 @@ public interface HerbBookmarkRepository {
     HerbBookmarkEntity findByMemberIdAndHerbId(Long memberId, Long herbId);
 
     // 약초 당 북마크 개수
-    Integer countByHerbId(Long herbId);
+    Long countByHerbId(Long herbId);
 
     // 북마크 상태
     Boolean isBookmarked(Long herbId, Long memberId);
 
     // 유저의 북마크 개수 조회
-    int countByMemberId(Long memberId);
+    Long countByMemberId(Long memberId);
 
     // 유저의 북마크 목록 조회
     List<HerbBookmarkEntity> findByMemberId(Long memberId, Pageable pageable);

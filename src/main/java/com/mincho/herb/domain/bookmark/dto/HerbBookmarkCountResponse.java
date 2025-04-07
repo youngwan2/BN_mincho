@@ -8,6 +8,6 @@ import lombok.Data;
 @Builder
 public class HerbBookmarkCountResponse {
 
-    private Integer count;
+    private Long count;
     private Boolean isBookmarked;
 }

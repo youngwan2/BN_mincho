@@ -61,7 +61,7 @@ public class HerbBookmarkController {
             return new ErrorResponse().getResponse(400, "herbId는 필수입니다.", HttpErrorType.BAD_REQUEST);
         }
        Boolean isBookmarked = herbBookmarkService.isBookmarked(herbId);
-       Integer bookmarkCount = herbBookmarkService.getBookmarkCount(herbId);
+       Long bookmarkCount = herbBookmarkService.getBookmarkCount(herbId);
 
         HerbBookmarkCountResponse bookmarkCountResponse = HerbBookmarkCountResponse.builder()
                 .count(bookmarkCount)

@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.comment.repository;
 
+import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -43,13 +44,33 @@ public class CommentRepositoryImpl implements CommentRepository{
         commentJpaRepository.save(commentEntity);
     }
 
+    // 게시글별 댓글 개수
+    @Override
+    public Long countByPostId(Long postId) {
+        return commentJpaRepository.countByPostId(postId);
+    }
+
+    // 사용자별 댓글 개수
     @Override
     public Long countByMemberId(Long memberId) {
         return commentJpaRepository.countByMemberId(memberId);
     }
 
+
     @Override
     public List<CommentEntity> findByMemberId(Long memberId) {
         return commentJpaRepository.findByMemberId(memberId);
+    }
+
+
+    /* 임시 쿼리 */
+    @Override
+    public List<CommentDTO> findByPostIdAndMemberId(Long postId, Long memberId) {
+        return commentJpaRepository.findByPostIdAndMemberId(postId, memberId);
+    }
+
+    @Override
+    public List<CommentDTO> findByParentCommentIdAndMemberId(Long parentCommentId, Long memberId) {
+        return commentJpaRepository.findByParentCommentIdAndMemberId(parentCommentId, memberId);
     }
 }

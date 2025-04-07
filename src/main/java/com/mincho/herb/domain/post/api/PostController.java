@@ -6,10 +6,7 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.post.PostService;
-import com.mincho.herb.domain.post.dto.PostRequestDTO;
-import com.mincho.herb.domain.post.dto.DetailPostResponseDTO;
-import com.mincho.herb.domain.post.dto.PostResponseDTO;
-import com.mincho.herb.domain.post.dto.SearchConditionDTO;
+import com.mincho.herb.domain.post.dto.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -20,11 +17,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/community/posts")
+@RequestMapping("/api/v1")
 @Slf4j
 public class PostController {
 
@@ -32,7 +30,7 @@ public class PostController {
     private final PostService postService;
 
     // 게시글 조회
-    @GetMapping()
+    @GetMapping("/community/posts")
     @Valid
     public ResponseEntity<?> getPostsByCategory(
             @RequestParam("category") @NotEmpty(message= "category 는 필수입니다.") String category,
@@ -58,7 +56,7 @@ public class PostController {
     }
 
     // 게시글 추가
-    @PostMapping()
+    @PostMapping("/community/posts")
     public ResponseEntity<Map<String,String>> addPost(@RequestBody PostRequestDTO postRequestDTO, BindingResult result){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -75,7 +73,7 @@ public class PostController {
     }
 
     // 게시글 상세 조회
-    @GetMapping("/{id}")
+    @GetMapping("/community/posts/{id}")
     public ResponseEntity<?> getDetailPost(@PathVariable("id") Long id){
         if(id == null){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
@@ -88,7 +86,7 @@ public class PostController {
     }
 
     // 게시글 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/community/posts/{id}")
     public ResponseEntity<Map<String, String>> removePost(@PathVariable("id") Long id){
         if(id == null){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
@@ -105,7 +103,7 @@ public class PostController {
     }
 
     // 게시글 수정
-    @PutMapping("/{id}")
+    @PatchMapping("/community/posts/{id}")
     public ResponseEntity<Map<String, String>> updatePost(
             @PathVariable("id") Long id,
             @Valid @RequestBody PostRequestDTO postRequestDTO,
@@ -128,4 +126,16 @@ public class PostController {
         return new SuccessResponse<>().getResponse(200, "성공적으로 수정되었습니다.", HttpSuccessType.OK);
     }
 
+    /** 마이페이지*/
+    // 사용자가 작성한 게시글 목록
+    @GetMapping("/users/me/posts")
+    public ResponseEntity<List<MypagePostsDTO>> getMypagePosts(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+    ){
+
+        List<MypagePostsDTO> posts = postService.getUserPosts(page, size);
+
+        return ResponseEntity.ok(posts);
+    }
 }
