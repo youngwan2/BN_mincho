@@ -131,13 +131,4 @@ public class UserController {
         response.addCookie(cookieUtils.createCookie("refresh",null, 0));
         return new SuccessResponse<>().getResponse(200, "로그아웃 되었습니다.", HttpSuccessType.OK);
     }
-
-    // 유저 댓글 + 개수
-    @GetMapping("/me/comments")
-    public ResponseEntity<?> getUserCommentInfo(){
-
-        UserCommentInfoDTO userCommentInfoDTOS = userService.getUserCommentInfo();
-
-        return new SuccessResponse<>().getResponse(200, "유저 댓글 통계를 조회하였습니다.", HttpSuccessType.OK, userCommentInfoDTOS);
-    }
 }

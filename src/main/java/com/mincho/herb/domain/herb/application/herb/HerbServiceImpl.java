@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -75,7 +76,6 @@ public class HerbServiceImpl implements HerbService{
     public List<HerbDTO> getHerbs(PageInfoDTO pageInfoDTO, HerbFilteringRequestDTO herbFilteringRequestDTO) {
 
         List<HerbDTO> herbs = herbRepository.findByFiltering(herbFilteringRequestDTO, pageInfoDTO);
-
         if(herbs.isEmpty()){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"조회 데이터가 없습니다.");
         }
@@ -182,7 +182,7 @@ public class HerbServiceImpl implements HerbService{
         // 현재 조회중인 허브를 제외한 모든 허브 id 목록 조회
         List<Long> herbIds = herbRepository.findHerbIds()
                 .stream()
-                .filter(id -> id != herbId)
+                .filter(id -> !Objects.equals(id, herbId))
                 .toList();
 
         // 랜덤하게 3개 뽑기
@@ -219,6 +219,7 @@ public class HerbServiceImpl implements HerbService{
          }).toList();
     }
 
+    // 이달의 개화 약초
     @Override
     public List<HerbDTO> getHerbsBloomingThisMonth(String month) {
 
@@ -234,5 +235,11 @@ public class HerbServiceImpl implements HerbService{
 
         }).toList();
 
+    }
+
+    // 약초 전체 개수
+    @Override
+    public Long getHerbCount(HerbFilteringRequestDTO herbFilteringRequestDTO) {
+        return herbRepository.countByFiltering(herbFilteringRequestDTO);
     }
 }

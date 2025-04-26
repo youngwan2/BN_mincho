@@ -34,6 +34,7 @@ public class PostController {
     @Valid
     public ResponseEntity<?> getPostsByCategory(
             @RequestParam("category") @NotEmpty(message= "category 는 필수입니다.") String category,
+            @RequestParam("queryType") String queryType,
             @RequestParam("query") String query,
             @RequestParam("sort") @NotEmpty(message= "sort 는 필수입니다.") String sort,
             @RequestParam("order") @NotEmpty(message="order 는 필수입니다.") String order,
@@ -44,10 +45,11 @@ public class PostController {
         log.info("category {} query {} sort {}  order{} page{} size{}", category, query, sort, order, page, size);
 
         SearchConditionDTO searchCondition = SearchConditionDTO.builder()
-                .order(order) // asc, desc
-                .query(query)
-                .sort(sort) // 정렬 기준 post_id, like_count 등등
-                .category(category)
+                .order(order) // 정렬 기준 post_id, like_count 등등
+                .query(query) // 검색어
+                .queryType(queryType) // 검색 대상 title 혹은 content
+                .sort(sort) //  정렬 asc, desc
+                .category(category) 
                 .build();
 
         PostResponseDTO posts = postService.getPostsByCondition(page, size, searchCondition);
@@ -133,9 +135,7 @@ public class PostController {
             @RequestParam("page") int page,
             @RequestParam("size") int size
     ){
-
         List<MypagePostsDTO> posts = postService.getUserPosts(page, size);
-
         return ResponseEntity.ok(posts);
     }
 }

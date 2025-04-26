@@ -36,7 +36,6 @@ public class UserServiceImpl implements  UserService{
     private final AuthenticationManager authenticationManager;
     private final JwtAuthProvider jwtAuthProvider;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
 
@@ -133,38 +132,5 @@ public class UserServiceImpl implements  UserService{
         }
 
         refreshTokenRepository.removeRefreshTokenAllByUserId(memberEntity.getId());
-    }
-
-    // 유저 댓글 + 개수
-    @Override
-    public UserCommentInfoDTO getUserCommentInfo() {
-
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
-        }
-
-        MemberEntity memberEntity = userRepository.findByEmail(email);
-        if(memberEntity == null) {
-            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
-        }
-
-        Long memberId = memberEntity.getId();
-
-        List<CommentEntity> commentEntities = commentRepository.findByMemberId(memberId);
-        Long count = commentRepository.countByMemberId(memberId);
-
-        // 작성한 댓글이 없다면
-        if(commentEntities.isEmpty()){
-            commentEntities = null;
-        }
-
-        // 엔티티 -> 도메인
-        List<Comment> comments = Objects.requireNonNull(commentEntities).stream().map(CommentEntity::toModel).toList();
-
-        return UserCommentInfoDTO.builder()
-                .comments(comments)
-                .count(count)
-                .build();
     }
 }

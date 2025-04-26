@@ -3,6 +3,8 @@ package com.mincho.herb.domain.comment.repository;
 
 import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public interface CommentRepository {
     Long countByMemberId(Long memberId);
 
     // 사용자 별 댓글 조회
-    List<CommentEntity> findByMemberId(Long memberId);
+    Page<CommentEntity> findByMemberId(Long memberId, Pageable pageable);
 
 
     // 댓글 조회

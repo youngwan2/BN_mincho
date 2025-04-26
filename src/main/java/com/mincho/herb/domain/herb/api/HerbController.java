@@ -41,22 +41,28 @@ public class HerbController {
         Integer pageNum = Integer.parseInt(page);
         Integer pageSize = Integer.parseInt(size);
 
+        HerbFilteringRequestDTO herbFilteringRequestDTO= HerbFilteringRequestDTO.builder()
+                .bneNm(bneNm)
+                .month(month)
+                .orderBy(orderBy)
+                .build();
 
         List<HerbDTO> herbs = herbService.getHerbs(
                 PageInfoDTO.builder()
                         .page(pageNum.longValue())
                         .size(pageSize.longValue())
                         .build(),
-                HerbFilteringRequestDTO.builder()
-                        .bneNm(bneNm)
-                        .month(month)
-                        .orderBy(orderBy)
-                        .build()
+                herbFilteringRequestDTO
+
         );
+
+        Long totalCount = herbService.getHerbCount(herbFilteringRequestDTO);
+
 
         HerbResponseDTO herbResponseDTO = HerbResponseDTO.builder()
                 .herbs(herbs)
-                .nextPage(++pageNum)
+                .nextPage(herbs.isEmpty() ? pageNum: ++pageNum) // 다음 페이지
+                .totalCount(totalCount)
                 .build();
 
         return ResponseEntity.ok(herbResponseDTO);

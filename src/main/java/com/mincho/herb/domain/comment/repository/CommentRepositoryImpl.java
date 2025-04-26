@@ -3,6 +3,8 @@ package com.mincho.herb.domain.comment.repository;
 import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -50,18 +52,6 @@ public class CommentRepositoryImpl implements CommentRepository{
         return commentJpaRepository.countByPostId(postId);
     }
 
-    // 사용자별 댓글 개수
-    @Override
-    public Long countByMemberId(Long memberId) {
-        return commentJpaRepository.countByMemberId(memberId);
-    }
-
-
-    @Override
-    public List<CommentEntity> findByMemberId(Long memberId) {
-        return commentJpaRepository.findByMemberId(memberId);
-    }
-
 
     /* 임시 쿼리 */
     @Override
@@ -72,5 +62,18 @@ public class CommentRepositoryImpl implements CommentRepository{
     @Override
     public List<CommentDTO> findByParentCommentIdAndMemberId(Long parentCommentId, Long memberId) {
         return commentJpaRepository.findByParentCommentIdAndMemberId(parentCommentId, memberId);
+    }
+    
+    /** 마이페이지 */
+    // 사용자별 댓글 개수
+    @Override
+    public Long countByMemberId(Long memberId) {
+        return commentJpaRepository.countByMemberId(memberId);
+    }
+
+    // 사용자별 댓글 조회
+    @Override
+    public Page<CommentEntity> findByMemberId(Long memberId, Pageable pageable) {
+        return commentJpaRepository.findByMemberId(memberId, pageable );
     }
 }

@@ -11,4 +11,5 @@ public class HerbResponseDTO {
 
     private List<HerbDTO> herbs;
     private Integer nextPage;
+    private Long totalCount;
 }

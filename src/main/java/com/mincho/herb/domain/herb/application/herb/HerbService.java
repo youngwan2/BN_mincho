@@ -18,4 +18,5 @@ public interface HerbService {
     void insertMany() throws IOException;
     List<HerbDTO> getRandomHerbs(Long herbId);
     List<HerbDTO> getHerbsBloomingThisMonth(String month);
+    Long getHerbCount(HerbFilteringRequestDTO herbFilteringRequestDTO);
 }

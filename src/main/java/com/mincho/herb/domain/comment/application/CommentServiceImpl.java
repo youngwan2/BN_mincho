@@ -12,6 +12,8 @@ import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,15 +31,15 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 추가
     @Override
-    public void addComment(RequestCommentCreateDTO requestCommentCreateDTO, String email) {
+    public void addComment(CommentCreateRequestDTO commentCreateRequestDTO, String email) {
 
         MemberEntity memberEntity = userRepository.findByEmail(email);
-        PostEntity postEntity = postRepository.findById(requestCommentCreateDTO.getPostId());
+        PostEntity postEntity = postRepository.findById(commentCreateRequestDTO.getPostId());
 
 
         CommentEntity parentCommentEntity = null;
-        if(requestCommentCreateDTO.getParentCommentId() != null){
-            parentCommentEntity = commentRepository.findById(requestCommentCreateDTO.getParentCommentId());
+        if(commentCreateRequestDTO.getParentCommentId() != null){
+            parentCommentEntity = commentRepository.findById(commentCreateRequestDTO.getParentCommentId());
         }
 
         // 부모 도메인이 존재하지 않을 때 까지 level 증가
@@ -52,7 +54,7 @@ public class CommentServiceImpl implements CommentService{
 
         CommentEntity unsavedCommentEntity = CommentEntity.builder()
                                                 .level(depth)
-                                                .contents(requestCommentCreateDTO.getContents())
+                                                .contents(commentCreateRequestDTO.getContents())
                                                 .deleted(false)
                                                 .member(memberEntity)
                                                 .post(postEntity)
@@ -65,8 +67,8 @@ public class CommentServiceImpl implements CommentService{
     
     // 댓글 수정
     @Override
-    public void updateComment(RequestCommentUpdateDTO requestCommentUpdateDTO) {
-      Long commentId  = requestCommentUpdateDTO.getId();
+    public void updateComment(CommentUpdateRequestDTO commentUpdateRequestDTO) {
+      Long commentId  = commentUpdateRequestDTO.getId();
       CommentEntity commentEntity = commentRepository.findById(commentId);
 
       // 삭제 상태가 이미 true 라면 삭제된 댓글이라고 예외 던짐
@@ -74,7 +76,7 @@ public class CommentServiceImpl implements CommentService{
           throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "이미 삭제된 댓글입니다.");
       }
 
-      commentEntity.setContents(requestCommentUpdateDTO.getContents());
+      commentEntity.setContents(commentUpdateRequestDTO.getContents());
 
       commentRepository.save(commentEntity);
     }
@@ -98,7 +100,7 @@ public class CommentServiceImpl implements CommentService{
 
     /* 댓글 조회*/
     @Override
-    public ResponseCommentDTO getCommentsByPostId(Long postId) {
+    public CommentResponseDTO getCommentsByPostId(Long postId) {
         // 부모 댓글과 자식 댓글을 모두 가져오는 페치 조인 쿼리 실행
         String email = commonUtils.userCheck();
         MemberEntity member = userRepository.findByEmail2(email);
@@ -146,10 +148,33 @@ public class CommentServiceImpl implements CommentService{
         // 댓글 개수
         Long totalCount = commentRepository.countByPostId(postId);
 
-        return ResponseCommentDTO.builder()
+        return CommentResponseDTO.builder()
                 .comments(comments)
                 .totalCount(totalCount)
                 .build();
 
     }
+
+    /** 마이페이지*/
+    // 사용자별 댓글 조회
+    @Override
+    public List<MypageCommentsDTO> getMypageComments(int page, int size) {
+
+        String email = commonUtils.userCheck();
+        MemberEntity member = userRepository.findByEmail(email);
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<CommentEntity> commentEntities = commentRepository.findByMemberId(member.getId(), pageable).stream().toList();
+
+
+        return  commentEntities.stream().map((commentEntity)->{
+            return MypageCommentsDTO.builder()
+                    .id(commentEntity.getId())
+                    .contents(commentEntity.getContents())
+                    .createdAt(commentEntity.getCreatedAt())
+                    .build();
+        }).toList();
+    }
+
 }

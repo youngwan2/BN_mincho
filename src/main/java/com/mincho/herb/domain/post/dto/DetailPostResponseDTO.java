@@ -22,5 +22,6 @@ public class DetailPostResponseDTO {
     private Boolean isMine;
     private Long likeCount;
     private LocalDateTime createdAt;
+    private Long viewCount;
 
 }

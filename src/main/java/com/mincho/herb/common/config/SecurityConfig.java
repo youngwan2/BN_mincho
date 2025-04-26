@@ -50,7 +50,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/users/send-verification").permitAll()
                             .requestMatchers("/api/v1/users/send-verification-code").permitAll()
                             .requestMatchers("/api/v1/users/**").hasRole("USER")
-
+                            .requestMatchers("/api/v1/admin/ai/embedding").hasRole("USER")
                             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자만 허용
                             .anyRequest().permitAll()
                 );
@@ -71,7 +71,7 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT","DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // 허용할 헤더
         configuration.setAllowCredentials(true); // 서버 쿠키를 클라이언트에 설정할 수 있도록 허용
         configuration.addExposedHeader("Authorization"); // 클라이언트에 노출할 헤더 지정

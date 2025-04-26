@@ -100,10 +100,18 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
 
-        Long totalCount = herbBookmarkRepository.countByMemberId(memberEntity.getId());
+        Long totalCount = herbBookmarkRepository.countByMemberId(memberEntity.getId()); // 전체 북마크 개수
         List<HerbBookmark> bookmarks = herbBookmarkRepository.findByMemberId(memberEntity.getId(), pageable)
                         .stream().map((bookmarkEntity)->{
-                            return bookmarkEntity.toModel();
+                            
+                            return HerbBookmark.builder()
+                                    .id(bookmarkEntity.getId())
+                                    .cntntsSj(bookmarkEntity.getHerb().getCntntsSj())
+                                    .bneNm(bookmarkEntity.getHerb().getBneNm())
+                                    .hbdcNm(bookmarkEntity.getHerb().getHbdcNm())
+                                    .url(bookmarkEntity.getUrl())
+                                    .createdAt(bookmarkEntity.getCreatedAt())
+                                    .build();
                 }).toList();
 
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class ResponseCommentDTO {
+public class CommentResponseDTO {
     private List<CommentsDTO> comments;
     private Long totalCount;
 }

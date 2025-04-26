@@ -9,6 +9,4 @@ public interface HerbBookmarkService {
     Long getBookmarkCount(Long herbId);
     Boolean isBookmarked(Long herbId);
     HerbBookmarkResponseDTO getBookmarks(int page, int size);
-
-
 }

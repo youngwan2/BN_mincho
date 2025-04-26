@@ -1,13 +1,17 @@
 package com.mincho.herb.domain.comment.application;
 
-import com.mincho.herb.domain.comment.dto.RequestCommentCreateDTO;
-import com.mincho.herb.domain.comment.dto.RequestCommentUpdateDTO;
-import com.mincho.herb.domain.comment.dto.ResponseCommentDTO;
+import com.mincho.herb.domain.comment.dto.CommentCreateRequestDTO;
+import com.mincho.herb.domain.comment.dto.CommentUpdateRequestDTO;
+import com.mincho.herb.domain.comment.dto.CommentResponseDTO;
+import com.mincho.herb.domain.comment.dto.MypageCommentsDTO;
+
+import java.util.List;
 
 public interface CommentService {
 
-    void addComment(RequestCommentCreateDTO requestCommentCreateDTO, String email);
-    void updateComment(RequestCommentUpdateDTO requestCommentUpdateDTO);
+    void addComment(CommentCreateRequestDTO commentCreateRequestDTO, String email);
+    void updateComment(CommentUpdateRequestDTO commentUpdateRequestDTO);
     void deleteComment(Long commentId);
-    ResponseCommentDTO getCommentsByPostId(Long postId);
+    CommentResponseDTO getCommentsByPostId(Long postId);
+    List<MypageCommentsDTO> getMypageComments(int page, int size);
 }

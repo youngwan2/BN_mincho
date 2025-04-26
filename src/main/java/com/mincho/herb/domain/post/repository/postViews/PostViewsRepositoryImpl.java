@@ -1,6 +1,5 @@
 package com.mincho.herb.domain.post.repository.postViews;
 
-import com.mincho.herb.domain.post.domain.ViewCount;
 import com.mincho.herb.domain.post.entity.PostViewsEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -15,6 +14,7 @@ public class PostViewsRepositoryImpl implements PostViewsRepository{
     // 포스트 조회수 초기 설정
     @Override
     public void save(PostViewsEntity postViewsEntity) {
+        postViewsJpaRepository.save(postViewsEntity);
         
     }
 
@@ -27,7 +27,7 @@ public class PostViewsRepositoryImpl implements PostViewsRepository{
 
     // 포스트 조회수 조회
     @Override
-    public Long findByPostId(Long postId) {
+    public PostViewsEntity findByPostId(Long postId) {
         return postViewsJpaRepository.findByPostId(postId);
     }
 }

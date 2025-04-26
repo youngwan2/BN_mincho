@@ -17,7 +17,4 @@ public interface UserService {
     void updatePassword(String password, String email);
     Member findUserByEmail(String email);
     void logoutAll(Long id);
-
-    UserCommentInfoDTO getUserCommentInfo();
-    
 }

@@ -15,7 +15,7 @@ public class PostViewsServiceImpl implements PostViewsService{
     // 포스트 조회수 증가
     @Override
     public int updateViewCount(Long postId) {
-        Long oldPostView =postViewsRepository.findByPostId(postId);
+        Long oldPostView =postViewsRepository.findByPostId(postId).getViewCount();
 
         Long newPostView = ViewCount.builder().build().increase(oldPostView);
 

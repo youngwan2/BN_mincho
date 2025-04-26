@@ -6,7 +6,7 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.domain.Author;
 import com.mincho.herb.domain.post.domain.Post;
-import com.mincho.herb.domain.post.domain.PostCategory;
+import com.mincho.herb.domain.post.domain.ViewCount;
 import com.mincho.herb.domain.post.dto.*;
 import com.mincho.herb.domain.post.entity.PostCategoryEntity;
 import com.mincho.herb.domain.post.entity.PostEntity;
@@ -19,7 +19,6 @@ import com.mincho.herb.domain.user.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,14 +60,41 @@ public class PostServiceImpl implements PostService{
     @Override
     public DetailPostResponseDTO getDetailPostById(Long id) {
 
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         MemberEntity memberEntity = userRepository.findByEmail2(email);
+        Long userId = 0L;
+        if(memberEntity == null){
+            userId = 0L;
+        } else {
+            userId = memberEntity.getId();
+        }
 
+
+        PostViewsEntity postViewsEntity = postViewsRepository.findByPostId(id);
+        Long prevPostViewCount = 0L;
+        // view 정보 없으면 추가해주기
+        if(postViewsEntity == null){
+            PostEntity postEntity = postRepository.findById(id);
+
+            postViewsRepository.save(
+                    PostViewsEntity.builder()
+                            .viewCount(0L)
+                            .post(postEntity)
+                            .build()
+            );
+        } else {
+        prevPostViewCount = postViewsEntity.getViewCount();
+        }
+
+        // 조회수 업데이트
+        postViewsRepository.updatePostViewCount(ViewCount.builder().build().increase(prevPostViewCount), id);
 
         Object[][] objects = postRepository.findByPostId(id);
         PostEntity postEntity = null;
         Long likeCount =0L;
+
         for(Object[] o : objects){
             postEntity = (PostEntity) o[0];
             likeCount = (Long) o[1];
@@ -87,8 +113,9 @@ public class PostServiceImpl implements PostService{
                 .contents(postEntity.getContents())
                 .author(author)
                 .category(postEntity.getCategory().getCategory())
-                .isMine(postEntity.getMember().getId().equals(memberEntity.getId()))
+                .isMine(postEntity.getMember().getId().equals(userId))
                 .likeCount(likeCount)
+                .viewCount(prevPostViewCount+1)
                 .createdAt(postEntity.getCreatedAt())
                 .build();
     }

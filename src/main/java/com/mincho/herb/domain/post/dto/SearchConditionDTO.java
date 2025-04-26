@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SearchConditionDTO {
     private String query;
+    private String queryType;
     private String sort;
     private String order;
     private String category;

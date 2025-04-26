@@ -11,5 +11,5 @@ public interface PostViewsRepository {
     int updatePostViewCount(Long newPostView, Long postId);
 
     // 포스트 조회수 조회
-    Long findByPostId(Long postId);
+    PostViewsEntity findByPostId(Long postId);
 }

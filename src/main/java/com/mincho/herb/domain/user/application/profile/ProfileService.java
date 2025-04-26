@@ -9,4 +9,7 @@ public interface ProfileService {
     void updateProfile(ProfileRequestDTO profileRequestDTO, String email);
     ProfileResponseDTO getUserProfile(String email);
     Profile insertProfile( Member member);
+    void updateProfileImage(String imgUrl);
+
+
 }

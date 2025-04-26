@@ -7,6 +7,7 @@ import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
 import com.mincho.herb.common.dto.PageInfoDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbEntity;
+import com.mincho.herb.domain.herb.entity.QHerbViewsEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -56,6 +57,11 @@ public class HerbRepositoryImpl implements HerbRepository {
     }
 
     @Override
+    public List<HerbEntity> findAll() {
+        return herbJpaRepository.findAll();
+    }
+
+    @Override
     public List<Long> findHerbIds() {
         return herbJpaRepository.findHerbIds().orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 약초 데이터의 id 목록이 존재하지 않습니다."));
     }
@@ -69,6 +75,8 @@ public class HerbRepositoryImpl implements HerbRepository {
     @Override
     public List<HerbDTO> findByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO, PageInfoDTO pageInfoDTO) {
         QHerbEntity herbEntity = QHerbEntity.herbEntity;
+        QHerbViewsEntity herbViewsEntity = QHerbViewsEntity.herbViewsEntity;
+
         BooleanBuilder builder = new BooleanBuilder();
 
         // 페이지 시작 번호
@@ -92,12 +100,37 @@ public class HerbRepositoryImpl implements HerbRepository {
                         herbEntity.bneNm,
                         herbEntity.cntntsSj,
                         herbEntity.hbdcNm,
-                        herbEntity.imgUrl1
+                        herbEntity.imgUrl1,
+                        herbViewsEntity.viewCount
                 ))
                 .from(herbEntity)
+                .leftJoin(herbViewsEntity).on(herbViewsEntity.herb.eq(herbEntity))
                 .where(builder)
                 .offset(offset)
                 .limit(pageInfoDTO.getSize())
                 .fetch();
     }
+
+    // 약초 개수 반환
+    public Long countByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO){
+        QHerbEntity herbEntity = QHerbEntity.herbEntity;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // 카테고리가 존재한다면,
+        if(herbFilteringRequestDTO.getBneNm() != null && !herbFilteringRequestDTO.getBneNm().isEmpty()){
+            builder.and(herbEntity.bneNm.contains(herbFilteringRequestDTO.getBneNm()));
+        }
+
+        // 개화기간이 존재 한다면
+        if(herbFilteringRequestDTO.getMonth() !=null && !herbFilteringRequestDTO.getMonth().isEmpty()){
+            builder.and(herbEntity.stle.contains(herbFilteringRequestDTO.getMonth()));
+        }
+
+        return jpaQueryFactory.select(herbEntity.count())
+                .from(herbEntity)
+                .where(builder)
+                .fetchOne();
+
+    };
 }

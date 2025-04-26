@@ -36,15 +36,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String accessToken = resolveToken(request);
 
+            /* accessToken이 존재하는 경우*/
             if (accessToken != null) {
-                // 토큰이 만료 되었는가?
+                
+                // 토큰이 만료 되었는가?  NO! 토큰 만료 안 됨 유효한 토큰임
                 if (!jwtAuthProvider.checkToken(accessToken)) {
-                    // NO! 토큰 만료 안 됨 유효한 토큰임
+                 
                     String email = jwtAuthProvider.getEmail(accessToken);
                     logger.info("email: "+ email);
 
                     Collection<GrantedAuthority> authorities = jwtAuthProvider.getAuthorities(accessToken);
                     Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    
+                    // 사용자 정보 저장
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     logger.info("JwtAuthFilter 처리 성공 " + authentication.getAuthorities().iterator().next().getAuthority());
                 }
@@ -70,17 +74,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             handleException(response, "해당 요청을 처리할 권한이 없습니다.", HttpServletResponse.SC_FORBIDDEN);
             return;
         }
+
+        // refreshToken 이 존재한다면 모두 가져오기
         List<Cookie> cookies = Arrays.stream(request.getCookies())
                 .filter(cookie -> Objects.equals(cookie.getName(), "refresh"))
                 .toList();
 
+        // 리프레쉬 토큰이 존재한다면
         if (!cookies.isEmpty()) {
             String refreshToken = cookies.get(0).getValue();
 
+            // 데이터베이스에 실제 저장되어 있는지
             if(refreshTokenRepository.findByRefreshToken(refreshToken) == null){
                 handleException(response, "refreshToken이 유효하지 않습니다.", HttpServletResponse.SC_UNAUTHORIZED);
             }
 
+            // 리프레쉬 토큰이 만료? true : false
             Boolean isValidRefreshToken = jwtAuthProvider.checkToken(refreshToken);
 
             // refresh 토큰이 만료되지 않았다면 해당 토큰으로 사용자의 이메일(식별용) 정보를 가져온다.
@@ -100,6 +109,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 logger.info("JwtAuthFilter - new token:"+ newAccessToken);
                 logger.info("JwtAuthFilter - refreshToken으로 accessToken 재발급 완료");
+
+                // 리프레쉬 토큰이 만료 되었다면
             } else {
                 handleException(response, "refreshToken이 유효하지 않습니다.", HttpServletResponse.SC_UNAUTHORIZED);
             }

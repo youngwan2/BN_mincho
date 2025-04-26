@@ -13,6 +13,8 @@ import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -50,6 +52,24 @@ public class ProfileServiceImpl implements ProfileService {
                 .avatarUrl(profileEntity.getAvatarUrl())
                 .introduction(profileEntity.getIntroduction())
                 .build();
+    }
+
+    // 프로필 이미지 업로드
+    @Override
+    @Transactional
+    public void updateProfileImage(String imgUrl) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!email.contains("@")){
+            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다. 로그인 후 다시시도 해주세요.");
+        }
+
+        Member member = userService.findUserByEmail(email);
+        MemberEntity memberEntity = MemberEntity.toEntity(member);
+        ProfileEntity profileEntity = profileRepository.findProfileByUser(member);
+        profileEntity.setAvatarUrl(imgUrl);
+
+        profileRepository.updateProfile(profileEntity.toModel(), memberEntity);
+
     }
 
     // 프로필 생성

@@ -30,4 +30,6 @@ public interface HerbJpaRepository extends JpaRepository<HerbEntity, Long> {
     @Query("SELECT h FROM HerbEntity h WHERE h.stle LIKE %:month%")
     Optional<List<HerbEntity>> findByMonth(@Param("month") String month);
 
+
+
 }

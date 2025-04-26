@@ -2,6 +2,8 @@ package com.mincho.herb.domain.comment.repository;
 
 import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,7 +35,7 @@ public interface CommentJpaRepository  extends JpaRepository<CommentEntity, Long
 
     // 사용자 별 댓글
     @Query("SELECT c FROM Comments c WHERE c.member.id = :memberId")
-    List<CommentEntity> findByMemberId(@Param("memberId") Long memberId);
+    Page<CommentEntity> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
 
     // 해당 댓글이 유저가 작성한 글인지 체크한 항목을 포함하는 댓글 조회
