@@ -1,9 +1,11 @@
 package com.mincho.herb.domain.bookmark.repository;
 
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
@@ -30,4 +32,8 @@ public interface HerbBookmarkJpaRepository extends JpaRepository<HerbBookmarkEnt
    @Query("SELECT hb FROM HerbBookmarkEntity hb WHERE hb.member.id =:memberId")
     Optional<Page<HerbBookmarkEntity>> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
+   // 유저 북마크 전체 삭제
+   @Modifying()
+   @Query("DELETE FROM HerbBookmarkEntity hb WHERE hb.member =:member")
+   void deleteByMember(MemberEntity member);
 }

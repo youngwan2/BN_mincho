@@ -34,10 +34,10 @@ public class PostController {
     @Valid
     public ResponseEntity<?> getPostsByCategory(
             @RequestParam("category") @NotEmpty(message= "category 는 필수입니다.") String category,
-            @RequestParam("queryType") String queryType,
-            @RequestParam("query") String query,
-            @RequestParam("sort") @NotEmpty(message= "sort 는 필수입니다.") String sort,
-            @RequestParam("order") @NotEmpty(message="order 는 필수입니다.") String order,
+            @RequestParam(value = "queryType", defaultValue = "content", required = false) String queryType,
+            @RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "sort",defaultValue = "desc") @NotEmpty(message= "sort 는 필수입니다.") String sort,
+            @RequestParam(value ="order",defaultValue = "post_id" ) @NotEmpty(message="order 는 필수입니다.") String order,
             @RequestParam("page") @Min(value = 0, message = "page 는 최소 0 이상이어야 합니다.") Integer page,
             @RequestParam("size") @Min(value = 5, message = "size 는 최소 5 이상이어야 합니다.") Integer size
             ){

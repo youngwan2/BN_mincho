@@ -28,6 +28,11 @@ public class HerbLikeServiceImpl implements HerbLikeService{
     @Override
     public void addHerbLike(Long herbId) {
         String email = commonUtils.userCheck();
+        
+        // 좋아요 존재하면 취소
+        if(this.isHerbLiked(herbId)){
+            this.deleteHerbLike(herbId);
+        }
 
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다");

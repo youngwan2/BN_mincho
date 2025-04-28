@@ -39,3 +39,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 파일
+herb.json

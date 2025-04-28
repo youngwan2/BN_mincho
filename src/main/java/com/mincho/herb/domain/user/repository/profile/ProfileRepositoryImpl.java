@@ -44,4 +44,9 @@ public class ProfileRepositoryImpl implements ProfileRepository {
         }
         return profileEntity;
     }
+
+    @Override
+    public void deleteByMember(MemberEntity member) {
+        profileJpaRepository.deleteByMember(member);
+    }
 }

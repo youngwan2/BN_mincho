@@ -1,10 +1,17 @@
 package com.mincho.herb.domain.herb.entity;
 
+import com.mincho.herb.domain.herb.domain.HerbViews;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "herbViews" )
 public class HerbViewsEntity {
 
@@ -18,4 +25,21 @@ public class HerbViewsEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private HerbEntity herb;
 
+
+    public static HerbViewsEntity toEntity(HerbViews herbViews, HerbEntity herbEntity){
+            HerbViewsEntity herbViewsEntity = new HerbViewsEntity();
+            herbViewsEntity.setId(herbViews.getId());
+            herbViewsEntity.setHerb(herbEntity);
+            herbViewsEntity.setViewCount(herbViews.getViewCount());
+
+            return herbViewsEntity;
+    }
+
+    public HerbViews toModel(){
+        return HerbViews.builder()
+                .id(this.id)
+                .viewCount(this.viewCount)
+                .herb(this.herb.toModel())
+                .build();
+    }
 }

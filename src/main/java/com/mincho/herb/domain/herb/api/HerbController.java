@@ -27,19 +27,13 @@ public class HerbController {
     // 허브 목록 조회
     @GetMapping()
     public ResponseEntity<?> getHerbs(
-            @RequestParam("page") String page,
-            @RequestParam("size") String size,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
             @RequestParam("month") String month,
             @RequestParam("bneNm") String bneNm,
             @RequestParam("orderBy") String orderBy
             ){
 
-        if(page.isEmpty()){
-            return new ErrorResponse().getResponse(400, "잘못된 요청입니다. page 정보는 필수입니다.", HttpErrorType.BAD_REQUEST);
-        }
-
-        Integer pageNum = Integer.parseInt(page);
-        Integer pageSize = Integer.parseInt(size);
 
         HerbFilteringRequestDTO herbFilteringRequestDTO= HerbFilteringRequestDTO.builder()
                 .bneNm(bneNm)
@@ -49,8 +43,8 @@ public class HerbController {
 
         List<HerbDTO> herbs = herbService.getHerbs(
                 PageInfoDTO.builder()
-                        .page(pageNum.longValue())
-                        .size(pageSize.longValue())
+                        .page(page)
+                        .size(size)
                         .build(),
                 herbFilteringRequestDTO
 
@@ -61,7 +55,7 @@ public class HerbController {
 
         HerbResponseDTO herbResponseDTO = HerbResponseDTO.builder()
                 .herbs(herbs)
-                .nextPage(herbs.isEmpty() ? pageNum: ++pageNum) // 다음 페이지
+                .nextPage(herbs.isEmpty() ? page: ++page) // 다음 페이지
                 .totalCount(totalCount)
                 .build();
 
@@ -122,10 +116,22 @@ public class HerbController {
         List<HerbDTO> herbs = herbService.getHerbsBloomingThisMonth(month);
         return new SuccessResponse<>().getResponse(200, "성공적으로 조회되었습니다.", HttpSuccessType.OK, herbs);
     }
+
+    // 사람들이 많이 찾은 약초
+    @GetMapping("/realtime-mostview")
+    public ResponseEntity<?> getHerbsMostview(){
+            List<PopularityHerbsDTO> response = herbService.getHerbsMostview();
+            return new SuccessResponse<>().getResponse(200, "성공적으로 조회되었습니다.", HttpSuccessType.OK, response);
+    }
+
+
+
     // 허브 데이터 초기화
     @PostMapping("/settings")
     public ResponseEntity<?> init() throws IOException {
         herbService.insertMany();
         return new SuccessResponse<>().getResponse(200, "성공적으로 추가되었습니다.", HttpSuccessType.OK);
     }
+
+
 }

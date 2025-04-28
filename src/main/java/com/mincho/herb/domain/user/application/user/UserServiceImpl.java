@@ -2,18 +2,25 @@ package com.mincho.herb.domain.user.application.user;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
 import com.mincho.herb.domain.comment.domain.Comment;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
+import com.mincho.herb.domain.like.repository.HerbLikeRepository;
+import com.mincho.herb.domain.post.entity.PostEntity;
+import com.mincho.herb.domain.post.repository.post.PostRepository;
+import com.mincho.herb.domain.post.repository.postLike.PostLikeRepository;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
 import com.mincho.herb.domain.user.dto.UserCommentInfoDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
@@ -36,7 +43,13 @@ public class UserServiceImpl implements  UserService{
     private final AuthenticationManager authenticationManager;
     private final JwtAuthProvider jwtAuthProvider;
     private final UserRepository userRepository;
+    private final HerbBookmarkRepository herbBookmarkRepository;
+    private final CommentRepository commentRepository;
+    private final ProfileRepository profileRepository;
+    private final HerbLikeRepository herbLikeRepository;
+    private final PostLikeRepository postLikeRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PostRepository postRepository;
 
 
     @Override
@@ -93,11 +106,34 @@ public class UserServiceImpl implements  UserService{
     }
 
     // 회원탈퇴
+    @Transactional
     @Override
     public void deleteUser(String email) {
         boolean hasUser =userRepository.existsByEmail(email);
         if(!hasUser) throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
+        MemberEntity memberEntity = userRepository.findByEmail(email);
 
+        // 연관 테이블 정리
+        herbBookmarkRepository.deleteByMember(memberEntity);
+        profileRepository.deleteByMember(memberEntity);
+        refreshTokenRepository.deleteByMember(memberEntity);
+        herbLikeRepository.deleteByMember(memberEntity);
+        postLikeRepository.deleteByMember(memberEntity);
+
+        List<PostEntity> postEntities = postRepository.findAllByMember(memberEntity);
+        List<CommentEntity> commentEntities = commentRepository.findAllByMember(memberEntity);
+
+        // 댓글과 연관관계 끊기
+        for(CommentEntity commentEntity : commentEntities){
+            commentEntity.setMember(null);
+        }
+
+        // 게시글과 연관관계 끊기
+        for (PostEntity postEntity : postEntities) {
+            postEntity.setMember(null);
+        }
+
+        // 제일 마지막 유저 탈퇴
         userRepository.deleteByEmail(email);
     }
 

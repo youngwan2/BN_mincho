@@ -4,16 +4,14 @@ import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.post.domain.Post;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "Post")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
 public class PostEntity extends BaseEntity {
 

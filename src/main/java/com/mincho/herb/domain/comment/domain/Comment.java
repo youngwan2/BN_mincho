@@ -16,10 +16,13 @@ public class Comment {
     private Long level;
     private Boolean deleted;
 
-
-    public static Boolean isValidCommentLevel(int level){
+    // 댓글 레벨 검증
+    public static Boolean isValidCommentLevel(int level) {
         return level >= 0 && level < 3;
     }
 
-
+    // 댓글 삭제 처리
+    public void markAsDelete() {
+        setDeleted(true);
+    }
 }

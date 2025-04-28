@@ -5,9 +5,12 @@ import com.mincho.herb.common.dto.PageInfoDTO;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.MapperUtils;
 import com.mincho.herb.domain.herb.domain.Herb;
+import com.mincho.herb.domain.herb.domain.HerbViews;
 import com.mincho.herb.domain.herb.dto.*;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
+import com.mincho.herb.domain.herb.entity.HerbViewsEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
+import com.mincho.herb.domain.herb.repository.herbViews.HerbViewsRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,7 @@ import java.util.Objects;
 public class HerbServiceImpl implements HerbService{
     private final HerbRepository herbRepository;
     private final UserRepository userRepository;
+    private final HerbViewsRepository herbViewsRepository;
     private final MapperUtils mapperUtils;
 
 
@@ -89,8 +93,18 @@ public class HerbServiceImpl implements HerbService{
     @Override
     public HerbDetailResponseDTO getHerbDetails(Long id) {
 
-         HerbEntity herbEntity = herbRepository.findById(id);
+         HerbEntity herbEntity = herbRepository.findById(id); // 조회 약초 엔티티
+         HerbViewsEntity herbViewsEntity = herbViewsRepository.findByHerb(herbEntity); // 이전 조회수 엔티티
 
+        // 허브 조회수가 null 이면 새로 만들어서 초기화 해줌
+        if(herbViewsEntity ==null){
+            HerbViewsEntity newHerbViews = new HerbViewsEntity();
+            newHerbViews.setViewCount(0L);
+            newHerbViews.setHerb(herbEntity);
+            herbViewsEntity = herbViewsRepository.save(newHerbViews);
+        }
+
+        // 이미지
          List<String> images = List.of(
                  herbEntity.getImgUrl1(),
                  herbEntity.getImgUrl2(),
@@ -99,6 +113,14 @@ public class HerbServiceImpl implements HerbService{
                  herbEntity.getImgUrl5(),
                  herbEntity.getImgUrl6()
          );
+
+        HerbViews herbViews = herbViewsEntity.toModel();
+        Long updatedViewCount =herbViews.increase(herbViewsEntity.getViewCount()); // 조회수 증가
+
+        log.info("herbViews:{}",herbViews);
+
+        herbViewsRepository.save(HerbViewsEntity.toEntity(herbViews, herbEntity));
+
 
         return HerbDetailResponseDTO.builder()
                 .id(herbEntity.getId())
@@ -109,6 +131,7 @@ public class HerbServiceImpl implements HerbService{
                 .hbdcNm(herbEntity.getHbdcNm())
                 .stle(herbEntity.getStle())
                 .imgUrls(images)
+                .viewCount(updatedViewCount)
                 .useeRegn(herbEntity.getUseeRegn())
                 .build();
 
@@ -241,5 +264,11 @@ public class HerbServiceImpl implements HerbService{
     @Override
     public Long getHerbCount(HerbFilteringRequestDTO herbFilteringRequestDTO) {
         return herbRepository.countByFiltering(herbFilteringRequestDTO);
+    }
+
+    // 실시간 인기 순위 약초
+    @Override
+    public List<PopularityHerbsDTO> getHerbsMostview() {
+        return herbRepository.findAllByOrderByViewCountDesc();
     }
 }

@@ -2,6 +2,7 @@ package com.mincho.herb.domain.comment.repository;
 
 import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,7 +64,13 @@ public class CommentRepositoryImpl implements CommentRepository{
     public List<CommentDTO> findByParentCommentIdAndMemberId(Long parentCommentId, Long memberId) {
         return commentJpaRepository.findByParentCommentIdAndMemberId(parentCommentId, memberId);
     }
-    
+
+    // 유저의 모든 댓글 목록 조회
+    @Override
+    public List<CommentEntity> findAllByMember(MemberEntity member) {
+        return commentJpaRepository.findAllByMember(member);
+    }
+
     /** 마이페이지 */
     // 사용자별 댓글 개수
     @Override
@@ -74,6 +81,6 @@ public class CommentRepositoryImpl implements CommentRepository{
     // 사용자별 댓글 조회
     @Override
     public Page<CommentEntity> findByMemberId(Long memberId, Pageable pageable) {
-        return commentJpaRepository.findByMemberId(memberId, pageable );
+        return commentJpaRepository.findByMemberId(memberId, pageable);
     }
 }

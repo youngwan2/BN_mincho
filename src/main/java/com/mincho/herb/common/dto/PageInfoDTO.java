@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class PageInfoDTO {
-    private Long page;
-    private Long size;
+    private int page;
+    private int size;
 }

@@ -6,6 +6,7 @@ import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.comment.dto.*;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
+import com.mincho.herb.domain.notification.application.NotificationService;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Slf4j
@@ -28,6 +30,7 @@ public class CommentServiceImpl implements CommentService{
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommonUtils commonUtils;
+    private final NotificationService notificationService;
 
     // 댓글 추가
     @Override
@@ -61,7 +64,21 @@ public class CommentServiceImpl implements CommentService{
                                                 .parentComment(parentCommentEntity)
                                                 .build();
 
-        commentRepository.save(unsavedCommentEntity);
+        commentRepository.save(unsavedCommentEntity); // 댓글 저장
+
+        // 알림 처리
+        Long targetUserId = parentCommentEntity == null || parentCommentEntity.getDeleted() ? null : parentCommentEntity.getMember().getId();
+
+        log.info("targetUserId:{}", targetUserId);
+
+        String path = "/community/"+postEntity.getId(); // 해당 댓글이 작성된 게시글 경로
+
+        if(targetUserId !=null){
+            notificationService.sendNotification( targetUserId, "comment", path , "당신의 댓글에 답글이 달렸습니다.");
+
+        } else {
+            notificationService.sendNotification(postEntity.getMember().getId(),"post", path , "당신의 게시글에 댓글이 달렸습니다.");
+        }
     }
 
     
@@ -93,7 +110,7 @@ public class CommentServiceImpl implements CommentService{
         
         // 삭제 상태로 변경
         commentEntity.setDeleted(true);
-        
+
         commentRepository.save(commentEntity);
 
     }

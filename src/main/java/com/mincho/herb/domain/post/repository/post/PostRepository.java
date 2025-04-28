@@ -24,6 +24,8 @@ public interface PostRepository {
     Long countByCategory(String category);
     List<PostCountDTO> countsByCategory();
 
+    List<PostEntity> findAllByMember(MemberEntity member);
+
     /** 마이페이지 */
     Long countByMemberId(Long memberId);
     Page<PostEntity> findByMemberId(Long memberId, Pageable pageable);

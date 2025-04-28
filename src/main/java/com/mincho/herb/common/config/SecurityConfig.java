@@ -49,6 +49,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/api/v1/herbs/**").permitAll()
                             .requestMatchers("/api/v1/users/send-verification").permitAll()
                             .requestMatchers("/api/v1/users/send-verification-code").permitAll()
+                            .requestMatchers("/api/v1/notification/**").permitAll()
                             .requestMatchers("/api/v1/users/**").hasRole("USER")
                             .requestMatchers("/api/v1/admin/ai/embedding").hasRole("USER")
                             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자만 허용

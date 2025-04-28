@@ -9,4 +9,5 @@ public interface RefreshTokenRepository {
     RefreshToken findByRefreshToken(String refreshToken);
     void removeRefreshToken(String refreshToken);
     void removeRefreshTokenAllByUserId(Long id);
+    void deleteByMember(MemberEntity member);
 }

@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.post.repository.postLike;
 
 import com.mincho.herb.domain.post.entity.PostLikeEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,8 @@ public interface PostLikeJpaRepository extends JpaRepository<PostLikeEntity, Lon
 
     @Query("SELECT COUNT(pl) FROM PostLikeEntity pl WHERE pl.id = :postId")
     Integer findLikeCountById(@Param("postId") Long postId);
+
+    @Modifying
+    @Query("DELETE FROM PostLikeEntity pl WHERE pl.member =:member")
+    void deleteByMember(MemberEntity member);
 }

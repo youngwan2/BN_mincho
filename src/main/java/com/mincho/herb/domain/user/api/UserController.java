@@ -89,7 +89,7 @@ public class UserController {
     }
 
     // 회원탈퇴
-    @DeleteMapping("/me")
+    @DeleteMapping("/me/entire")
     public ResponseEntity<Map<String, String>> deleteUser(HttpServletResponse response){
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

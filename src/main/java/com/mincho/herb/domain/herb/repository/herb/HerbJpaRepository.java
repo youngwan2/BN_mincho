@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.herb.repository.herb;
 
+import com.mincho.herb.domain.herb.dto.PopularityHerbsDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,10 @@ public interface HerbJpaRepository extends JpaRepository<HerbEntity, Long> {
     // 이달에 개화하는 약초 목록
     @Query("SELECT h FROM HerbEntity h WHERE h.stle LIKE %:month%")
     Optional<List<HerbEntity>> findByMonth(@Param("month") String month);
+
+    // 조회수에 따른 약초 목록
+    @Query("SELECT new com.mincho.herb.domain.herb.dto.PopularityHerbsDTO(h.id, h.cntntsSj, hv.viewCount)  FROM HerbEntity h RIGHT JOIN HerbViewsEntity hv ON h.id = hv.herb.id ORDER BY hv.viewCount DESC LIMIT 10")
+    List<PopularityHerbsDTO> findAllByOrderByViewCountDesc(Pageable pageable);
 
 
 

@@ -19,4 +19,5 @@ public interface HerbService {
     List<HerbDTO> getRandomHerbs(Long herbId);
     List<HerbDTO> getHerbsBloomingThisMonth(String month);
     Long getHerbCount(HerbFilteringRequestDTO herbFilteringRequestDTO);
+    List<PopularityHerbsDTO> getHerbsMostview();
 }

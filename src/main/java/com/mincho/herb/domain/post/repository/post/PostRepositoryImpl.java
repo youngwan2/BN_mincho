@@ -141,6 +141,12 @@ public class PostRepositoryImpl implements PostRepository{
         return postJpaRepository.countPostsByCategory();
     }
 
+    @Override
+    public List<PostEntity> findAllByMember(MemberEntity member) {
+
+        return postJpaRepository.findAllByMember(member);
+    }
+
     /** 마이페이지 */
     // 사용자 별 게시글 수
     @Override

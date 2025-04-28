@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.bookmark.repository;
 
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -22,5 +23,8 @@ public interface HerbBookmarkRepository {
 
     // 유저의 북마크 목록 조회
     List<HerbBookmarkEntity> findByMemberId(Long memberId, Pageable pageable);
+
+    // 유저 북마크 전체 삭제
+    void deleteByMember(MemberEntity memberEntity);
 
 }

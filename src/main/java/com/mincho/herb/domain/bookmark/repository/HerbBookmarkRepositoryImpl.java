@@ -3,6 +3,7 @@ package com.mincho.herb.domain.bookmark.repository;
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -60,5 +61,10 @@ public class HerbBookmarkRepositoryImpl implements HerbBookmarkRepository {
     @Override
     public List<HerbBookmarkEntity> findByMemberId(Long memberId, Pageable pageable) {
         return herbBookmarkJpaRepository.findByMemberId(memberId, pageable).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"북마크 목록이 존재하지 않습니다.")).stream().toList();
+    }
+    // 유저 북마크 전체 삭제
+    @Override
+    public void deleteByMember(MemberEntity memberEntity) {
+        herbBookmarkJpaRepository.deleteByMember(memberEntity);
     }
 }

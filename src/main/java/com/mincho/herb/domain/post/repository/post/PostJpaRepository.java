@@ -72,4 +72,7 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
         Page<PostEntity> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
 
+        @Query("SELECT p FROM PostEntity p WHERE p.member = :member")
+        List<PostEntity> findAllByMember(MemberEntity member);
+
 }

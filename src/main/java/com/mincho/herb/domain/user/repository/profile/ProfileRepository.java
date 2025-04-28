@@ -9,5 +9,6 @@ public interface ProfileRepository {
     Profile saveProfile(ProfileEntity profileEntity);
     void updateProfile(Profile profile, MemberEntity user);
     ProfileEntity findProfileByUser(Member member);
+    void deleteByMember(MemberEntity member);
 
 }

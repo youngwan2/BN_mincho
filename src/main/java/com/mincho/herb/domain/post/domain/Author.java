@@ -9,4 +9,5 @@ import lombok.*;
 @Builder
 public class Author {
     private String nickname;
+    private String profileImage;
 }

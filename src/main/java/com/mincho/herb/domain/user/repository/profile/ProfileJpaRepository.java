@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.user.repository.profile;
 
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,5 +20,9 @@ public interface ProfileJpaRepository extends JpaRepository<ProfileEntity, Long>
 
     @Query("SELECT m FROM Profile m WHERE m.member.id = :userId")
     ProfileEntity findProfileByUser(@Param("userId") Long userId);
+
+    @Modifying
+    @Query("DELETE FROM Profile p WHERE p.member = :member")
+    void deleteByMember(MemberEntity member);
 
 }

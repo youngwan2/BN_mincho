@@ -39,7 +39,7 @@ public class PostServiceImpl implements PostService{
     // 조건 별 게시글 조회
     @Override
     public PostResponseDTO getPostsByCondition(int page, int size, SearchConditionDTO searchConditionDTO) {
-        PageInfoDTO pageInfoDTO = PageInfoDTO.builder().page((long) page).size((long) size).build();
+        PageInfoDTO pageInfoDTO = PageInfoDTO.builder().page(page).size(size).build();
         
         // 포스트 엔티티 목록
         List<PostDTO> posts = postRepository.findAllByConditions(searchConditionDTO, pageInfoDTO);
@@ -105,7 +105,11 @@ public class PostServiceImpl implements PostService{
         }
         Author author = Author.builder()
                 .nickname(postEntity.getMember().getProfile().getNickname())
+                .profileImage(postEntity.getMember().getProfile().getAvatarUrl())
                 .build();
+
+
+        log.info("userId:{}, {}", userId, postEntity.getMember().getId());
 
         return DetailPostResponseDTO.builder()
                 .id(postEntity.getId())

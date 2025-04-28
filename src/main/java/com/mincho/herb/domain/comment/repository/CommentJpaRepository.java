@@ -2,6 +2,7 @@ package com.mincho.herb.domain.comment.repository;
 
 import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -69,4 +70,8 @@ public interface CommentJpaRepository  extends JpaRepository<CommentEntity, Long
             "WHERE c.parentComment.id = :parentCommentId " +
             "ORDER BY c.deleted asc")
     List<CommentDTO> findByParentCommentIdAndMemberId(@Param("parentCommentId") Long parentCommentId, @Param("memberId") Long memberId);
+
+    // 유저의 모든 댓글 조회
+    @Query("SELECT c FROM Comments c WHERE c.member = :member")
+    List<CommentEntity> findAllByMember(MemberEntity member);
 }
