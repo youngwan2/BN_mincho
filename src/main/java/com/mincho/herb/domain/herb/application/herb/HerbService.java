@@ -11,7 +11,7 @@ public interface HerbService {
 
     void createHerb(HerbCreateRequestDTO herbCreateRequestDTO);
     Herb getHerbByHerbName(String herbName); // 약초 이름으로 찾기
-    List<HerbDTO> getHerbs(PageInfoDTO pageInfoDTO, HerbFilteringRequestDTO herbFilteringRequestDTO); // 약초 목록 조회
+    List<HerbDTO> getHerbs(PageInfoDTO pageInfoDTO, HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort); // 약초 목록 조회
     HerbDetailResponseDTO getHerbDetails(Long id); // 약초 상세 조회
     void removeHerb(Long id);
     void updateHerb(HerbUpdateRequestDTO herbUpdateRequestDTO, Long herbId);

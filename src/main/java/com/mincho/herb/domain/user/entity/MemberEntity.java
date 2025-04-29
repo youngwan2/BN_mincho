@@ -21,14 +21,16 @@ public class MemberEntity extends BaseEntity {
     @Column(unique = true)
     private String email;
 
-    @Column
     private String password;
-
-    @Column
     private String role;
+
+    private String provider; // 리소스 서버 제공자
+    private String providerId; // 리소스 서버 식별자
 
     @OneToOne(mappedBy = "member")
     private ProfileEntity profile;
+
+
 
 
     public static MemberEntity toEntity(Member memberDomain){
@@ -36,6 +38,8 @@ public class MemberEntity extends BaseEntity {
         memberEntity.id = memberDomain.getId();
         memberEntity.email = memberDomain.getEmail();
         memberEntity.password = memberDomain.getPassword();
+        memberEntity.providerId = memberDomain.getProviderId();
+        memberEntity.provider  =memberDomain.getProvider();
         memberEntity.role = memberDomain.getRole();
         return memberEntity;
     }
@@ -45,6 +49,8 @@ public class MemberEntity extends BaseEntity {
                 .id(this.id)
                 .email(this.email)
                 .password(this.password)
+                .provider(this.provider)
+                .providerId(this.providerId)
                 .role(this.role)
                 .build();
 

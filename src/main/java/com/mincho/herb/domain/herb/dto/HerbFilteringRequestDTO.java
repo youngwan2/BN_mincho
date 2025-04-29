@@ -8,6 +8,6 @@ import lombok.Data;
 @Builder
 public class HerbFilteringRequestDTO {
     private String bneNm;
+    private String cntntsSj; // 약초명
     private String month;
-    private String orderBy;
 }

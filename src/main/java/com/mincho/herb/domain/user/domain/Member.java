@@ -13,4 +13,6 @@ public class Member {
     private String password;
     private String role;
     private Profile profile;
+    private String provider;
+    private String providerId;
 }

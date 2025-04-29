@@ -1,6 +1,9 @@
 package com.mincho.herb.common.config;
 
+import com.mincho.herb.infra.auth.CustomOauth2UserService;
 import com.mincho.herb.infra.auth.JwtAuthFilter;
+import com.mincho.herb.infra.auth.OAuth2SuccessHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,13 +24,13 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final CustomOauth2UserService customOauth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws  Exception{
@@ -45,6 +48,7 @@ public class SecurityConfig {
                     authorizationManagerRequestMatcherRegistry
                             .requestMatchers("/api/v1/users/register/**").permitAll()
                             .requestMatchers("/api/v1/users/login/**").permitAll()
+                            .requestMatchers("/oauth2/**", "/login/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/herbs/**").permitAll()
                             .requestMatchers("/api/v1/users/send-verification").permitAll()
@@ -54,20 +58,20 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/admin/ai/embedding").hasRole("USER")
                             .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자만 허용
                             .anyRequest().permitAll()
-                );
+        );
+        http.oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOauth2UserService))
+                .successHandler(oAuth2SuccessHandler) // 소셜 로그인 성공 시 리디렉트 처리
+        );
+
 
         return http.build();
     }
 
-    /*
-    * http.authorizeHttpRequests(auth -> auth
-    .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()  // GET 요청은 모두 허용
-    .requestMatchers(HttpMethod.POST, "/api/posts/**").hasRole("ADMIN")  // POST 요청은 ADMIN만 허용
-    .anyRequest().authenticated()
-);
-    *
-    * */
 
+    // CORS 설정
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

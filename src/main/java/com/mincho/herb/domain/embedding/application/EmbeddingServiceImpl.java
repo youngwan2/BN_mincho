@@ -76,7 +76,7 @@ public class EmbeddingServiceImpl implements EmbeddingService {
         String template = """
                 당신은 유능한 약초 전문가입니다. 문맥에 따라 고객의 질문에 정중하게 대답해 주십시오.
                 컨텍스트에 나와 있는 약초 중에서 사용자의 {question}에 등장하는 문장을 의미 기반으로 분석하고, {context} 에 등장하는 약초 목록에서 존재하는 약초를 최대 10개 내로 선택하여 포맷형태의 배열로 응답해야 합니다.
-                answer 에는 왜 해당 약초를 추천하는지 그 외 도움이 되는 내용을 포함해서 친절하게 답변해야 합니다.
+                answer 에는 왜 해당 약초를 추천하는지 명시합니다.
                 만일 약초 목록에서 찾지 못했더라도, 증상과 관련해서 추가로 알아두면 도움이 되는 약초가 있으면 추천해야 합니다. 이 때 왜 추천하는지 이유도 answer에 명시해야 합니다.
                 컨텍스트가 없는 경우 '현재 증상에 추천드릴 약초가 없네요. 죄송합니다.'로 시작하여, 추천하는 검색어를 answer 에 입력 후 대답하세요.
                 컨텍스트가 없는 경우 id 는 -999 로 입력하여 대답하세요.
@@ -135,20 +135,23 @@ public class EmbeddingServiceImpl implements EmbeddingService {
         }
 
 
-        //
         List<Document> documents = herbEntities.stream()
                 .map(herbEntity -> {
 
                         StringBuilder contents = new StringBuilder();
-                        contents.append(Optional.ofNullable(herbEntity.getCntntsSj()).orElse("")).append(" ");
-                        contents.append(Optional.ofNullable(herbEntity.getPrvateTherpy()).orElse("")).append(" ");
-                        contents.append(Optional.ofNullable(herbEntity.getStle()).orElse("")).append(" ");
+                        contents.append(Optional.ofNullable(herbEntity.getCntntsSj()).orElse("")).append(" "); // 약초명
+                        contents.append(Optional.ofNullable(herbEntity.getPrvateTherpy()).orElse("")).append(" "); // 민간 요법
+                        contents.append(Optional.ofNullable(herbEntity.getGrowthForm()).orElse("")).append(" "); // 형태
+                        contents.append(Optional.ofNullable(herbEntity.getFlowering()).orElse("")).append(" "); // 개화기
+                        contents.append(Optional.ofNullable(herbEntity.getHabitat()).orElse("")).append(" "); // 재배환경
+                        contents.append(Optional.ofNullable(herbEntity.getHarvest()).orElse("")).append(" "); // 수확 건조
 
                         // 데이터 식별용 메타데이터
                         Map<String, Object> metadata = new HashMap<>();
                         metadata.put("id", String.valueOf(herbEntity.getId()));
                         metadata.put("bneNm", herbEntity.getBneNm());
                         metadata.put("hbdcNm", herbEntity.getHbdcNm());
+                        metadata.put("cntntSj", herbEntity.getCntntsSj());
 
                         log.info("metadata{}",metadata);
 

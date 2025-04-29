@@ -5,11 +5,13 @@ import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.herb.dto.HerbDTO;
 import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
 import com.mincho.herb.common.dto.PageInfoDTO;
+import com.mincho.herb.domain.herb.dto.HerbSort;
 import com.mincho.herb.domain.herb.dto.PopularityHerbsDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbViewsEntity;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -76,10 +78,12 @@ public class HerbRepositoryImpl implements HerbRepository {
 
     // 약초 목록 반환
     @Override
-    public List<HerbDTO> findByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO, PageInfoDTO pageInfoDTO) {
+    public List<HerbDTO> findByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort, PageInfoDTO pageInfoDTO) {
         QHerbEntity herbEntity = QHerbEntity.herbEntity;
         QHerbViewsEntity herbViewsEntity = QHerbViewsEntity.herbViewsEntity;
 
+
+        // == 필터링
         BooleanBuilder builder = new BooleanBuilder();
 
         // 페이지 시작 번호
@@ -92,7 +96,22 @@ public class HerbRepositoryImpl implements HerbRepository {
 
         // 개화기간이 존재 한다면
         if(herbFilteringRequestDTO.getMonth() !=null && !herbFilteringRequestDTO.getMonth().isEmpty()){
-            builder.and(herbEntity.stle.contains(herbFilteringRequestDTO.getMonth()));
+            builder.and(herbEntity.flowering.contains(herbFilteringRequestDTO.getMonth()));
+        }
+
+        // == 정렬
+        OrderSpecifier<?> orderSpecifier = herbEntity.cntntsSj.asc(); // 기본은 이름 순으로
+
+        if("cntntsSj".equals(herbSort.getSort())){
+            orderSpecifier = herbEntity.cntntsSj.asc();
+        }
+
+        if("latest".equals(herbSort.getSort())){
+            orderSpecifier = herbEntity.id.desc();
+        }
+
+        if("views".equals(herbSort.getSort()) && "desc".equals(herbSort.getOrderBy())){
+            orderSpecifier = herbViewsEntity.viewCount.coalesce(0L).desc();
         }
 
         // 조건이 하나도 없다면 모든 목록 반환(있다면 builder 적용)
@@ -110,6 +129,7 @@ public class HerbRepositoryImpl implements HerbRepository {
                 .leftJoin(herbViewsEntity).on(herbViewsEntity.herb.eq(herbEntity))
                 .where(builder)
                 .offset(offset)
+                .orderBy(orderSpecifier)
                 .limit(pageInfoDTO.getSize())
                 .fetch();
     }
@@ -127,7 +147,7 @@ public class HerbRepositoryImpl implements HerbRepository {
 
         // 개화기간이 존재 한다면
         if(herbFilteringRequestDTO.getMonth() !=null && !herbFilteringRequestDTO.getMonth().isEmpty()){
-            builder.and(herbEntity.stle.contains(herbFilteringRequestDTO.getMonth()));
+            builder.and(herbEntity.flowering.contains(herbFilteringRequestDTO.getMonth()));
         }
 
         return jpaQueryFactory.select(herbEntity.count())

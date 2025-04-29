@@ -4,7 +4,6 @@ import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.Herb;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
 @Data
@@ -33,20 +32,21 @@ public class HerbEntity extends BaseEntity {
     @Column(length = 5000)
     private String prvateTherpy; // 민간요법
 
-    @Column(length = 1500)
-    private String stle; // 형태
     private String useeRegn; // 이용 부위
 
     private Long adminId;
 
-    public HerbEntity(long l, String number, String s, String 가락지나물, String s1, String url, String protocol) {
-        super();
-    }
+    @Column(length = 1500)
+    private String growthForm; // 생장형태
 
-    public HerbEntity(long l, String number, String s, String 가락지나물, String s1, String url, String url1, String url2, String url3, String url4, String url5, String space, String space1, String space2) {
-        super();
-    }
+    private String flowering; // 개화기
 
+    private String habitat; // 분포 및 환경
+
+    private String harvest; // 수확·건조
+
+
+    // 엔티티로
     public static HerbEntity toEntity(Herb herb) {
         HerbEntity herbEntity = new HerbEntity();
         herbEntity.id = herb.getId();
@@ -61,12 +61,16 @@ public class HerbEntity extends BaseEntity {
         herbEntity.imgUrl5 = herb.getImgUrl5();
         herbEntity.imgUrl6 = herb.getImgUrl6();
         herbEntity.prvateTherpy = herb.getPrvateTherpy();
-        herbEntity.stle = herb.getStle();
         herbEntity.useeRegn = herb.getUseeRegn();
+        herbEntity.growthForm = herb.getGrowthForm();
+        herbEntity.flowering = herb.getFlowering();
+        herbEntity.habitat = herb.getHabitat();
+        herbEntity.harvest = herb.getHarvest();
 
         return herbEntity;
     }
 
+    // 도메인으로
     public Herb toModel() {
         return Herb.builder()
                 .id(this.id)
@@ -81,8 +85,11 @@ public class HerbEntity extends BaseEntity {
                 .imgUrl5(this.imgUrl5)
                 .imgUrl6(this.imgUrl6)
                 .prvateTherpy(this.prvateTherpy)
-                .stle(this.stle)
                 .useeRegn(this.useeRegn)
+                .growthForm(this.growthForm)
+                .flowering(this.flowering)
+                .habitat(this.habitat)
+                .harvest(this.harvest)
                 .build();
     }
 }
