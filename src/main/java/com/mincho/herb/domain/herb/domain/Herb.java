@@ -19,7 +19,10 @@ public class Herb {
     private String imgUrl5; // 이미지 URL 5
     private String imgUrl6; // 이미지 URL 6
     private String prvateTherpy; // 민간요법
-    private String stle; // 형태
     private String useeRegn; // 이용 부위
+    private String growthForm; // 생장형태
+    private String flowering; // 개화기
+    private String habitat; // 분포 및 환경
+    private String harvest; // 수확·건조
     private Long adminId;
 }

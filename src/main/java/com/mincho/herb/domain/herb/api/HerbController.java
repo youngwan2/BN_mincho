@@ -31,6 +31,8 @@ public class HerbController {
             @RequestParam("size") int size,
             @RequestParam("month") String month,
             @RequestParam("bneNm") String bneNm,
+            @RequestParam("cntntsSj") String cntntsSj,
+            @RequestParam("sort") String sort,
             @RequestParam("orderBy") String orderBy
             ){
 
@@ -38,6 +40,11 @@ public class HerbController {
         HerbFilteringRequestDTO herbFilteringRequestDTO= HerbFilteringRequestDTO.builder()
                 .bneNm(bneNm)
                 .month(month)
+                .cntntsSj(cntntsSj)
+                .build();
+
+        HerbSort herbSort = HerbSort.builder()
+                .sort(sort)
                 .orderBy(orderBy)
                 .build();
 
@@ -46,7 +53,8 @@ public class HerbController {
                         .page(page)
                         .size(size)
                         .build(),
-                herbFilteringRequestDTO
+                herbFilteringRequestDTO,
+                herbSort
 
         );
 

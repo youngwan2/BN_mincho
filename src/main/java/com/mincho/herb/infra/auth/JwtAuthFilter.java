@@ -125,6 +125,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         response.getWriter().write(String.format("{\"message\": \"%s\"}", message));
     }
 
+    /** Bearer 와 토큰을 분리 후 토큰만 반환한다.*/
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

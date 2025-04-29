@@ -4,6 +4,7 @@ package com.mincho.herb.domain.herb.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -19,5 +20,11 @@ public class HerbDetailResponseDTO {
     private String stle; // 형태
     private String useeRegn; // 이용 부위
     private Long viewCount;
+    private String growthForm; // 생장 형태
+    private String flowering; // 개화기
+    private String habitat;   // 분포 및 환경
+    private String harvest;   // 수확·건조
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 }

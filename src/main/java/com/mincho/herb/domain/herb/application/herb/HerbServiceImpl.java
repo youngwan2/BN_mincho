@@ -42,25 +42,26 @@ public class HerbServiceImpl implements HerbService{
        }
 
        String email = (String) SecurityContextHolder.getContext().getAuthentication().getName();
-       log.info("로그인된 유저의 이메일:{}", email);
+
+       if(!email.contains("@")) {
+           throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
+       }
+
        Long adminId = userRepository.findByEmail(email).getId();
 
-       HerbEntity unsavedHerbEntity =  HerbEntity.builder()
-                .cntntsNo(herbCreateRequestDTO.getCntntsNo())
+        HerbEntity unsavedHerbEntity = HerbEntity.builder()
                 .cntntsSj(herbCreateRequestDTO.getCntntsSj())
-                .imgUrl1(herbCreateRequestDTO.getImgUrl1())
-                .imgUrl2(herbCreateRequestDTO.getImgUrl2())
-                .imgUrl3(herbCreateRequestDTO.getImgUrl3())
-                .imgUrl4(herbCreateRequestDTO.getImgUrl4())
-                .imgUrl5(herbCreateRequestDTO.getImgUrl5())
-                .imgUrl6(herbCreateRequestDTO.getImgUrl6())
-                .stle(herbCreateRequestDTO.getStle())
                 .hbdcNm(herbCreateRequestDTO.getHbdcNm())
                 .useeRegn(herbCreateRequestDTO.getUseeRegn())
                 .prvateTherpy(herbCreateRequestDTO.getPrvateTherpy())
-                .adminId(adminId)
                 .bneNm(herbCreateRequestDTO.getBneNm())
+                .growthForm(herbCreateRequestDTO.getGrowthForm())
+                .flowering(herbCreateRequestDTO.getFlowering())
+                .habitat(herbCreateRequestDTO.getHabitat())
+                .harvest(herbCreateRequestDTO.getHarvest())
+                .adminId(adminId)
                 .build();
+
         herbRepository.save(unsavedHerbEntity);
     }
 
@@ -77,9 +78,9 @@ public class HerbServiceImpl implements HerbService{
 
     // 약초 목록 조회(페이징)
     @Override
-    public List<HerbDTO> getHerbs(PageInfoDTO pageInfoDTO, HerbFilteringRequestDTO herbFilteringRequestDTO) {
+    public List<HerbDTO> getHerbs(PageInfoDTO pageInfoDTO, HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort) {
 
-        List<HerbDTO> herbs = herbRepository.findByFiltering(herbFilteringRequestDTO, pageInfoDTO);
+        List<HerbDTO> herbs = herbRepository.findByFiltering(herbFilteringRequestDTO, herbSort, pageInfoDTO);
         if(herbs.isEmpty()){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"조회 데이터가 없습니다.");
         }
@@ -129,10 +130,15 @@ public class HerbServiceImpl implements HerbService{
                 .cntntsSj(herbEntity.getCntntsSj())
                 .prvateTherpy(herbEntity.getPrvateTherpy())
                 .hbdcNm(herbEntity.getHbdcNm())
-                .stle(herbEntity.getStle())
                 .imgUrls(images)
                 .viewCount(updatedViewCount)
                 .useeRegn(herbEntity.getUseeRegn())
+                .growthForm(herbEntity.getGrowthForm())
+                .flowering(herbEntity.getFlowering())
+                .habitat(herbEntity.getHabitat())
+                .harvest(herbEntity.getHarvest())
+                .createdAt(herbEntity.getCreatedAt())
+                .updatedAt(herbEntity.getUpdatedAt())
                 .build();
 
     }

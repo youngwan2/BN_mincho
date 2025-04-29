@@ -28,7 +28,7 @@ public interface HerbJpaRepository extends JpaRepository<HerbEntity, Long> {
     Optional<List<Long>> findHerbIds();
 
     // 이달에 개화하는 약초 목록
-    @Query("SELECT h FROM HerbEntity h WHERE h.stle LIKE %:month%")
+    @Query("SELECT h FROM HerbEntity h WHERE h.flowering LIKE %:month%")
     Optional<List<HerbEntity>> findByMonth(@Param("month") String month);
 
     // 조회수에 따른 약초 목록

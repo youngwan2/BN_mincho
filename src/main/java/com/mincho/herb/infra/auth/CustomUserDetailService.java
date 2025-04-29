@@ -27,6 +27,6 @@ public class CustomUserDetailService implements UserDetailsService {
         }
 
         log.info("loadUserGyUsername User:{}", memberEntity.toModel());
-        return new CustomUserDetails(memberEntity.toModel());
+        return new CustomUserDetails(memberEntity.toModel(), null);
     }
 }
