@@ -16,15 +16,18 @@ import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepositor
 import com.mincho.herb.domain.post.repository.postViews.PostViewsRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
+import com.mincho.herb.infra.auth.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+
+// TODO: 전체적으로 하는 일이 많음. 향후 개선 필요
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,12 +38,13 @@ public class PostServiceImpl implements PostService{
     private final PostViewsRepository postViewsRepository;
     private final UserRepository userRepository;
     private final CommonUtils commonUtils;
+    private final S3Service s3Service;
 
     // 조건 별 게시글 조회
     @Override
     public PostResponseDTO getPostsByCondition(int page, int size, SearchConditionDTO searchConditionDTO) {
         PageInfoDTO pageInfoDTO = PageInfoDTO.builder().page(page).size(size).build();
-        
+
         // 포스트 엔티티 목록
         List<PostDTO> posts = postRepository.findAllByConditions(searchConditionDTO, pageInfoDTO);
 
@@ -48,8 +52,6 @@ public class PostServiceImpl implements PostService{
         if(posts.isEmpty()){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 목록이 존재하지 않습니다.");
         }
-
-
         // 포스트 + 개수
         return PostResponseDTO.builder()
                 .posts(posts) // 게시글 목록
@@ -59,22 +61,16 @@ public class PostServiceImpl implements PostService{
     // 포스트 상세 조회
     @Override
     public DetailPostResponseDTO getDetailPostById(Long id) {
-
-
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = commonUtils.userCheck();
 
         MemberEntity memberEntity = userRepository.findByEmail2(email);
-        Long userId = 0L;
-        if(memberEntity == null){
-            userId = 0L;
-        } else {
-            userId = memberEntity.getId();
-        }
+        Long userId = memberEntity == null ? 0L : memberEntity.getId();
 
 
         PostViewsEntity postViewsEntity = postViewsRepository.findByPostId(id);
         Long prevPostViewCount = 0L;
-        // view 정보 없으면 추가해주기
+
+        // view(조회) 정보 없으면 조회 데이터 추가
         if(postViewsEntity == null){
             PostEntity postEntity = postRepository.findById(id);
 
@@ -85,12 +81,13 @@ public class PostServiceImpl implements PostService{
                             .build()
             );
         } else {
-        prevPostViewCount = postViewsEntity.getViewCount();
+            prevPostViewCount = postViewsEntity.getViewCount();
         }
 
         // 조회수 업데이트
         postViewsRepository.updatePostViewCount(ViewCount.builder().build().increase(prevPostViewCount), id);
 
+        // TODO: 취약한 방식이므로 향후 DTO 등의 안전한 방식으로 변경 필
         Object[][] objects = postRepository.findByPostId(id);
         PostEntity postEntity = null;
         Long likeCount =0L;
@@ -131,17 +128,6 @@ public class PostServiceImpl implements PostService{
     }
 
 
-    // 카테고리별 게시글 통계
-    @Override
-    public List<PostCountDTO> getPostStatistics() {
-        List<PostCountDTO> counts = postRepository.countsByCategory();
-        if(counts.isEmpty()){
-            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "조회할 게시글 통계가 존재하지 않습니다.");
-        }
-        return counts;
-    }
-
-
     // 게시글 추가
     @Override
     @Transactional
@@ -149,23 +135,19 @@ public class PostServiceImpl implements PostService{
         // 유저 조회
         MemberEntity memberEntity = userRepository.findByEmail(email);
 
+        // 바꾼 카테고리
+        PostCategoryEntity changedCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
 
-        // 해당 카테고리가 실제로 존재하는지 검증
-        PostCategoryEntity postCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
-
-        if(postCategoryEntity == null){
+        if(changedCategoryEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 카테고리는 존재하지 않습니다.");
         }
 
-        // 카테고리 엔티티 조회
-        PostCategoryEntity savedPostCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
-
-
         // 포스트 저장
-        Post post = Post.builder().title(postRequestDTO.getTitle())
+        Post post = Post.builder()
+                        .title(postRequestDTO.getTitle())
                         .contents(postRequestDTO.getContents())
                         .build();
-        PostEntity unsavedPostEntity =  PostEntity.toEntity(post, memberEntity, savedPostCategoryEntity);
+        PostEntity unsavedPostEntity =  PostEntity.toEntity(post, memberEntity, changedCategoryEntity);
         PostEntity savedPostEntity = postRepository.save(unsavedPostEntity);
 
         // 포스트 조회수 초기 상태 설정
@@ -180,8 +162,12 @@ public class PostServiceImpl implements PostService{
 
     // 게시글 수정
     @Override
+    @Transactional
     public void update(PostRequestDTO postRequestDTO, Long id, String email) {
         MemberEntity memberEntity = postRepository.findAuthorByPostIdAndEmail(id, email);
+
+        PostEntity oldPostEntity = postRepository.findById(id);
+        String oldContent = oldPostEntity.getContents(); // 수정 전 콘텐츠
 
         PostCategoryEntity updatedPostCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
 
@@ -193,15 +179,27 @@ public class PostServiceImpl implements PostService{
                       .contents(postRequestDTO.getContents())
                       .build();
 
-        postRepository.save(unsavedPostEntity);
+        PostEntity newPostEntity = postRepository.save(unsavedPostEntity);
 
+        String newContent = newPostEntity.getContents(); // 수정 후 콘텐츠
+        s3Service.deleteRemovedOldImages(oldContent, newContent); // 안 쓰는 이미지 S3 에서 제거
     }
 
     // 게시글 삭제
     @Override
+    @Transactional
     public void removePost(Long id, String email) {
         Long userId = postRepository.findAuthorIdByPostIdAndEmail(id, email);
         if(userId != null){
+
+            PostEntity postEntity = postRepository.findById(id);
+
+            String content = postEntity.getContents();
+
+            // S3 에서 기존 컨텐츠에 저장되어 있던 이미지를 모두 제거함
+            s3Service.deleteAllImagesInContent(content);
+
+            // 게시글 삭제
             postRepository.deleteById(id);
         }
     }

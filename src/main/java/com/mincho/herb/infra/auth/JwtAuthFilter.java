@@ -34,6 +34,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
+            String path = request.getRequestURI();
+            if (path.startsWith("/login/oauth2/code") || path.startsWith("/oauth2/")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             String accessToken = resolveToken(request);
 
             /* accessToken이 존재하는 경우*/

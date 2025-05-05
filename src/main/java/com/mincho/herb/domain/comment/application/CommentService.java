@@ -1,8 +1,8 @@
 package com.mincho.herb.domain.comment.application;
 
 import com.mincho.herb.domain.comment.dto.CommentCreateRequestDTO;
-import com.mincho.herb.domain.comment.dto.CommentUpdateRequestDTO;
 import com.mincho.herb.domain.comment.dto.CommentResponseDTO;
+import com.mincho.herb.domain.comment.dto.CommentUpdateRequestDTO;
 import com.mincho.herb.domain.comment.dto.MypageCommentsDTO;
 
 import java.util.List;

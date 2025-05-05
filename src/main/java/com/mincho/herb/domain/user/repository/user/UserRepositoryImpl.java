@@ -24,6 +24,13 @@ public class UserRepositoryImpl implements UserRepository{
         return userJpaRepository.existsByEmail(email);
     }
 
+
+    // 일반 유저 인가?
+    @Override
+    public boolean existsByEmailAndProviderIsNull(String email) {
+        return userJpaRepository.existsByEmailAndProviderIsNull(email);
+    }
+
     @Override
     @Transactional
     public void deleteByEmail(String email) { // 회원탈퇴

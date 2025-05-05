@@ -2,10 +2,10 @@ package com.mincho.herb.domain.user.repository.profile;
 
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.domain.Member;
-import com.mincho.herb.domain.user.entity.ProfileEntity;
+import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.ProfileEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;

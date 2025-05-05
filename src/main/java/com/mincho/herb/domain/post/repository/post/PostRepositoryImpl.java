@@ -57,40 +57,55 @@ public class PostRepositoryImpl implements PostRepository{
 
         BooleanBuilder builder = new BooleanBuilder();
         String category = searchConditionDTO.getCategory();
-        String sort = searchConditionDTO.getSort();
-        String order = searchConditionDTO.getOrder();
-        String query = searchConditionDTO.getQuery();
+        String sort = searchConditionDTO.getSort(); // 정렬 방향 desc, asc
+        String order = searchConditionDTO.getOrder(); // 정렬 기준 post_id 등
+        String query = searchConditionDTO.getQuery(); // 검색어
+        String queryType = searchConditionDTO.getQueryType(); // 검색 타입(title, contents, author 로 나눠서 검색 대상 필터링
 
-        // 페이징 오프셋 및 제한
-        long offset = (long) (pageInfoDTO.getPage() * pageInfoDTO.getSize());
+        long offset = (long) pageInfoDTO.getPage() * pageInfoDTO.getSize();
         long limit = pageInfoDTO.getSize();
 
-        // 카테고리 필터 (정확한 매칭)
-        if (category != null && !category.trim().isEmpty()) {
+        // 카테고리 필터
+        if (category != null && !category.trim().isEmpty() && !"all".equals(category)) {
             builder.and(postEntity.category.category.eq(category));
         }
 
-        // 검색 조건 (내용 포함 여부)
+        // 검색 조건
         if (query != null && !query.trim().isEmpty()) {
-            builder.and(postEntity.contents.like("%" + query.trim() + "%"));
+            switch (queryType) {
+                case "title": // 제목 기준 검색
+                    builder.and(postEntity.title.containsIgnoreCase(query.trim()));
+                    break;
+                case "content": // 내용 기준 검색
+                    builder.and(postEntity.contents.containsIgnoreCase(query.trim()));
+                    break;
+                case "author": // 저자 기준 검색
+                    builder.and(postEntity.member.profile.nickname.containsIgnoreCase(query.trim()));
+                    break;
+                case "all": // 전체 대상 검색
+                default:
+                    builder.and(
+                            postEntity.title.containsIgnoreCase(query.trim())
+                                    .or(postEntity.contents.containsIgnoreCase(query.trim()))
+                                    .or(postEntity.member.profile.nickname.containsIgnoreCase(query.trim()))
+                    );
+                    break;
+            }
         }
 
         // 정렬 조건 설정
-        OrderSpecifier<?> orderSpecifier;
-        if ("desc".equalsIgnoreCase(order)) {
-            orderSpecifier = postEntity.id.desc(); // 기본값: id 내림차순
-        } else {
-            orderSpecifier = postEntity.id.asc(); // 오름차순
-        }
+        OrderSpecifier<?> orderSpecifier = "desc".equalsIgnoreCase(sort)
+                ? postEntity.id.desc()
+                : postEntity.id.asc();
 
         return jpaQueryFactory
                 .select(Projections.constructor(PostDTO.class,
-                        postEntity.id, // 포스트 ID
-                        postEntity.title, // 제목
-                        postEntity.category.category, // 카테고리
-                        postEntity.member.profile.nickname, // 사용자 닉네임
-                        Expressions.numberTemplate(Long.class, "coalesce({0}, 0)", postLikeEntity.count()).as("likeCount"), // 좋아요 개수 (null 방지)
-                        postEntity.createdAt // 생성 날짜
+                        postEntity.id,
+                        postEntity.title,
+                        postEntity.category.category,
+                        postEntity.member.profile.nickname,
+                        Expressions.numberTemplate(Long.class, "coalesce({0}, 0)", postLikeEntity.count()).as("likeCount"),
+                        postEntity.createdAt
                 ))
                 .from(postEntity)
                 .leftJoin(postLikeEntity).on(postLikeEntity.post.id.eq(postEntity.id))
@@ -102,7 +117,6 @@ public class PostRepositoryImpl implements PostRepository{
                 .limit(limit)
                 .fetch();
     }
-
     // 해당 포스트를 작성한 유저 조회
     @Override
     public Long findAuthorIdByPostIdAndEmail(Long postId, String email) {

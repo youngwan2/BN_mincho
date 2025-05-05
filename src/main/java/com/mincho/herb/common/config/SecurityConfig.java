@@ -60,7 +60,6 @@ public class SecurityConfig {
                             .anyRequest().permitAll()
         );
         http.oauth2Login(oauth2 -> oauth2
-                .loginPage("/login")
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(customOauth2UserService))
                 .successHandler(oAuth2SuccessHandler) // 소셜 로그인 성공 시 리디렉트 처리
@@ -75,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173","https://www.minchoherb.com", "http://localhost:4174"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT","DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // 허용할 헤더
         configuration.setAllowCredentials(true); // 서버 쿠키를 클라이언트에 설정할 수 있도록 허용

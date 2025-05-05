@@ -8,6 +8,9 @@ public interface EmailService {
 
     MimeMessage createMail(String email, String authCode) throws MessagingException;
     boolean emailVerification(VerificationRequestDTO verificationRequestDTO);
-    void sendVerificationCode(String toMail) throws MessagingException;
+    boolean emailVerificationForReset(VerificationRequestDTO verificationRequestDTO);
+    void sendVerificationCodeForSignUp(String toMail) throws MessagingException;
+    void sendVerificationCodeForReset(String email) throws MessagingException;
+    String sendResetPassword(String toMail) throws  MessagingException;
     boolean validateMx(String domain);
 }

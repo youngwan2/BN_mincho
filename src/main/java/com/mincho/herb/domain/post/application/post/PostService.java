@@ -15,6 +15,5 @@ public interface PostService {
 
 
     /** 마이페이지 */
-    List<PostCountDTO> getPostStatistics();
     List<MypagePostsDTO> getUserPosts(int page, int size);
 }

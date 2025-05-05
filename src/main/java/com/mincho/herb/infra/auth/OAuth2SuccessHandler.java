@@ -36,7 +36,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         refreshCookie.setMaxAge(60 * 60 * 24 * 14); // 2주
         response.addCookie(refreshCookie);
 
-        String redirectUrl = "http://localhost:5173/auth/oauth-success?token=" + accessToken;
+        String redirectUrl = "https://www.minchoherb.com/auth/oauth-success?token=" + accessToken;
         response.sendRedirect(redirectUrl);
     }
 }

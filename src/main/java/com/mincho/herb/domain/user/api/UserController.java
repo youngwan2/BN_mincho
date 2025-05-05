@@ -8,11 +8,14 @@ import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.CommonUtils;
+import com.mincho.herb.common.util.CookieUtils;
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Member;
-import com.mincho.herb.domain.user.dto.*;
-import com.mincho.herb.common.util.CookieUtils;
+import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
+import com.mincho.herb.domain.user.dto.LoginRequestDTO;
+import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
+import com.mincho.herb.domain.user.dto.UpdatePasswordRequestDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -25,7 +28,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -107,19 +109,27 @@ public class UserController {
 
     // 비밀번호 수정
     @PatchMapping("/me/password")
-    public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody UpdatePasswordRequestDTO updatePasswordRequestDTO, BindingResult result){
+    public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody UpdatePasswordRequestDTO updatePasswordRequestDTO){
 
-        if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
-        }
+        log.info("요청 비밀번호:{}", updatePasswordRequestDTO);
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if(!commonUtils.emailValidation(email)){
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
 
-        userService.updatePassword(updatePasswordRequestDTO.getPassword(), email);
-        return new SuccessResponse<>().getResponse(200, "비밀번호가 수정 되었습니다.", HttpSuccessType.OK);
+        // 현재 비밀번호가 유효한 비밀번호인가?
+        boolean pass = userService.checkPassword(email, updatePasswordRequestDTO.getCurrentPassword());
+
+        // Yes! 유효함
+        if(pass){
+            userService.updatePassword(email, updatePasswordRequestDTO.getNewPassword());
+            return new SuccessResponse<>().getResponse(200, "비밀번호가 수정 되었습니다.", HttpSuccessType.OK);
+
+            // No! 유효하지 않음
+        } else {
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "잘못된 현재 비밀번호 입니다.");
+        }
     }
 
     // 로그아웃
@@ -130,5 +140,14 @@ public class UserController {
 
         response.addCookie(cookieUtils.createCookie("refresh",null, 0));
         return new SuccessResponse<>().getResponse(200, "로그아웃 되었습니다.", HttpSuccessType.OK);
+    }
+
+
+    // 로그인 상태 확인
+    @GetMapping("/login-status")
+    public ResponseEntity<Boolean> isLogin(){
+        boolean isLogin = userService.isLogin();
+        return ResponseEntity.ok(isLogin);
+
     }
 }

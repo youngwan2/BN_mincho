@@ -1,11 +1,12 @@
 package com.mincho.herb.common.util;
 
-import io.jsonwebtoken.*;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -48,4 +49,5 @@ public class JWTUtils {
     public String getCategory(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
+
 }

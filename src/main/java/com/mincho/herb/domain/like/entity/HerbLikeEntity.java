@@ -4,7 +4,6 @@ import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.like.domain.HerbLike;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 @Entity

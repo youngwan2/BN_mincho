@@ -7,6 +7,7 @@ import com.mincho.herb.common.config.success.SuccessResponse;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.post.application.post.PostService;
 import com.mincho.herb.domain.post.dto.*;
+import com.mincho.herb.infra.auth.S3Service;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +31,7 @@ public class PostController {
 
     private final CommonUtils commonUtils;
     private final PostService postService;
+    private final S3Service s3Service;
 
     // 게시글 조회
     @GetMapping("/community/posts")
@@ -76,7 +80,10 @@ public class PostController {
 
     // 게시글 상세 조회
     @GetMapping("/community/posts/{id}")
-    public ResponseEntity<?> getDetailPost(@PathVariable("id") Long id){
+    public ResponseEntity<?> getDetailPost(
+            @PathVariable("id") Long id ) {
+
+
         if(id == null){
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
         }
@@ -108,15 +115,13 @@ public class PostController {
     @PatchMapping("/community/posts/{id}")
     public ResponseEntity<Map<String, String>> updatePost(
             @PathVariable("id") Long id,
-            @Valid @RequestBody PostRequestDTO postRequestDTO,
-            BindingResult result) {
+            @Valid @RequestBody PostRequestDTO postRequestDTO
+        ) {
         if (id == null) {
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. 경로 파라미터를 재확인 해주세요.", HttpErrorType.BAD_REQUEST);
         }
 
-        if (result.hasErrors()) {
-            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
-        }
+
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!commonUtils.emailValidation(email)) {
@@ -127,6 +132,19 @@ public class PostController {
 
         return new SuccessResponse<>().getResponse(200, "성공적으로 수정되었습니다.", HttpSuccessType.OK);
     }
+
+    // 게시글 이미지 프리사인드 URL 생성
+    @PostMapping("/community/posts/images/presigned-url")
+    public ResponseEntity<?> uploadImage(
+            @RequestParam("file") MultipartFile file
+    ){
+        String url  =s3Service.generatePresignedUrl(file, 5);
+
+        Map<String, String> urlMap = new HashMap<String, String>();
+        urlMap.put("url", url);
+        return ResponseEntity.ok(urlMap);
+    }
+
 
     /** 마이페이지*/
     // 사용자가 작성한 게시글 목록

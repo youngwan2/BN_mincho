@@ -7,6 +7,7 @@ import com.mincho.herb.domain.notification.dto.NotificationDTO;
 import com.mincho.herb.domain.notification.dto.NotificationsResponse;
 import com.mincho.herb.domain.notification.entity.NotificationEntity;
 import com.mincho.herb.domain.notification.repository.NotificationRepository;
+import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import com.mincho.herb.domain.user.application.user.UserService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

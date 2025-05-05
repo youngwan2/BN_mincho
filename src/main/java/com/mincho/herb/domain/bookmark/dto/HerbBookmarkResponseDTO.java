@@ -1,7 +1,8 @@
 package com.mincho.herb.domain.bookmark.dto;
 
 import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.List;
 

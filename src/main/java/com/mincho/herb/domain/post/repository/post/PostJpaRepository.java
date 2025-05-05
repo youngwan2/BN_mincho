@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 
 public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {

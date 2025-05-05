@@ -1,9 +1,9 @@
 package com.mincho.herb.domain.user.repository.profile;
 
-import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.domain.Member;
-import com.mincho.herb.domain.user.entity.ProfileEntity;
+import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.ProfileEntity;
 
 public interface ProfileRepository {
     Profile saveProfile(ProfileEntity profileEntity);

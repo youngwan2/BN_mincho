@@ -14,15 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostStatisticsServiceImpl implements PostStatisticsService {
 
-    private final PostStatisticsRepository postStatisticsRepository;
+    private final PostRepository postRepository;
 
     @Override
     public List<PostCountDTO> getPostStatistics() {
-        List<PostCountDTO> postCountDTOs = postStatisticsRepository.countsByCategory();
-
-        if(postCountDTOs.isEmpty()){
-            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "");
+        List<PostCountDTO> counts = postRepository.countsByCategory();
+        if(counts.isEmpty()){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "조회할 게시글 통계가 존재하지 않습니다.");
         }
-        return postCountDTOs;
+        return counts;
     }
 }

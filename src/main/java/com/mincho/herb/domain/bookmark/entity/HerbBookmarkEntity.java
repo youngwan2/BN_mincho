@@ -5,7 +5,10 @@ import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "HerbBookmark", uniqueConstraints = {

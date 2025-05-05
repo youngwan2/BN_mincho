@@ -1,7 +1,5 @@
 package com.mincho.herb.domain.bookmark.domain;
 
-import com.mincho.herb.domain.herb.domain.Herb;
-import com.mincho.herb.domain.user.domain.Member;
 import lombok.Builder;
 import lombok.Data;
 

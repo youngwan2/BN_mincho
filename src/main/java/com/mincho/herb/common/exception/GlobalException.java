@@ -2,8 +2,6 @@ package com.mincho.herb.common.exception;
 
 import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorType;
-import io.jsonwebtoken.ExpiredJwtException;
-
 import jakarta.mail.SendFailedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -76,7 +73,8 @@ public class GlobalException {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception ex){
-
+        log.error("500:{}", ex.getMessage());
+        ex.fillInStackTrace();
         return new ErrorResponse().getResponse(500, "서버에서 문제가 발생하였습니다. 나중에 다시시도해 주세요.", HttpErrorType.INTERNAL_SERVER_ERROR);
     }
 }

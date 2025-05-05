@@ -3,7 +3,6 @@ package com.mincho.herb.domain.user.application.user;
 import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
-import com.mincho.herb.domain.comment.domain.Comment;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.like.repository.HerbLikeRepository;
@@ -14,7 +13,6 @@ import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
-import com.mincho.herb.domain.user.dto.UserCommentInfoDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
@@ -23,23 +21,23 @@ import com.mincho.herb.infra.auth.JwtAuthProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements  UserService{
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtAuthProvider jwtAuthProvider;
     private final UserRepository userRepository;
@@ -50,6 +48,7 @@ public class UserServiceImpl implements  UserService{
     private final PostLikeRepository postLikeRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PostRepository postRepository;
+
 
 
     @Override
@@ -74,6 +73,13 @@ public class UserServiceImpl implements  UserService{
     @Override
     public boolean dueCheck(DuplicateCheckDTO duplicateCheckDTO) {
         return userRepository.existsByEmail(duplicateCheckDTO.getEmail());
+    }
+
+    // 비밀번호 일치 유무 체크
+    @Override
+    public boolean checkPassword(String email, String rawPassword) {
+        String password = userRepository.findByEmail(email).getPassword();
+        return bCryptPasswordEncoder.matches(rawPassword, password );
     }
 
     // 로그인
@@ -139,8 +145,9 @@ public class UserServiceImpl implements  UserService{
 
     // 비밀번호 수정
     @Override
-    public void updatePassword(String password, String email) {
-        userRepository.updatePasswordByEmail(password, email);
+    public void updatePassword(String email, String password) {
+        String encodePw = bCryptPasswordEncoder.encode(password);
+        userRepository.updatePasswordByEmail(encodePw, email);
     }
 
     // 유저 조회
@@ -168,5 +175,11 @@ public class UserServiceImpl implements  UserService{
         }
 
         refreshTokenRepository.removeRefreshTokenAllByUserId(memberEntity.getId());
+    }
+
+    @Override
+    public boolean isLogin() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return email.contains("@");
     }
 }

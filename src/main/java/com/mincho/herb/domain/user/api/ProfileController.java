@@ -1,14 +1,11 @@
 package com.mincho.herb.domain.user.api;
 
 import com.mincho.herb.common.config.error.ErrorResponse;
-import com.mincho.herb.common.config.error.HttpErrorCode;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
-import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.application.profile.ProfileService;
-import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
 import com.mincho.herb.infra.auth.S3Service;

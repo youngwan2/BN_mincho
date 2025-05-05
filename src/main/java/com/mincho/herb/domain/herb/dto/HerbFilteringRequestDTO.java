@@ -1,6 +1,5 @@
 package com.mincho.herb.domain.herb.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
 

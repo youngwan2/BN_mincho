@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+
+// TODO: 관심사가 불분명한 클래스. 향후 정리 필요
 @Slf4j
 @Component
 public class CommonUtils {

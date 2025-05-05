@@ -3,7 +3,10 @@ package com.mincho.herb.domain.notification.entity;
 import com.mincho.herb.common.base.BaseEntity;
 import com.mincho.herb.domain.notification.domain.Notification;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor

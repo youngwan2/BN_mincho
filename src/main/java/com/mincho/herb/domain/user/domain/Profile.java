@@ -2,7 +2,10 @@ package com.mincho.herb.domain.user.domain;
 
 
 import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

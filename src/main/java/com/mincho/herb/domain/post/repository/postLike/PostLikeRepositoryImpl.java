@@ -1,6 +1,5 @@
 package com.mincho.herb.domain.post.repository.postLike;
 
-import com.mincho.herb.common.exception.CustomHttpException;
 import com.mincho.herb.domain.post.entity.PostLikeEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import lombok.RequiredArgsConstructor;

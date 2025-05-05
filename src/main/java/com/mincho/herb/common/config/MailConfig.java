@@ -14,10 +14,10 @@ import java.util.Properties;
 public class MailConfig {
     @Bean
     public JavaMailSender javaMailSender(
-            @Value("${mail.host}") String host,
-            @Value("${mail.port}") int port,
-            @Value("${mail.username}") String username,
-            @Value("${mail.password}") String password
+            @Value("${spring.mail.host}") String host,
+            @Value("${spring.mail.port}") int port,
+            @Value("${spring.mail.username}") String username,
+            @Value("${spring.mail.password}") String password
     ) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         log.info("host:{}, port:{}, username:{}, password:{}",host, port, username, password);

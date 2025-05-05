@@ -5,8 +5,8 @@ import com.mincho.herb.common.config.error.ErrorResponse;
 import com.mincho.herb.common.config.error.HttpErrorType;
 import com.mincho.herb.common.config.success.HttpSuccessType;
 import com.mincho.herb.common.config.success.SuccessResponse;
-import com.mincho.herb.common.util.CommonUtils;
 import com.mincho.herb.domain.user.application.email.EmailService;
+import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.dto.EmailRequestDTO;
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
 import jakarta.mail.MessagingException;
@@ -14,10 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -26,20 +24,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailController {
     private final EmailService emailService;
-    private  final CommonUtils commonUtils;
+    private final UserService userService;
 
 
     // 인증번호 발송
     @PostMapping("/send-verification-code")
-    public ResponseEntity<?> sendVerificationCode(@Valid @RequestBody EmailRequestDTO emailRequestDTO, BindingResult result) {
+    public ResponseEntity<?> sendVerificationCode(
+            @Valid @RequestBody EmailRequestDTO emailRequestDTO,
+            @RequestParam("type") String type) {
 
         log.info("email:{}",emailRequestDTO);
-        if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
-        }
-
         try {
-            emailService.sendVerificationCode(emailRequestDTO.getEmail());
+            // reset: 비밀번호 재설정
+            if(type.equals("reset")) {
+                emailService.sendVerificationCodeForReset(emailRequestDTO.getEmail());
+            }
+
+            // register: 회원가입
+            if(type.equals("register")) {
+                emailService.sendVerificationCodeForSignUp(emailRequestDTO.getEmail());
+            }
+
+
         } catch (MessagingException ex) {
             return new ErrorResponse().getResponse(500, "인증번호 발송에 실패하였습니다.", HttpErrorType.INTERNAL_SERVER_ERROR);
         }
@@ -49,19 +55,37 @@ public class EmailController {
 
     // 인증번호 검증
     @PostMapping("/send-verification")
-    public ResponseEntity<Map<String, String>> emailVerification(@Valid @RequestBody VerificationRequestDTO verificationRequestDTO, BindingResult result) {
+    public ResponseEntity<Map<String, String>> emailVerification(
+            @Valid @RequestBody VerificationRequestDTO verificationRequestDTO,
+            @RequestParam("type") String type
+            ) {
 
-        if(result.hasErrors()){
-             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
-         }
+        boolean isVer = false;
 
-        boolean isVer = emailService.emailVerification(verificationRequestDTO);
+        // 회원가입 시 인증번호 검증
+        if(type.equals("register")){
+            isVer = emailService.emailVerification(verificationRequestDTO);
+        }
+
+        // 비밀번호 재설정 시 인증번호 검증
+        if(type.equals("reset")) {
+            isVer = emailService.emailVerificationForReset(verificationRequestDTO);
+
+            try {
+                String newPassword = emailService.sendResetPassword(verificationRequestDTO.getEmail()); // 새 비밀번호를 유저에게
+                log.info("raw new pass:{}", newPassword);
+                userService.updatePassword(verificationRequestDTO.getEmail(), newPassword );
+
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         if(isVer){
             return new SuccessResponse<>().getResponse(200, "통과 되었습니다.", HttpSuccessType.OK);
         }
 
         return new ErrorResponse().getResponse(409, "인증 실패하였습니다.", HttpErrorType.CONFLICT);
-
     }
 }
 
