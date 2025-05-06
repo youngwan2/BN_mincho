@@ -5,6 +5,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JWTUtils jwtUtils;
+
+    @Value(value = "spring.frontend.redirect-uri")
+    private final String frontendRedirectUri;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -36,8 +40,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         refreshCookie.setMaxAge(60 * 60 * 24 * 14); // 2주
         response.addCookie(refreshCookie);
 
-        String redirectUrl = "https://www.minchoherb.com/auth/oauth-success?token=" + accessToken;
-        response.sendRedirect(redirectUrl);
+        String redirectUri = frontendRedirectUri +"/auth/oauth-success?token=" + accessToken;
+        response.sendRedirect(redirectUri);
     }
 }
 

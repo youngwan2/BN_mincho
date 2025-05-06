@@ -21,9 +21,24 @@ import javax.naming.directory.InitialDirContext;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * {@code EmailServiceImpl} 클래스는 회원가입 및 비밀번호 재설정을 위한 이메일 인증 기능을 담당합니다.
+ * <p>
+ * 주요 기능은 다음과 같습니다:
+ * <ul>
+ *     <li>이메일 인증 코드 발송</li>
+ *     <li>인증 코드 유효성 검증</li>
+ *     <li>비밀번호 재설정용 임시 비밀번호 발송</li>
+ *     <li>도메인의 MX 레코드 검증</li>
+ * </ul>
+ *
+ * 이메일 인증 번호는 Redis에 일정 시간(기본 5분) 동안 저장되며, 인증이 성공하면 자동으로 제거됩니다.
+ *
+ * @author YoungWan Kim
+ */
 @Slf4j
 @Service
-public class EmailServiceImpl implements EmailService{
+public class EmailServiceImpl implements EmailService {
 
     private final UserRepository userRepository;
     private final JavaMailSender javaMailSender;
@@ -31,8 +46,18 @@ public class EmailServiceImpl implements EmailService{
     private final String senderEmail;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * EmailServiceImpl의 생성자입니다.
+     *
+     * @param userRepository 사용자 정보를 조회하기 위한 레포지토리
+     * @param redisTemplate  Redis 캐시 처리용 템플릿
+     * @param javaMailSender 이메일 발송을 위한 JavaMailSender
+     * @param commonUtils    공통 유틸리티 클래스
+     * @param senderEmail    발신자 이메일 주소 (환경변수에서 주입)
+     */
     public EmailServiceImpl(
-            UserRepository userRepository, RedisTemplate<String,Object> redisTemplate,
+            UserRepository userRepository,
+            RedisTemplate<String, Object> redisTemplate,
             JavaMailSender javaMailSender,
             CommonUtils commonUtils,
             @Value("${spring.main.sender.email}") String senderEmail) {
@@ -43,133 +68,153 @@ public class EmailServiceImpl implements EmailService{
         this.senderEmail = senderEmail;
     }
 
-
-    // 이메일 인증
+    /**
+     * 회원가입 시 이메일로 발송된 인증 코드가 일치하는지 검증합니다.
+     *
+     * @param verificationRequestDTO 사용자 이메일 및 입력한 인증 코드
+     * @return 인증 성공 여부
+     */
     @Override
     public boolean emailVerification(VerificationRequestDTO verificationRequestDTO) {
         String value = (String) redisTemplate.opsForValue().get(verificationRequestDTO.getEmail());
         log.info("input code: {}, auth code: {}", verificationRequestDTO.getCode(), value);
         boolean isVer = verificationRequestDTO.getCode().equals(value);
-        
-        // 인증 성공 시 레디스에서 키 제거
-        if(isVer){
+
+        if (isVer) {
             redisTemplate.delete(verificationRequestDTO.getEmail());
         }
-        return isVer ;
+        return isVer;
     }
 
-    // 이메일 인증 | 비밀번호 재설정용
+    /**
+     * 비밀번호 재설정 시 이메일로 발송된 인증 코드가 일치하는지 검증합니다.
+     *
+     * @param verificationRequestDTO 사용자 이메일 및 입력한 인증 코드
+     * @return 인증 성공 시 true 반환
+     * @throws CustomHttpException 인증 실패 시 예외 발생
+     */
     @Override
     public boolean emailVerificationForReset(VerificationRequestDTO verificationRequestDTO) {
         String value = (String) redisTemplate.opsForValue().get(verificationRequestDTO.getEmail());
-
         log.info("input code: {}, auth code: {}", verificationRequestDTO.getCode(), value);
 
         boolean isVer = verificationRequestDTO.getCode().equals(value);
 
-        // 인증 성공 시 레디스에서 키 제거
-        if(isVer){
+        if (isVer) {
             redisTemplate.delete(verificationRequestDTO.getEmail());
             return true;
         } else {
             throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "인증번호가 일치하지 않습니다.");
         }
-
     }
 
-    // 이메일 인증 코드 발송 | 회원가입 용
+    /**
+     * 회원가입 시 이메일 인증 코드를 생성하여 메일로 전송합니다.
+     *
+     * @param toMail 수신자 이메일
+     * @throws MessagingException 이메일 발송 실패 시
+     * @throws CustomHttpException 이미 존재하는 사용자거나 도메인이 유효하지 않을 경우
+     */
     @Override
     public void sendVerificationCodeForSignUp(String toMail) throws MessagingException {
+        boolean isUser = userRepository.existsByEmail(toMail);
 
-         boolean isUser = userRepository.existsByEmail(toMail);
-
-         if(isUser){
-             throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"잘못된 요청입니다. 이전 단계를 완료 후 요청해주세요");
-         }
+        if (isUser) {
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "잘못된 요청입니다. 이전 단계를 완료 후 요청해주세요");
+        }
 
         boolean isValidMx = this.validateMx(toMail.split("@")[1]);
-        if(isValidMx){
-            String authCode = commonUtils.createAuthCode(5);
 
+        if (isValidMx) {
+            String authCode = commonUtils.createAuthCode(5);
             MimeMessage message = createMail(toMail, authCode);
             javaMailSender.send(message);
 
-            // 이메일 인증번호 5분 간 캐싱
-            redisTemplate.opsForValue().set(toMail, authCode, 300, TimeUnit.SECONDS); // 5분 간 유효
-
+            redisTemplate.opsForValue().set(toMail, authCode, 300, TimeUnit.SECONDS);
         } else {
-            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"유효한 도메인이 아닙니다.");
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "유효한 도메인이 아닙니다.");
         }
-
     }
 
-    // 인증번호 발송| 비밀번호 찾기용
+    /**
+     * 비밀번호 재설정 시 인증 코드를 이메일로 발송합니다.
+     *
+     * @param toMail 수신자 이메일
+     * @throws MessagingException 이메일 발송 실패 시
+     * @throws CustomHttpException 유효하지 않은 도메인이거나 소셜 로그인 계정일 경우
+     */
     @Override
     public void sendVerificationCodeForReset(String toMail) throws MessagingException {
+        boolean isValidMx = this.validateMx(toMail.split("@")[1]);
 
-        boolean isValidMx = this.validateMx(toMail.split("@")[1]); // 유효한 도메인의 이메일인가?
+        if (isValidMx) {
+            boolean isLocal = userRepository.existsByEmailAndProviderIsNull(toMail);
 
-        // Yes! 유효한 도메인
-        if(isValidMx){
-            boolean isLocal = userRepository.existsByEmailAndProviderIsNull(toMail); // 로컬 가입 유저인가?
-
-            // No! 소셜 회원
-            if(!isLocal) {
+            if (!isLocal) {
                 throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "소셜 로그인 계정은 비밀번호 재설정을 이용할 수 없습니다.");
             }
 
+            String authCode = commonUtils.createAuthCode(5);
+            MimeMessage message = createMail(toMail, authCode);
+            javaMailSender.send(message);
 
-                String authCode = commonUtils.createAuthCode(5); // 인증코드 생성
-
-                MimeMessage message = createMail(toMail, authCode);
-                javaMailSender.send(message); // 인증 코드를 메일로 전송
-
-                // 이메일 인증번호 5분 간 캐싱
-                redisTemplate.opsForValue().set(toMail, authCode, 300, TimeUnit.SECONDS); // 5분 간 유효
-
+            redisTemplate.opsForValue().set(toMail, authCode, 300, TimeUnit.SECONDS);
         } else {
-            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"유효한 도메인이 아닙니다.");
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "유효한 도메인이 아닙니다.");
         }
     }
 
-    // 재설정된 비밀번호 전송
+    /**
+     * 임시 비밀번호를 생성하여 이메일로 발송합니다.
+     *
+     * @param toMail 수신자 이메일
+     * @return 생성된 임시 비밀번호 문자열
+     * @throws MessagingException 이메일 발송 실패 시
+     */
     @Override
     public String sendResetPassword(String toMail) throws MessagingException {
-        String authCode = commonUtils.createAuthCode(12); // 12자리의 임시 비밀번호 생성
+        String authCode = commonUtils.createAuthCode(12);
         MimeMessage message = createMailForResetPassword(toMail, authCode);
         javaMailSender.send(message);
-
         return authCode;
     }
 
-    // reference: https://velog.io/@danielyang-95/%EC%9D%B4%EB%A9%94%EC%9D%BC-%EC%9C%A0%ED%9A%A8%EC%84%B1-%EA%B2%80%EC%A6%9D-by-MX-%EB%A0%88%EC%BD%94%EB%93%9C
+    /**
+     * 이메일 도메인의 MX 레코드를 검사하여 유효한 메일 도메인인지 확인합니다.
+     *
+     * @param domain 이메일 도메인 (예: gmail.com)
+     * @return 유효하면 true, 아니면 false
+     */
     @Override
     public boolean validateMx(String domain) {
         try {
-                Hashtable<String, String> env = new Hashtable<>();
-                env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
-                DirContext ictx = new InitialDirContext(env);
-                Attributes attrs = ictx.getAttributes(domain, new String[]{"MX"});
-                Attribute attr = attrs.get("MX");
+            Hashtable<String, String> env = new Hashtable<>();
+            env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
+            DirContext ictx = new InitialDirContext(env);
+            Attributes attrs = ictx.getAttributes(domain, new String[]{"MX"});
+            Attribute attr = attrs.get("MX");
 
-                if (attr == null) {
-                    return false;
-                }
-
-                return true;
-            } catch (NamingException e) {
-                return false;
-            }
+            return attr != null;
+        } catch (NamingException e) {
+            return false;
+        }
     }
 
-    // 메일 포맷 생성
+    /**
+     * 이메일 인증용 HTML 포맷의 MimeMessage를 생성합니다.
+     *
+     * @param email    수신자 이메일
+     * @param authCode 인증 코드
+     * @return 생성된 MimeMessage
+     * @throws MessagingException 메시지 생성 실패 시
+     */
     @Override
     public MimeMessage createMail(String email, String authCode) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
-
         message.setFrom(senderEmail);
         message.setRecipients(MimeMessage.RecipientType.TO, email);
         message.setSubject("이메일 인증");
+
         String body = "<html lang='ko'>" +
                 "<head>" +
                 "<meta charset='UTF-8'>" +
@@ -189,17 +234,26 @@ public class EmailServiceImpl implements EmailService{
                 "</body>" +
                 "</html>";
 
-        message.setText(body, "UTF-8", "html");
 
+
+        message.setText(body, "UTF-8", "html");
         return message;
     }
 
+    /**
+     * 비밀번호 재설정용 HTML 포맷의 MimeMessage를 생성합니다.
+     *
+     * @param email    수신자 이메일
+     * @param authCode 임시 비밀번호
+     * @return 생성된 MimeMessage
+     * @throws MessagingException 메시지 생성 실패 시
+     */
     private MimeMessage createMailForResetPassword(String email, String authCode) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
-
         message.setFrom(senderEmail);
         message.setRecipients(MimeMessage.RecipientType.TO, email);
         message.setSubject("재설정용 임시 비밀번호");
+
         String body = "<html lang='ko'>" +
                 "<head>" +
                 "<meta charset='UTF-8'>" +
@@ -220,7 +274,6 @@ public class EmailServiceImpl implements EmailService{
                 "</html>";
 
         message.setText(body, "UTF-8", "html");
-
         return message;
     }
 }

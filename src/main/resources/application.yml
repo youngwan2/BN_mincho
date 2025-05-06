@@ -22,6 +22,8 @@ spring:
           registration:
             google:
               redirect-uri: http://localhost:8080/login/oauth2/code/google
+  frontend:
+    .redirect-uri: http://localhost:5173
 server:
     port: 8080
     serverAddress: localhost
@@ -39,7 +41,8 @@ spring:
                 registration:
                     google:
                         redirect-uri: http://43.201.176.39/login/oauth2/code/google
-
+    frontend:
+      .redirect-uri: http://localhost:5173
 server:
     port: 8080
     serverAddress: 43.201.176.39 # 탄력적 IP 주소
@@ -57,7 +60,8 @@ spring:
                 registration:
                     google:
                         redirect-uri: http://43.201.176.39/login/oauth2/code/google
-
+    frontend:
+      .redirect-uri: http://localhost:5173
 server:
     port: 8081
     serverAddress: 43.201.176.39

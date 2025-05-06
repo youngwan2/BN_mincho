@@ -24,7 +24,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public  OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
+        OAuth2User oAuth2User = super.loadUser(userRequest); // 인증된 유저의 프로필 정보, 권한 정보 등이 담긴다.
         log.info("getAttributes : {}",oAuth2User.getAttributes());
 
         // registrationId == provider ex. Google
@@ -35,7 +35,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         // 구글 로그인
         if(provider.equals("google")){
 
-            customOAuth2UserInfo = new GoogleUserDetailsCustom(oAuth2User.getAttributes());
+            customOAuth2UserInfo = new GoogleUserDetailsCustom(oAuth2User.getAttributes()); // 유저 프로필 정보 등 추출
             log.info("구글 로그인:{}", customOAuth2UserInfo);
 
         }
