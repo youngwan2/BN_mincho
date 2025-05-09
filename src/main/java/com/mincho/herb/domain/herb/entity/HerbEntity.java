@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.herb.entity;
 
-import com.mincho.herb.common.base.BaseEntity;
+import com.mincho.herb.global.base.BaseEntity;
 import com.mincho.herb.domain.herb.domain.Herb;
 import jakarta.persistence.*;
 import lombok.*;

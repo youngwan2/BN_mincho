@@ -1,14 +1,14 @@
 package com.mincho.herb.domain.user.api;
 
 
-import com.mincho.herb.common.config.error.ErrorResponse;
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.config.error.HttpErrorType;
-import com.mincho.herb.common.config.success.HttpSuccessType;
-import com.mincho.herb.common.config.success.SuccessResponse;
-import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.common.util.CommonUtils;
-import com.mincho.herb.common.util.CookieUtils;
+import com.mincho.herb.global.config.error.ErrorResponse;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.config.error.HttpErrorType;
+import com.mincho.herb.global.config.success.HttpSuccessType;
+import com.mincho.herb.global.config.success.SuccessResponse;
+import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.CookieUtils;
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Member;

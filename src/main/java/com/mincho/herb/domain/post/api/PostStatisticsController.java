@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.api;
 
-import com.mincho.herb.common.config.success.HttpSuccessType;
-import com.mincho.herb.common.config.success.SuccessResponse;
+import com.mincho.herb.global.config.success.HttpSuccessType;
+import com.mincho.herb.global.config.success.SuccessResponse;
 import com.mincho.herb.domain.post.application.postStatistics.PostStatisticsService;
 import com.mincho.herb.domain.post.dto.PostCountDTO;
 import lombok.RequiredArgsConstructor;

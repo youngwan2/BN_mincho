@@ -1,9 +1,9 @@
 package com.mincho.herb.domain.bookmark.application;
 
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.common.util.CommonUtils;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
 import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;

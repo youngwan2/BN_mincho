@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.notification.application;
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.notification.domain.Notification;
 import com.mincho.herb.domain.notification.dto.NotificationDTO;
 import com.mincho.herb.domain.notification.dto.NotificationsResponse;

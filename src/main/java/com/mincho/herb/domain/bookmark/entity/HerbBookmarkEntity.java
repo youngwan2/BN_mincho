@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.bookmark.entity;
 
-import com.mincho.herb.common.base.BaseEntity;
+import com.mincho.herb.global.base.BaseEntity;
 import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;

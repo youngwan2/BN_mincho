@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.herb.application.herbRatings;
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
 import com.mincho.herb.domain.herb.entity.HerbEntity;

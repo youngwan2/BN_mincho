@@ -1,11 +1,11 @@
 package com.mincho.herb.domain.herb.api;
 
 
-import com.mincho.herb.common.config.error.ErrorResponse;
-import com.mincho.herb.common.config.error.HttpErrorType;
-import com.mincho.herb.common.config.success.HttpSuccessType;
-import com.mincho.herb.common.config.success.SuccessResponse;
-import com.mincho.herb.common.util.CommonUtils;
+import com.mincho.herb.global.config.error.ErrorResponse;
+import com.mincho.herb.global.config.error.HttpErrorType;
+import com.mincho.herb.global.config.success.HttpSuccessType;
+import com.mincho.herb.global.config.success.SuccessResponse;
+import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.domain.herb.application.herb.HerbService;
 import com.mincho.herb.domain.herb.application.herbRatings.HerbRatingsService;
 import com.mincho.herb.domain.herb.domain.HerbRatings;

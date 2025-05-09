@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.comment.entity;
 
-import com.mincho.herb.common.base.BaseEntity;
+import com.mincho.herb.global.base.BaseEntity;
 import com.mincho.herb.domain.comment.domain.Comment;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;

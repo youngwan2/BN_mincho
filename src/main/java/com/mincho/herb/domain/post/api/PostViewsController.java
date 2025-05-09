@@ -1,8 +1,8 @@
 package com.mincho.herb.domain.post.api;
 
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.post.application.postView.PostViewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

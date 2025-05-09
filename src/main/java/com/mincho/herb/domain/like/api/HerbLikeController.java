@@ -1,8 +1,8 @@
 package com.mincho.herb.domain.like.api;
 
 
-import com.mincho.herb.common.config.success.HttpSuccessType;
-import com.mincho.herb.common.config.success.SuccessResponse;
+import com.mincho.herb.global.config.success.HttpSuccessType;
+import com.mincho.herb.global.config.success.SuccessResponse;
 import com.mincho.herb.domain.like.application.HerbLikeService;
 import com.mincho.herb.domain.like.dto.HerbLikeCountResponseDTO;
 import lombok.RequiredArgsConstructor;

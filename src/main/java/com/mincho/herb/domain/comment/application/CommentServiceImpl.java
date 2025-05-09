@@ -1,8 +1,8 @@
 package com.mincho.herb.domain.comment.application;
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.exception.CustomHttpException;
-import com.mincho.herb.common.util.CommonUtils;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.domain.comment.dto.*;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;

@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.herb.application.herb;
 
-import com.mincho.herb.common.dto.PageInfoDTO;
+import com.mincho.herb.global.dto.PageInfoDTO;
 import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.dto.*;
 

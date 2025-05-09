@@ -1,10 +1,9 @@
 package com.mincho.herb.domain.post.application.postStatistics;
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
-import com.mincho.herb.domain.post.repository.postStatistics.PostStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

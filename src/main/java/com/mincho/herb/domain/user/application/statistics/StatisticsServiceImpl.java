@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.user.application.statistics;
 
-import com.mincho.herb.common.util.CommonUtils;
+import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.post.repository.post.PostRepository;

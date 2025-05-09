@@ -1,8 +1,8 @@
 package com.mincho.herb.domain.herb.repository.herb;
 
-import com.mincho.herb.common.config.error.HttpErrorCode;
-import com.mincho.herb.common.dto.PageInfoDTO;
-import com.mincho.herb.common.exception.CustomHttpException;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.dto.PageInfoDTO;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.herb.dto.HerbDTO;
 import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
 import com.mincho.herb.domain.herb.dto.HerbSort;

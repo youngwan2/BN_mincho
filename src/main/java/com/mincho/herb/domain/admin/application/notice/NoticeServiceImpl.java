@@ -1,0 +1,129 @@
+package com.mincho.herb.domain.admin.application.notice;
+
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.domain.admin.dto.notice.NoticeRequestDTO;
+import com.mincho.herb.domain.admin.dto.notice.NoticeResponseDTO;
+import com.mincho.herb.domain.admin.dto.notice.NoticeSearchConditionDTO;
+import com.mincho.herb.domain.admin.entity.NoticeEntity;
+import com.mincho.herb.domain.admin.repository.board.NoticeRepository;
+import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.repository.user.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+/**
+ * 관리자용 게시판 서비스 구현체.
+ * 게시글 생성, 수정, 삭제, 조회 등의 비즈니스 로직을 처리합니다.
+ *
+ * <p>이 클래스는 로그인된 사용자의 인증 및 권한 확인을 수행하고,
+ * 게시글에 대한 CRUD 및 조건 검색 기능을 제공합니다.</p>
+ *
+ * @author YoungWan Kim
+ */
+@Service
+@RequiredArgsConstructor
+public class NoticeServiceImpl implements NoticeService {
+
+    private final NoticeRepository noticeRepository;
+    private final UserRepository userRepository;
+    private final CommonUtils commonUtils;
+
+    /**
+     * 게시글을 생성합니다.
+     * 관리자 권한이 있는 사용자만 생성할 수 있습니다.
+     *
+     * @param dto 게시글 생성 요청 데이터
+     * @throws CustomHttpException 로그인하지 않았거나 관리자 권한이 없는 경우
+     */
+    @Override
+    public void create(NoticeRequestDTO dto) {
+
+        MemberEntity memberEntity = adminCheckAndReturnAdmin();
+
+        NoticeEntity board = com.mincho.herb.domain.admin.entity.NoticeEntity.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .category(dto.getCategory())
+                .pinned(dto.getPinned() != null ? dto.getPinned() : false)
+                .tags(dto.getTags())
+                .publishedAt(java.time.LocalDateTime.now())
+                .admin(memberEntity)
+                .deleted(false)
+                .build();
+
+        noticeRepository.save(board);
+    }
+
+    /**
+     * 기존 게시글을 수정합니다.
+     *
+     * @param id  수정할 게시글 ID
+     * @param dto 수정할 데이터
+     * @throws CustomHttpException 게시글이 존재하지 않는 경우
+     */
+    @Override
+    public void update(Long id, NoticeRequestDTO dto) {
+        adminCheckAndReturnAdmin();
+
+        NoticeEntity board = noticeRepository.findById(id)
+                .orElseThrow(() -> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        board.setTitle(dto.getTitle());
+        board.setContent(dto.getContent());
+        board.setCategory(dto.getCategory());
+        board.setPinned(dto.getPinned() != null ? dto.getPinned() : false);
+        board.setTags(dto.getTags());
+
+        noticeRepository.save(board);
+    }
+
+    /**
+     * 게시글을 삭제(soft delete)합니다.
+     *
+     * @param id 삭제할 게시글 ID
+     * @throws CustomHttpException 게시글이 존재하지 않는 경우
+     */
+    @Override
+    public void delete(Long id) {
+        adminCheckAndReturnAdmin();
+
+        NoticeEntity board = noticeRepository.findById(id)
+                .orElseThrow(() -> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "게시글을 찾을 수 없습니다."));
+
+        board.setDeleted(true);
+        noticeRepository.save(board);
+    }
+
+    /**
+     * 게시글을 조건에 따라 검색합니다. 페이징 처리 및 검색 필터(카테고리, 검색어 등)를 지원합니다.
+     *
+     * @param condition 검색 조건 DTO
+     * @param pageable  페이징 정보
+     * @return 검색된 게시글 목록 (페이지네이션 포함)
+     */
+    @Override
+    public NoticeResponseDTO search(NoticeSearchConditionDTO condition, Pageable pageable) {
+        return noticeRepository.searchBoards(condition, pageable);
+    }
+
+
+   /** 해당 사용자가 관리자 권한이 있는지 확인합니다. */
+    private MemberEntity adminCheckAndReturnAdmin(){
+        String email = commonUtils.userCheck();
+        if (email == null) {
+            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
+        }
+
+        MemberEntity memberEntity = userRepository.findByEmail(email);
+
+        if (!memberEntity.getRole().equals("ROLE_ADMIN")) {
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자 권한이 없습니다.");
+        }
+
+        return memberEntity;
+    }
+}
+

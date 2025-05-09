@@ -1,6 +1,6 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.common.util.JWTUtils;
+import com.mincho.herb.global.util.JWTUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +19,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JWTUtils jwtUtils;
 
     @Value(value = "spring.frontend.redirect-uri")
-    private final String frontendRedirectUri;
+    private String frontendRedirectUri;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
