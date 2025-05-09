@@ -41,11 +41,11 @@ jobs:
 
       # Docker 이미지 빌드
       - name: Build Docker
-        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/live_server .
+        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/be_mincho .
 
       # Docker 이미지 푸시
       - name: Push Docker
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/be_mincho:latest
 
   deploy:
     needs: build
@@ -54,15 +54,15 @@ jobs:
       # 현재 배포 중인 서버 상태 확인 (8080/8081 중 어떤 포트가 사용 중인지 확인)
       - name: Set target IP
         run: |
-          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.BE_SERVER_IP }}/env")
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.BE_SERVER_IP }}/ch/env")
           echo $STATUS
           if [ $STATUS = 200 ]; then
-            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.BE_SERVER_IP }}/env")
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.BE_SERVER_IP }}/ch/env")
           else
             CURRENT_UPSTREAM=green
           fi
           echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
-          if [ $CURRENT_UPSTREAM = blue ]; then
+          if [ $CURRENT_UPSTREAM = blue ]; then 
             echo "CURRENT_PORT=8080" >> $GITHUB_ENV
             echo "STOPPED_PORT=8081" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
@@ -104,7 +104,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload' 
+            sudo docker exec -i nginx-server bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload' 
 
       # 이전에 실행 중이던 컨테이너 중지 및 삭제
       - name: Stop current server
