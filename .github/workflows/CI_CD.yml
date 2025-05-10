@@ -85,7 +85,7 @@ jobs:
           script_stop: true
           script: |
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/be_mincho:latest
-            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
+            sudo docker compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
 
       # 새로 띄운 서버 상태 확인 (env 엔드포인트로 200 응답 확인)
       - name: Check deploy server URL
