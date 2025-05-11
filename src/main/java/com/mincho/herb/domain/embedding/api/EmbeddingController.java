@@ -30,19 +30,4 @@ public class EmbeddingController {
         return ResponseEntity.created(null).build();
 
     }
-
-    @GetMapping("/herbs/recommend")
-    public ResponseEntity<?> embed(@RequestParam(value = "message") String message) {
-
-        List<RecommendHerbsDTO> recommendHerbs = embeddingService.similaritySearch(message);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("a hh:mm", Locale.KOREAN);
-        RecommendHerbResponseDTO response = new RecommendHerbResponseDTO(
-                "bot",
-                recommendHerbs,
-                LocalTime.now().format(formatter)
-        );
-
-        return ResponseEntity.ok(response);
-    }
 }

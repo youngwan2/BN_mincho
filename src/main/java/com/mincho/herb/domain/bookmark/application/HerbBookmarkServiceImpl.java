@@ -1,6 +1,8 @@
 package com.mincho.herb.domain.bookmark.application;
 
 
+import com.mincho.herb.domain.bookmark.dto.HerbBookmarkLogResponseDTO;
+import com.mincho.herb.global.aop.UserActivityAction;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
@@ -32,7 +34,8 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
     // 관심약초 추가
     @Override
-    public void addHerbBookmark(String url, Long herbId) {
+    @UserActivityAction(action = "herb_bookmark")
+    public HerbBookmarkLogResponseDTO addHerbBookmark(String url, Long herbId) {
         String email = commonUtils.userCheck();
 
         if(email == null){
@@ -58,13 +61,17 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
                 .herb(herbEntity)
                 .url(url)
                 .build());
+
+       return HerbBookmarkLogResponseDTO.builder()
+               .herbId(herbId)
+               .herbName(herbEntity.getCntntsSj())
+               .build();
     }
 
     // 관심약초 개수 조회(약초별)
     @Override
     public Long getBookmarkCount(Long herbId) {
-        Long count = herbBookmarkRepository.countByHerbId(herbId);
-        return count;
+        return herbBookmarkRepository.countByHerbId(herbId);
     }
 
 
@@ -79,7 +86,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
         MemberEntity memberEntity = memberEntity = userRepository.findByEmail(email);
 
-        return herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbId) != null ? true : false;
+        return herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbId) != null;
 
     }
 

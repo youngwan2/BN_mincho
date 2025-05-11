@@ -1,5 +1,7 @@
 package com.mincho.herb.domain.like.application;
 
+import com.mincho.herb.domain.like.dto.LikeHerbResponseDTO;
+import com.mincho.herb.global.aop.UserActivityAction;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
@@ -25,7 +27,8 @@ public class HerbLikeServiceImpl implements HerbLikeService{
 
     // 좋아요 추가
     @Override
-    public void addHerbLike(Long herbId) {
+    @UserActivityAction(action = "herb_like")
+    public LikeHerbResponseDTO addHerbLike(Long herbId) {
         String email = commonUtils.userCheck();
         
         // 좋아요 존재하면 취소
@@ -45,6 +48,10 @@ public class HerbLikeServiceImpl implements HerbLikeService{
         herbLikeEntity.setMember(memberEntity);
 
         herbLikeRepository.insertHerbLike(herbLikeEntity);
+        return LikeHerbResponseDTO.builder()
+                .herbId(herbEntity.getId())
+                .herbName(herbEntity.getCntntsSj())
+                .build();
     }
 
     // 좋아요 취소

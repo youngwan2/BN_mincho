@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.herb.application.herb;
 
+import com.mincho.herb.domain.embedding.dto.RecommendHerbsDTO;
 import com.mincho.herb.global.dto.PageInfoDTO;
 import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.dto.*;
@@ -20,4 +21,5 @@ public interface HerbService {
     List<HerbDTO> getHerbsBloomingThisMonth(String month);
     Long getHerbCount(HerbFilteringRequestDTO herbFilteringRequestDTO);
     List<PopularityHerbsDTO> getHerbsMostview();
+    List<RecommendHerbsDTO> getSimilaritySearchByRag(String question); // 코사인 유사도 검색
 }

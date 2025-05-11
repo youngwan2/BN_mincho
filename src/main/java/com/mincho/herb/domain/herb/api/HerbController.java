@@ -1,6 +1,8 @@
 package com.mincho.herb.domain.herb.api;
 
 
+import com.mincho.herb.domain.embedding.dto.RecommendHerbResponseDTO;
+import com.mincho.herb.domain.embedding.dto.RecommendHerbsDTO;
 import com.mincho.herb.global.config.error.ErrorResponse;
 import com.mincho.herb.global.config.error.HttpErrorType;
 import com.mincho.herb.global.config.success.HttpSuccessType;
@@ -15,7 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @RestController
@@ -141,5 +146,20 @@ public class HerbController {
         return new SuccessResponse<>().getResponse(200, "성공적으로 추가되었습니다.", HttpSuccessType.OK);
     }
 
+    //
+    @GetMapping("/herbs/recommend")
+    public ResponseEntity<?> embed(@RequestParam(value = "message") String message) {
+
+        List<RecommendHerbsDTO> recommendHerbs = herbService.getSimilaritySearchByRag(message);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("a hh:mm", Locale.KOREAN);
+        RecommendHerbResponseDTO response = new RecommendHerbResponseDTO(
+                "bot",
+                recommendHerbs,
+                LocalTime.now().format(formatter)
+        );
+
+        return ResponseEntity.ok(response);
+    }
 
 }

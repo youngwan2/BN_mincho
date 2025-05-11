@@ -82,7 +82,6 @@ jobs:
           username: ubuntu
           host: ${{ secrets.BE_SERVER_IP }} # ec2의 탄력적 IP
           key: ${{ secrets.EC2_SSH_KEY }} # EC2 SSH 접근 키
-          script_stop: true
           script: |
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/be_mincho:latest
             sudo docker compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
