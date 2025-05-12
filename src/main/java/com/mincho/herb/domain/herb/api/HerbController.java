@@ -147,7 +147,7 @@ public class HerbController {
     }
 
     //
-    @GetMapping("/herbs/recommend")
+    @GetMapping("/recommend")
     public ResponseEntity<?> embed(@RequestParam(value = "message") String message) {
 
         List<RecommendHerbsDTO> recommendHerbs = herbService.getSimilaritySearchByRag(message);
