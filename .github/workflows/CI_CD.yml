@@ -54,10 +54,10 @@ jobs:
       # 현재 배포 중인 서버 상태 확인 (8080/8081 중 어떤 포트가 사용 중인지 확인)
       - name: Set target IP
         run: |
-          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.BE_SERVER_IP }}/ch/env")
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "https://${{ secrets.BE_SERVER_IP }}/ch/env")
           echo $STATUS
           if [ $STATUS = 200 ]; then
-            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.BE_SERVER_IP }}/ch/env")
+            CURRENT_UPSTREAM=$(curl -s "https://${{ secrets.BE_SERVER_IP }}/ch/env")
           else
             CURRENT_UPSTREAM=green
           fi
@@ -90,7 +90,7 @@ jobs:
       - name: Check deploy server URL
         uses: jtalk/url-health-check-action@v3
         with:
-          url: http://${{ secrets.BE_SERVER_IP }}:${{env.STOPPED_PORT}}/ch/env
+          url: https://${{ secrets.BE_SERVER_IP }}:${{env.STOPPED_PORT}}/ch/env
           max-attempts: 3
           retry-delay: 10s
 
