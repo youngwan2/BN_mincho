@@ -40,12 +40,12 @@ spring:
             client:
                 registration:
                     google:
-                        redirect-uri: http://43.201.176.39/login/oauth2/code/google
+                        redirect-uri: ${REDIRECT_GOOGLE_URL}
     frontend:
-      .redirect-uri: https://http://www.minchoherb.com
+      .redirect-uri: ${FRONTEND_URL}
 server:
     port: 8080
-    serverAddress: 43.201.176.39 # 탄력적 IP 주소
+    serverAddress: ${SERVER_HOST}
     serverName: blue_server
 
 ---
@@ -59,12 +59,12 @@ spring:
             client:
                 registration:
                     google:
-                        redirect-uri: http://43.201.176.39/login/oauth2/code/google
+                        redirect-uri: ${REDIRECT_GOOGLE_URL}
     frontend:
-      .redirect-uri: https://http://www.minchoherb.com
+      .redirect-uri: ${FRONTEND_URL}
 server:
     port: 8081
-    serverAddress: 43.201.176.39
+    serverAddress: ${SERVER_HOST}
     serverName: green_server
 
 ---
