@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostService{
                 .build();
 
 
-        log.info("userId:{}, {}", userId, postEntity.getMember().getId());
+        log.debug("userId:{}, {}", userId, postEntity.getMember().getId());
 
         return DetailPostResponseDTO.builder()
                 .id(postEntity.getId())

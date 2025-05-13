@@ -78,14 +78,19 @@ public class UserServiceImpl implements  UserService{
     // 비밀번호 일치 유무 체크
     @Override
     public boolean checkPassword(String email, String rawPassword) {
-        String password = userRepository.findByEmail(email).getPassword();
+        MemberEntity member  = userRepository.findByEmail(email);
+
+        if(member.getProviderId() == null) {
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "소셜 로그인 유저는 이용할 수 없습니다.");
+        }
+
+        String password = member.getPassword();
         return bCryptPasswordEncoder.matches(rawPassword, password );
     }
 
     // 로그인
     @Override
     public Map<String, String> login(LoginRequestDTO loginRequestDTO) {
-
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
 

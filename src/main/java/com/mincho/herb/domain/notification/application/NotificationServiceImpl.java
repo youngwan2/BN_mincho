@@ -102,7 +102,6 @@ public class NotificationServiceImpl  implements NotificationService{
             notifications = List.of();
         }
 
-        log.info("notifications:{}", notifications);
         List<NotificationDTO> notificationDTOS= notifications.stream().map(notificationEntity->{
 
             return NotificationDTO.builder()
@@ -132,7 +131,7 @@ public class NotificationServiceImpl  implements NotificationService{
 
         SseEmitter emitter = emitterMap.get(userId);
 
-        log.info("targetEmitter:{}", emitter);
+        log.debug("targetEmitter:{}", emitter);
         if(emitter != null){
             try {
                 emitter.send(SseEmitter.event()

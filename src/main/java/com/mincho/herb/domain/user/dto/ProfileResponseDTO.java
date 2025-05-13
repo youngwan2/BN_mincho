@@ -10,4 +10,5 @@ public class ProfileResponseDTO {
     private String nickname;
     private String introduction;
     private String avatarUrl;
+    private Boolean isSocial;
 }

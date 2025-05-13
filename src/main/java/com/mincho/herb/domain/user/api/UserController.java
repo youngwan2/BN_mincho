@@ -135,8 +135,8 @@ public class UserController {
     // 로그아웃
     @DeleteMapping("/me/logout")
     public ResponseEntity<Map<String, String>> logout(
-            HttpServletResponse response,
-            @CookieValue("refresh") String refreshToken ){
+            HttpServletResponse response
+             ){
 
         response.addCookie(cookieUtils.createCookie("refresh",null, 0));
         return new SuccessResponse<>().getResponse(200, "로그아웃 되었습니다.", HttpSuccessType.OK);

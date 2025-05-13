@@ -40,9 +40,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileResponseDTO getUserProfile(String email) {
         Member member = userService.findUserByEmail(email);
-        if(member == null){
-            throw  new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "회원이 아닙니다.");
-        }
 
         ProfileEntity profileEntity=  profileRepository.findProfileByUser(member);
 
@@ -50,6 +47,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .nickname(profileEntity.getNickname())
                 .avatarUrl(profileEntity.getAvatarUrl())
                 .introduction(profileEntity.getIntroduction())
+                .isSocial(member.getProviderId() != null)
                 .build();
     }
 
