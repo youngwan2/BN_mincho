@@ -23,7 +23,13 @@ spring:
             google:
               redirect-uri: http://localhost:8080/login/oauth2/code/google
   frontend:
-    .redirect-uri: http://localhost:5173
+     redirect-uri: http://localhost:5173
+
+  jpa:
+     defer-datasource-initialization: true
+     hibernate:
+        ddl-auto: update
+        show-sql: true
 server:
     port: 8080
     serverAddress: localhost
@@ -42,7 +48,10 @@ spring:
                     google:
                         redirect-uri: ${REDIRECT_GOOGLE_URL}
     frontend:
-      .redirect-uri: ${FRONTEND_URL}
+      redirect-uri: ${FRONTEND_URL}
+    jpa:
+      hibernate:
+        ddl-auto: none
 server:
     port: 8080
     serverAddress: ${SERVER_HOST}
@@ -61,7 +70,11 @@ spring:
                     google:
                         redirect-uri: ${REDIRECT_GOOGLE_URL}
     frontend:
-      .redirect-uri: ${FRONTEND_URL}
+       redirect-uri: ${FRONTEND_URL}
+
+    jpa:
+      hibernate:
+        ddl-auto: none
 server:
     port: 8081
     serverAddress: ${SERVER_HOST}
@@ -85,11 +98,7 @@ spring:
             maximum-pool-size: 20
             connection-timeout: 30000
 
-    jpa:
-        defer-datasource-initialization: true
-        hibernate:
-            ddl-auto: update
-            show-sql: true
+
     database: postgresql
 
     jwt:

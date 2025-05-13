@@ -25,10 +25,6 @@ public class UserActivityLoggingAspect {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         String logType = userActivityAction.action();
 
-        if(!email.contains("@")){
-            email = "anonymous";
-        }
-
         // 상세 페이지 조회 로그 저장
         switch (logType) {
             case "herb_detail" -> {

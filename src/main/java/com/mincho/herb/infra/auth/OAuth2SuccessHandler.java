@@ -5,6 +5,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -14,11 +15,12 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JWTUtils jwtUtils;
 
-    @Value(value = "spring.frontend.redirect-uri")
+    @Value("${spring.frontend.redirect-uri}")
     private String frontendRedirectUri;
 
     @Override
@@ -41,6 +43,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(refreshCookie);
 
         String redirectUri = frontendRedirectUri +"/auth/oauth-success?token=" + accessToken;
+        log.debug("Redirecting to: {}", redirectUri);
         response.sendRedirect(redirectUri);
     }
 }
