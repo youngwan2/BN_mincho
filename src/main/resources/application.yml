@@ -102,6 +102,9 @@ spring:
 
     jpa:
       open-in-view: false
+      hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
 
     jwt:
         secret: ${JWT}
