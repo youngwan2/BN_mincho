@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.notification.application;
 
+import com.mincho.herb.domain.notification.dto.NotificationReadStateResponseDTO;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.notification.domain.Notification;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -68,6 +70,7 @@ public class NotificationServiceImpl  implements NotificationService{
 
     // 알림 저장
     @Override
+    @Transactional
     public NotificationEntity save(Long userId, String type,String path, String message) {
         Notification notification = Notification.builder()
                 .userId(userId)
@@ -146,6 +149,7 @@ public class NotificationServiceImpl  implements NotificationService{
 
     // 해당 알림 읽음 처리
     @Override
+    @Transactional
     public void markAyRead(Long id) {
         NotificationEntity notificationEntity = notificationRepository.findById(id);
         
@@ -159,17 +163,21 @@ public class NotificationServiceImpl  implements NotificationService{
 
     // 읽은 알림 전체 삭제
     @Override
-    public void removeAllReadNotifications(List<Long> ids) {
+    @Transactional
+    public void removeAllReadNotifications() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(!email.contains("@")){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
         }
+        Member member = userService.findUserByEmail(email);
+        notificationRepository.deleteAllByIsReadTrue(member.getId());
 
     }
 
     // 선택 알림 삭제
     @Override
+    @Transactional
     public void removeReadNotification(List<Long> ids) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -178,4 +186,22 @@ public class NotificationServiceImpl  implements NotificationService{
         }
 
     }
+
+
+    // 읽지 않은 알림이 하나라도 존재하면 false
+    @Override
+    public NotificationReadStateResponseDTO getNotificationReadState() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if(!email.contains("@")){
+            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
+        }
+        Member member = userService.findUserByEmail(email);
+        Boolean isRead = notificationRepository.existsByUserIdAndIsReadFalse(member.getId());
+
+        return NotificationReadStateResponseDTO.builder()
+                .isAllRead(isRead)
+                .build();
+    }
+
 }

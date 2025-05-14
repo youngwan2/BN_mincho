@@ -15,6 +15,7 @@ public class PostStatisticsServiceImpl implements PostStatisticsService {
 
     private final PostRepository postRepository;
 
+    // 포스트 통계
     @Override
     public List<PostCountDTO> getPostStatistics() {
         List<PostCountDTO> counts = postRepository.countsByCategory();

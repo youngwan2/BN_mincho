@@ -14,6 +14,7 @@ import com.mincho.herb.domain.user.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -28,6 +29,7 @@ public class HerbLikeServiceImpl implements HerbLikeService{
     // 좋아요 추가
     @Override
     @UserActivityAction(action = "herb_like")
+    @Transactional
     public LikeHerbResponseDTO addHerbLike(Long herbId) {
         String email = commonUtils.userCheck();
         
@@ -56,6 +58,7 @@ public class HerbLikeServiceImpl implements HerbLikeService{
 
     // 좋아요 취소
     @Override
+    @Transactional
     public void deleteHerbLike(Long herbId) {
         String email = commonUtils.userCheck();
 

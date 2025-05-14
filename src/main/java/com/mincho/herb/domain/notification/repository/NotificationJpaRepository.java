@@ -17,8 +17,8 @@ public interface NotificationJpaRepository extends JpaRepository<NotificationEnt
 
     // 읽은 상태의 알림 모두 제거
     @Modifying
-    @Query("DELETE FROM NotificationEntity n WHERE n.id IN :ids AND n.isRead = true ")
-    void deleteAllByIdsAndIsReadTrue(List<Long> ids);
+    @Query("DELETE FROM NotificationEntity n WHERE n.userId =:userId AND n.isRead = true ")
+    void deleteAllByIdsAndIsReadTrueAndUserId(Long userId);
 
     // 선택한 알림 제거
     @Modifying
@@ -26,4 +26,8 @@ public interface NotificationJpaRepository extends JpaRepository<NotificationEnt
     void deleteAllByIds(List<Long> ids);
 
     Long countByUserId(Long userId);
+
+    // 읽지 않은 알림이 하나라도 존재하면 false
+    @Query("SELECT CASE WHEN COUNT(n) > 0 THEN false ELSE true END FROM NotificationEntity n WHERE n.userId = :userId AND n.isRead = false")
+    Boolean existsByUserIdAndIsReadFalse(Long userId);
 }

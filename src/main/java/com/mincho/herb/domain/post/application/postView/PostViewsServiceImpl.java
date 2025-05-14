@@ -4,6 +4,7 @@ import com.mincho.herb.domain.post.domain.ViewCount;
 import com.mincho.herb.domain.post.repository.postViews.PostViewsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +15,7 @@ public class PostViewsServiceImpl implements PostViewsService{
     
     // 포스트 조회수 증가
     @Override
+    @Transactional
     public int updateViewCount(Long postId) {
         Long oldPostView =postViewsRepository.findByPostId(postId).getViewCount();
 

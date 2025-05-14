@@ -2,6 +2,7 @@ package com.mincho.herb.domain.notification.api;
 
 
 import com.mincho.herb.domain.notification.application.NotificationService;
+import com.mincho.herb.domain.notification.dto.NotificationReadStateResponseDTO;
 import com.mincho.herb.domain.notification.dto.NotificationsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -56,11 +57,16 @@ public class NotificationController {
     }
 
     // 읽은 알림 전체 삭제 처리
-    @DeleteMapping("/notifications/read")
-    public ResponseEntity<Void> removeAllReadNotifications(
-            @PathVariable List<Long> ids
-    ){
-        notificationService.removeAllReadNotifications(ids);
+    @DeleteMapping("/notifications/reads")
+    public ResponseEntity<Void> removeAllReadNotifications(){
+        notificationService.removeAllReadNotifications();
         return ResponseEntity.noContent().build();
+    }
+
+    // 읽지 않은 알림이 하나라도 존재하면 false
+    @GetMapping("/notifications/unread-status")
+    public ResponseEntity<NotificationReadStateResponseDTO> getNotificationReadState() {
+        NotificationReadStateResponseDTO unreadStatus = notificationService.getNotificationReadState();
+        return ResponseEntity.ok(unreadStatus);
     }
 }

@@ -18,7 +18,6 @@ import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +51,10 @@ public class UserServiceImpl implements  UserService{
 
 
 
+    
+    // 회원가입
     @Override
+    @Transactional
     public Member register(RegisterRequestDTO registerDTO) {
         DuplicateCheckDTO duplicateCheckDTO = new DuplicateCheckDTO(registerDTO.getEmail());
         boolean hasUser = dueCheck(duplicateCheckDTO);
@@ -117,8 +120,8 @@ public class UserServiceImpl implements  UserService{
     }
 
     // 회원탈퇴
-    @Transactional
     @Override
+    @Transactional
     public void deleteUser(String email) {
         boolean hasUser =userRepository.existsByEmail(email);
         if(!hasUser) throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
@@ -150,6 +153,7 @@ public class UserServiceImpl implements  UserService{
 
     // 비밀번호 수정
     @Override
+    @Transactional
     public void updatePassword(String email, String password) {
         String encodePw = bCryptPasswordEncoder.encode(password);
         userRepository.updatePasswordByEmail(encodePw, email);
@@ -167,6 +171,7 @@ public class UserServiceImpl implements  UserService{
 
     // 모든 브라우저 로그아웃
     @Override
+    @Transactional
     public void logoutAll(Long id) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -182,6 +187,8 @@ public class UserServiceImpl implements  UserService{
         refreshTokenRepository.removeRefreshTokenAllByUserId(memberEntity.getId());
     }
 
+    
+    // 로그인 유무 체크
     @Override
     public boolean isLogin() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

@@ -97,9 +97,11 @@ spring:
         hikari:
             maximum-pool-size: 20
             connection-timeout: 30000
-
-
+            leak-detection-threshold: 5000
     database: postgresql
+
+    jpa:
+      open-in-view: false
 
     jwt:
         secret: ${JWT}

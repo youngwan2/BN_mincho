@@ -19,6 +19,8 @@ public class PostLikeServiceImpl implements PostLikeService{
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
+    
+    // 좋아요 개수 조회
     @Override
     public Integer getPostLikeCount(Long id) {
         Integer count = postLikeRepository.findLikeSumById(id);
@@ -27,6 +29,8 @@ public class PostLikeServiceImpl implements PostLikeService{
     }
         return count ;
     }
+    
+    // 좋아요 추가
     @Override
     @Transactional
     public Boolean addPostLike(Long postId, String email) {
@@ -57,6 +61,4 @@ public class PostLikeServiceImpl implements PostLikeService{
                return false;
            }
     }
-
-
 }

@@ -47,7 +47,13 @@ public class NotificationRepositoryImpl implements NotificationRepository{
     }
     // 읽은 알림 삭제
     @Override
-    public void deleteAllByIdsAndIsReadTrue(List<Long> ids) {
-        notificationJpaRepository.deleteAllByIdsAndIsReadTrue(ids);
+    public void deleteAllByIsReadTrue(Long userId) {
+        notificationJpaRepository.deleteAllByIdsAndIsReadTrueAndUserId(userId);
+    }
+
+    // 읽지 않은 알림이 하나라도 존재하면 false
+    @Override
+    public Boolean existsByUserIdAndIsReadFalse(Long userId) {
+        return notificationJpaRepository.existsByUserIdAndIsReadFalse(userId);
     }
 }

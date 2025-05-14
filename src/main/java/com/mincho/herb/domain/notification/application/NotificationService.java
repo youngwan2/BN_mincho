@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.notification.application;
 
 
+import com.mincho.herb.domain.notification.dto.NotificationReadStateResponseDTO;
 import com.mincho.herb.domain.notification.dto.NotificationsResponse;
 import com.mincho.herb.domain.notification.entity.NotificationEntity;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -21,6 +22,9 @@ public interface NotificationService {
      * */
     void sendNotification(Long userId, String type, String path, String message);
     void markAyRead(Long id);
-    void removeAllReadNotifications(List<Long> ids);
+    void removeAllReadNotifications();
     void removeReadNotification(List<Long> ids);
+
+    // 읽지 않은 알림이 하나라도 존재하면 false
+    NotificationReadStateResponseDTO getNotificationReadState();
 }

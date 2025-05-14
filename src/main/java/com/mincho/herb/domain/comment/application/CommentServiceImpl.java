@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 추가
     @Override
+    @Transactional
     public void addComment(CommentCreateRequestDTO commentCreateRequestDTO, String email) {
 
         MemberEntity memberEntity = userRepository.findByEmail(email);
@@ -83,6 +85,7 @@ public class CommentServiceImpl implements CommentService{
     
     // 댓글 수정
     @Override
+    @Transactional
     public void updateComment(CommentUpdateRequestDTO commentUpdateRequestDTO) {
       Long commentId  = commentUpdateRequestDTO.getId();
       CommentEntity commentEntity = commentRepository.findById(commentId);
@@ -99,6 +102,7 @@ public class CommentServiceImpl implements CommentService{
 
     // 댓글 삭제
     @Override
+    @Transactional
     public void deleteComment(Long commentId) {
         CommentEntity commentEntity = commentRepository.findById(commentId);
         

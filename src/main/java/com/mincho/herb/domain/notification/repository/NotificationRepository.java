@@ -12,5 +12,6 @@ public interface NotificationRepository{
     NotificationEntity findById(Long id);
     Long countByUserId(Long userId);
     void deleteAllByIds(List<Long> ids);
-    void deleteAllByIdsAndIsReadTrue(List<Long> ids);
+    void deleteAllByIsReadTrue(Long userId);
+    Boolean existsByUserIdAndIsReadFalse(Long userId);
 }

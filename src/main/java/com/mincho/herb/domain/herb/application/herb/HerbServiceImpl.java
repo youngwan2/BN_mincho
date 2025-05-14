@@ -27,6 +27,7 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class HerbServiceImpl implements HerbService{
 
     // 약초 등록
     @Override
+    @Transactional
     public void createHerb(HerbCreateRequestDTO herbCreateRequestDTO) {
        String roles = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -161,6 +163,7 @@ public class HerbServiceImpl implements HerbService{
 
     // 약초 제거
     @Override
+    @Transactional
     public void removeHerb(Long id) {
         String roles = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -180,6 +183,7 @@ public class HerbServiceImpl implements HerbService{
 
     // 허브 수정
     @Override
+    @Transactional
     public void updateHerb(HerbUpdateRequestDTO herbUpdateRequestDTO, Long herbId) {
         String roles = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -220,6 +224,7 @@ public class HerbServiceImpl implements HerbService{
 
     }
 
+    // 랜덤 약초
     @Override
     public List<HerbDTO> getRandomHerbs(Long herbId) {
 

@@ -10,11 +10,11 @@ import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -71,6 +71,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     // 프로필 생성
     @Override
+    @Transactional
     public Profile insertProfile(Member member) {
         Profile profile = Profile.builder()
                 .nickname(null)

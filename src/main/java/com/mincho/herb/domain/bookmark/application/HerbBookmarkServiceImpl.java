@@ -14,16 +14,17 @@ import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
     private final HerbBookmarkRepository herbBookmarkRepository;
@@ -35,6 +36,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     // 관심약초 추가
     @Override
     @UserActivityAction(action = "herb_bookmark")
+
     public HerbBookmarkLogResponseDTO addHerbBookmark(String url, Long herbId) {
         String email = commonUtils.userCheck();
 
