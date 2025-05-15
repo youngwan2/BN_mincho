@@ -286,6 +286,7 @@ public class HerbServiceImpl implements HerbService{
 
     }
 
+
     // 약초 전체 개수
     @Override
     public Long getHerbCount(HerbFilteringRequestDTO herbFilteringRequestDTO) {
@@ -297,6 +298,19 @@ public class HerbServiceImpl implements HerbService{
     public List<PopularityHerbsDTO> getHerbsMostview() {
         return herbRepository.findAllByOrderByViewCountDesc();
     }
+
+    // 유사도 기반 약초 검색
+    @Override
+    @UserActivityAction(action="search")
+    public List<HerbDTO> getRecommendHerbs() {
+
+        List<Document> results = vectorStore.similaritySearch(SearchRequest.builder()
+
+                .build());
+
+        return List.of();
+    }
+
 
     // RAG 기반 유사도 검색
     @Override

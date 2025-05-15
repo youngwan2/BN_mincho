@@ -19,6 +19,7 @@ public interface HerbService {
     void insertMany() throws IOException;
     List<HerbDTO> getRandomHerbs(Long herbId);
     List<HerbDTO> getHerbsBloomingThisMonth(String month);
+    List<HerbDTO> getRecommendHerbs();
     Long getHerbCount(HerbFilteringRequestDTO herbFilteringRequestDTO);
     List<PopularityHerbsDTO> getHerbsMostview();
     List<RecommendHerbsDTO> getSimilaritySearchByRag(String question); // 코사인 유사도 검색

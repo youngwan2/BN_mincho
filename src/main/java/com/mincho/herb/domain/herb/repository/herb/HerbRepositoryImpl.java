@@ -99,6 +99,11 @@ public class HerbRepositoryImpl implements HerbRepository {
             builder.and(herbEntity.flowering.contains(herbFilteringRequestDTO.getMonth()));
         }
 
+        // 약초명이 존재 한다면
+        if(herbFilteringRequestDTO.getCntntsSj() != null && !herbFilteringRequestDTO.getCntntsSj().isEmpty()){
+            builder.and(herbEntity.cntntsSj.like("%"+herbFilteringRequestDTO.getCntntsSj()+"%"));
+        }
+
         // == 정렬
         OrderSpecifier<?> orderSpecifier = herbEntity.cntntsSj.asc(); // 기본은 이름 순으로
 
