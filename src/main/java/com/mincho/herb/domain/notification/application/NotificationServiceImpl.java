@@ -39,7 +39,7 @@ public class NotificationServiceImpl  implements NotificationService{
     public SseEmitter subscribe() {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.debug("sse 요청 유저의 email:{}", email);
+        log.info("sse 요청 유저의 email:{}", email);
         if(!email.contains("@")){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"유효한 권한이 없습니다.");
         }
@@ -48,7 +48,7 @@ public class NotificationServiceImpl  implements NotificationService{
 
         emitterMap.put(userId, emitter);
 
-        log.debug("sse cons:{}", emitterMap);
+        log.info("sse cons:{}", emitterMap);
 
         emitter.onCompletion(()-> emitterMap.remove(userId));
         emitter.onTimeout(()-> emitterMap.remove(userId));
