@@ -27,7 +27,10 @@ public class NotificationController {
     @GetMapping(value ="/notification/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(HttpServletResponse response){
         log.info("SSE 연결 요청 수신");
-        response.setHeader("X-Accel-Buffering", "no");
+
+        // SSE가 실시간으로 동작하도록 필수 헤더 추가
+        response.setHeader("X-Accel-Buffering", "no");       // NGINX buffering 비활성화
+        response.setHeader("Cache-Control", "no-cache");     // 클라이언트 캐싱 방지
         return notificationService.subscribe();
 
     }
