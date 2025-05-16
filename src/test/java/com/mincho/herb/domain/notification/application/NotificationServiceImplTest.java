@@ -26,6 +26,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * NotificationServiceImpl 클래스의 유닛 테스트 클래스입니다.
+ * <p>
+ * 사용자 알림 관련 서비스 로직에 대해 단위 테스트를 수행합니다.
+ * Mockito를 사용하여 외부 의존성을 Mock 처리하고 JUnit 5 기반으로 테스트를 구성합니다.
+ * </p>
+ */
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceImplTest {
 
@@ -47,6 +54,9 @@ class NotificationServiceImplTest {
     private final String mockEmail = "user@example.com";
 
 
+    /**
+     * 알림 저장 로직에 대해 저장된 엔티티가 반환되는지 검증합니다.
+     */
     @Test
     void save_ShouldPersistNotificationSuccessfully() {
         Long userId = 1L;
@@ -63,6 +73,9 @@ class NotificationServiceImplTest {
         verify(notificationRepository, times(1)).save(any(NotificationEntity.class));
     }
 
+    /**
+     * 사용자의 알림이 존재하지 않을 경우, 빈 응답을 반환하는지 검증합니다.
+     */
     @Test
     void getNotifications_ShouldReturnEmptyResponseForNoNotifications() {
         setUpMockAuthentication(); // Mock Authentication
@@ -81,6 +94,9 @@ class NotificationServiceImplTest {
         assertEquals(0, response.getTotalCount());
     }
 
+    /**
+     * SseEmitter를 통해 알림을 전송하는 로직이 정상적으로 수행되는지 검증합니다.
+     */
     @Test
     void sendNotification_ShouldSendEventToEmitter() throws IOException {
         Long userId = 1L;
@@ -97,6 +113,12 @@ class NotificationServiceImplTest {
         verify(emitter, times(1)).send(any(SseEmitter.SseEventBuilder.class));
     }
 
+    /**
+     * 알림을 읽음 처리하는 로직이 정상적으로 수행되는지 검증합니다.
+     * - NotificationEntity → 도메인 모델 변환
+     * - 도메인 모델의 읽음 처리
+     * - 다시 Entity로 저장
+     */
     @Test
     void markAsRead_ShouldUpdateNotificationAsRead() {
         Long notificationId = 1L;
@@ -121,6 +143,9 @@ class NotificationServiceImplTest {
         verify(notificationRepository, times(1)).save(any(NotificationEntity.class));
     }
 
+    /**
+     * 사용자가 읽지 않은 알림이 하나라도 존재하면 false를 반환하는지 검증합니다.
+     */
     @Test
     void getNotificationReadState_ShouldReturnCorrectState() {
         setUpMockAuthentication(); // Mock Authentication
@@ -138,6 +163,13 @@ class NotificationServiceImplTest {
     }
 
 
+    /**
+     * 테스트를 위한 SecurityContext 설정 메서드입니다.
+     * <p>
+     * SecurityContextHolder에 Mock된 Authentication 객체를 설정하여
+     * 인증 정보를 사용하는 서비스 로직의 테스트가 가능하게 합니다.
+     * </p>
+     */
     private void setUpMockAuthentication() {
         // 1. Authentication Mock
         Authentication auth = mock(Authentication.class);
