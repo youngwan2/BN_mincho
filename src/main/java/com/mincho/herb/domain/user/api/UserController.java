@@ -1,6 +1,13 @@
 package com.mincho.herb.domain.user.api;
 
 
+import com.mincho.herb.domain.user.application.profile.ProfileService;
+import com.mincho.herb.domain.user.application.user.UserService;
+import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
+import com.mincho.herb.domain.user.dto.LoginRequestDTO;
+import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
+import com.mincho.herb.domain.user.dto.UpdatePasswordRequestDTO;
 import com.mincho.herb.global.config.error.ErrorResponse;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.config.error.HttpErrorType;
@@ -9,13 +16,6 @@ import com.mincho.herb.global.config.success.SuccessResponse;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.global.util.CookieUtils;
-import com.mincho.herb.domain.user.application.profile.ProfileService;
-import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.domain.Member;
-import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
-import com.mincho.herb.domain.user.dto.LoginRequestDTO;
-import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
-import com.mincho.herb.domain.user.dto.UpdatePasswordRequestDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;

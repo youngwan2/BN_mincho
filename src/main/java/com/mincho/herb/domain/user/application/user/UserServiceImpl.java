@@ -1,7 +1,5 @@
 package com.mincho.herb.domain.user.application.user;
 
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
@@ -17,6 +15,8 @@ import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.infra.auth.JwtAuthProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -161,12 +161,17 @@ public class UserServiceImpl implements  UserService{
 
     // 유저 조회
     @Override
-    public Member findUserByEmail(String email) {
+    public MemberEntity getUserByEmail(String email) {
         MemberEntity memberEntity = userRepository.findByEmail(email);
         if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
-        return memberEntity.toModel();
+        return memberEntity;
+    }
+
+    @Override
+    public MemberEntity getUserByEmailOrNull(String email) {
+        return userRepository.findByEmailOrNull(email);
     }
 
     // 모든 브라우저 로그아웃

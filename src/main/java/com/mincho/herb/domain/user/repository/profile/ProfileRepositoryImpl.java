@@ -1,11 +1,10 @@
 package com.mincho.herb.domain.user.repository.profile;
 
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -32,8 +31,8 @@ public class ProfileRepositoryImpl implements ProfileRepository {
 
     // 사용자 정보로 프로필 조회
     @Override
-    public ProfileEntity findProfileByUser(Member member) {
-        Long userId = MemberEntity.toEntity(member).getId();
+    public ProfileEntity findProfileByUser(MemberEntity member) {
+        Long userId = member.getId();
 
         log.info("profile-userId: {}",userId);
 

@@ -1,7 +1,5 @@
 package com.mincho.herb.domain.user.application.profile;
 
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.domain.Profile;
@@ -10,6 +8,8 @@ import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +30,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void updateProfile(ProfileRequestDTO profileRequestDTO, String email) {
-        MemberEntity memberEntity = MemberEntity.toEntity(userService.findUserByEmail(email)) ;
+        MemberEntity memberEntity = userService.getUserByEmail(email) ;
         Profile newProfile = ProfileEntity.toEntity(Profile.withChangeProfile(profileRequestDTO), memberEntity).toModel();
 
         profileRepository.updateProfile(newProfile, memberEntity);
@@ -39,7 +39,7 @@ public class ProfileServiceImpl implements ProfileService {
     // 프로필 조회
     @Override
     public ProfileResponseDTO getUserProfile(String email) {
-        Member member = userService.findUserByEmail(email);
+        MemberEntity member = userService.getUserByEmail(email);
 
         ProfileEntity profileEntity=  profileRepository.findProfileByUser(member);
 
@@ -60,12 +60,11 @@ public class ProfileServiceImpl implements ProfileService {
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다. 로그인 후 다시시도 해주세요.");
         }
 
-        Member member = userService.findUserByEmail(email);
-        MemberEntity memberEntity = MemberEntity.toEntity(member);
+        MemberEntity member = userService.getUserByEmail(email);
         ProfileEntity profileEntity = profileRepository.findProfileByUser(member);
         profileEntity.setAvatarUrl(imgUrl);
 
-        profileRepository.updateProfile(profileEntity.toModel(), memberEntity);
+        profileRepository.updateProfile(profileEntity.toModel(), member);
 
     }
 

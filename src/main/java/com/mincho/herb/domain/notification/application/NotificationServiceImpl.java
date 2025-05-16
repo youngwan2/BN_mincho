@@ -1,15 +1,15 @@
 package com.mincho.herb.domain.notification.application;
 
-import com.mincho.herb.domain.notification.dto.NotificationReadStateResponseDTO;
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.notification.domain.Notification;
 import com.mincho.herb.domain.notification.dto.NotificationDTO;
+import com.mincho.herb.domain.notification.dto.NotificationReadStateResponseDTO;
 import com.mincho.herb.domain.notification.dto.NotificationsResponse;
 import com.mincho.herb.domain.notification.entity.NotificationEntity;
 import com.mincho.herb.domain.notification.repository.NotificationRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class NotificationServiceImpl  implements NotificationService{
     
-    private  final UserService userService;
+    private final UserService userService;
     private final NotificationRepository notificationRepository;
     private final ConcurrentHashMap<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
@@ -44,7 +45,7 @@ public class NotificationServiceImpl  implements NotificationService{
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"유효한 권한이 없습니다.");
         }
 
-        Long userId =  userService.findUserByEmail(email).getId();
+        Long userId =  userService.getUserByEmail(email).getId();
 
         emitterMap.put(userId, emitter);
 
@@ -97,7 +98,7 @@ public class NotificationServiceImpl  implements NotificationService{
             return null;
         }
 
-        Member member = userService.findUserByEmail(email);
+        MemberEntity member = userService.getUserByEmail(email);
         Long userId = member.getId();
 
         // 알림 목록
@@ -153,10 +154,11 @@ public class NotificationServiceImpl  implements NotificationService{
     @Override
     @Transactional
     public void markAyRead(Long id) {
-        NotificationEntity notificationEntity = notificationRepository.findById(id);
+        Optional<NotificationEntity> optionalNotification = notificationRepository.findById(id);
+
+        if(optionalNotification.isPresent()){
         
-        if(notificationEntity !=null){
-            Notification notification = notificationEntity.toModel();
+            Notification notification = optionalNotification.get().toModel();
             notification.markAsRead(); // 읽음 처리
             
             notificationRepository.save(NotificationEntity.toEntity(notification)); // 저장
@@ -172,7 +174,7 @@ public class NotificationServiceImpl  implements NotificationService{
         if(!email.contains("@")){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
         }
-        Member member = userService.findUserByEmail(email);
+        MemberEntity member = userService.getUserByEmail(email);
         notificationRepository.deleteAllByIsReadTrue(member.getId());
 
     }
@@ -198,12 +200,17 @@ public class NotificationServiceImpl  implements NotificationService{
         if(!email.contains("@")){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
         }
-        Member member = userService.findUserByEmail(email);
+        MemberEntity member = userService.getUserByEmail(email);
         Boolean isRead = notificationRepository.existsByUserIdAndIsReadFalse(member.getId());
 
         return NotificationReadStateResponseDTO.builder()
                 .isAllRead(isRead)
                 .build();
     }
+
+    protected void addEmitterForTest(Long userId, SseEmitter emitter) {
+        this.emitterMap.put(userId, emitter);
+    }
+
 
 }

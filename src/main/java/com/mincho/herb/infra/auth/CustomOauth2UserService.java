@@ -46,7 +46,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         log.info("providerId:{}, email:{}, name:{}", providerId, email, name); // 여기까지 문제 없음
 
-        MemberEntity memberEntity = memberRepository.findByEmail2(email);
+        MemberEntity memberEntity = memberRepository.findByEmailOrNull(email);
         
         // 유저 정보 저장
         if (memberEntity == null) {

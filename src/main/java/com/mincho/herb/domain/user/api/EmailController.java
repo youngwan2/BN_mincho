@@ -1,14 +1,14 @@
 package com.mincho.herb.domain.user.api;
 
 
-import com.mincho.herb.global.config.error.ErrorResponse;
-import com.mincho.herb.global.config.error.HttpErrorType;
-import com.mincho.herb.global.config.success.HttpSuccessType;
-import com.mincho.herb.global.config.success.SuccessResponse;
 import com.mincho.herb.domain.user.application.email.EmailService;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.dto.EmailRequestDTO;
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
+import com.mincho.herb.global.config.error.ErrorResponse;
+import com.mincho.herb.global.config.error.HttpErrorType;
+import com.mincho.herb.global.config.success.HttpSuccessType;
+import com.mincho.herb.global.config.success.SuccessResponse;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

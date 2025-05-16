@@ -13,5 +13,5 @@ public interface CommentService {
     void updateComment(CommentUpdateRequestDTO commentUpdateRequestDTO);
     void deleteComment(Long commentId);
     CommentResponseDTO getCommentsByPostId(Long postId);
-    List<MypageCommentsDTO> getMypageComments(int page, int size);
+    List<MypageCommentsDTO> getMypageComments(int page, int size, String sort);
 }
