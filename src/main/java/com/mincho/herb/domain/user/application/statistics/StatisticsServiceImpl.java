@@ -1,12 +1,12 @@
 package com.mincho.herb.domain.user.application.statistics;
 
-import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.user.dto.StatisticsResponseDTO;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
+import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

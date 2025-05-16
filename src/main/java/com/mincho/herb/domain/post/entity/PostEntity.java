@@ -1,8 +1,8 @@
 package com.mincho.herb.domain.post.entity;
 
-import com.mincho.herb.global.base.BaseEntity;
 import com.mincho.herb.domain.post.domain.Post;
 import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

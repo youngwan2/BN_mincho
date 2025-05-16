@@ -4,6 +4,7 @@ import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 
 import java.util.Map;
 
@@ -15,7 +16,8 @@ public interface UserService {
     Map<String, String> login(LoginRequestDTO loginRequestDTO);
     void deleteUser(String email); // 회원탈퇴
     void updatePassword( String email, String password);
-    Member findUserByEmail(String email);
+    MemberEntity getUserByEmail(String email);
+    MemberEntity getUserByEmailOrNull(String email);
     void logoutAll(Long id);
 
     boolean isLogin();

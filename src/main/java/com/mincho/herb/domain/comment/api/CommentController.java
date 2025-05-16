@@ -1,5 +1,10 @@
 package com.mincho.herb.domain.comment.api;
 
+import com.mincho.herb.domain.comment.application.CommentService;
+import com.mincho.herb.domain.comment.dto.CommentCreateRequestDTO;
+import com.mincho.herb.domain.comment.dto.CommentResponseDTO;
+import com.mincho.herb.domain.comment.dto.CommentUpdateRequestDTO;
+import com.mincho.herb.domain.comment.dto.MypageCommentsDTO;
 import com.mincho.herb.global.config.error.ErrorResponse;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.config.error.HttpErrorType;
@@ -7,11 +12,6 @@ import com.mincho.herb.global.config.success.HttpSuccessType;
 import com.mincho.herb.global.config.success.SuccessResponse;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
-import com.mincho.herb.domain.comment.application.CommentService;
-import com.mincho.herb.domain.comment.dto.CommentCreateRequestDTO;
-import com.mincho.herb.domain.comment.dto.CommentResponseDTO;
-import com.mincho.herb.domain.comment.dto.CommentUpdateRequestDTO;
-import com.mincho.herb.domain.comment.dto.MypageCommentsDTO;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -101,8 +101,9 @@ public class CommentController {
     @GetMapping("/users/me/comments")
     public ResponseEntity<List<MypageCommentsDTO>> getMypageComments(
             @RequestParam int page,
-            @RequestParam int size
+            @RequestParam int size,
+            @RequestParam(required = false, defaultValue = "desc") String sort
     ){
-        return ResponseEntity.ok(commentService.getMypageComments(page,size));
+        return ResponseEntity.ok(commentService.getMypageComments(page,size,sort ));
     }
 }

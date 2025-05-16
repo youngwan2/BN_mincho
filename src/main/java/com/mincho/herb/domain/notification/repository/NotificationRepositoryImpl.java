@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,8 +30,8 @@ public class NotificationRepositoryImpl implements NotificationRepository{
 
     // 단일 알림 찾기
     @Override
-    public NotificationEntity findById(Long id) {
-        return notificationJpaRepository.findById(id).orElse(null);
+    public Optional<NotificationEntity> findById(Long id) {
+        return notificationJpaRepository.findById(id);
     }
 
     // 알림 개수 통계

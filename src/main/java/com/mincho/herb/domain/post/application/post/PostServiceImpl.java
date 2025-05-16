@@ -1,9 +1,5 @@
 package com.mincho.herb.domain.post.application.post;
 
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.dto.PageInfoDTO;
-import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.domain.post.domain.Author;
 import com.mincho.herb.domain.post.domain.Post;
 import com.mincho.herb.domain.post.domain.ViewCount;
@@ -16,6 +12,10 @@ import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepositor
 import com.mincho.herb.domain.post.repository.postViews.PostViewsRepository;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.dto.PageInfoDTO;
+import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.infra.auth.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +63,7 @@ public class PostServiceImpl implements PostService{
     public DetailPostResponseDTO getDetailPostById(Long id) {
         String email = commonUtils.userCheck();
 
-        MemberEntity memberEntity = userRepository.findByEmail2(email);
+        MemberEntity memberEntity = userRepository.findByEmailOrNull(email);
         Long userId = memberEntity == null ? 0L : memberEntity.getId();
 
 

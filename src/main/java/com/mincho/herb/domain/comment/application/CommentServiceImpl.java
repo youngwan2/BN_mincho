@@ -1,20 +1,21 @@
 package com.mincho.herb.domain.comment.application;
 
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.domain.comment.dto.*;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.notification.application.NotificationService;
+import com.mincho.herb.domain.post.application.post.PostService;
 import com.mincho.herb.domain.post.entity.PostEntity;
-import com.mincho.herb.domain.post.repository.post.PostRepository;
+import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.domain.user.repository.user.UserRepository;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,18 +28,18 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService{
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
-    private final CommonUtils commonUtils;
+    private final PostService postService;
+    private final UserService userService;
     private final NotificationService notificationService;
+    private final CommonUtils commonUtils;
 
     // 댓글 추가
     @Override
     @Transactional
     public void addComment(CommentCreateRequestDTO commentCreateRequestDTO, String email) {
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
-        PostEntity postEntity = postRepository.findById(commentCreateRequestDTO.getPostId());
+        MemberEntity memberEntity = userService.getUserByEmail(email);
+        PostEntity postEntity = postService.getPostById(commentCreateRequestDTO.getPostId());
 
 
         CommentEntity parentCommentEntity = null;
@@ -123,7 +124,7 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponseDTO getCommentsByPostId(Long postId) {
         // 부모 댓글과 자식 댓글을 모두 가져오는 페치 조인 쿼리 실행
         String email = commonUtils.userCheck();
-        MemberEntity member = userRepository.findByEmail2(email);
+        MemberEntity member = userService.getUserByEmailOrNull(email);
         Long memberId;
 
         if(member != null){
@@ -178,12 +179,13 @@ public class CommentServiceImpl implements CommentService{
     /** 마이페이지*/
     // 사용자별 댓글 조회
     @Override
-    public List<MypageCommentsDTO> getMypageComments(int page, int size) {
+    public List<MypageCommentsDTO> getMypageComments(int page, int size, String sort) {
 
         String email = commonUtils.userCheck();
-        MemberEntity member = userRepository.findByEmail(email);
+        MemberEntity member = userService.getUserByEmail(email);
 
-        Pageable pageable = PageRequest.of(page, size);
+        Sort sortby = Sort.by(sort.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, "id"); // 최신순 정렬
+        Pageable pageable = PageRequest.of(page, size, sortby); // 최신순 페이징
 
         List<CommentEntity> commentEntities = commentRepository.findByMemberId(member.getId(), pageable).stream().toList();
 

@@ -1,16 +1,18 @@
 package com.mincho.herb.domain.like.application;
 
+import com.mincho.herb.domain.herb.application.herb.HerbService;
+import com.mincho.herb.domain.herb.entity.HerbEntity;
+import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.like.dto.LikeHerbResponseDTO;
+import com.mincho.herb.domain.like.entity.HerbLikeEntity;
+import com.mincho.herb.domain.like.repository.HerbLikeRepository;
+import com.mincho.herb.domain.user.application.user.UserService;
+import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.global.aop.UserActivityAction;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
-import com.mincho.herb.domain.herb.entity.HerbEntity;
-import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
-import com.mincho.herb.domain.like.entity.HerbLikeEntity;
-import com.mincho.herb.domain.like.repository.HerbLikeRepository;
-import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.domain.user.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class HerbLikeServiceImpl implements HerbLikeService{
     private final HerbLikeRepository herbLikeRepository;
-    private final HerbRepository herbRepository;
-    private final UserRepository userRepository;
+    private final HerbService herbService;
+    private final UserService userService;
     private final CommonUtils commonUtils;
 
 
@@ -42,8 +44,8 @@ public class HerbLikeServiceImpl implements HerbLikeService{
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다");
         }
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
-        HerbEntity herbEntity = herbRepository.findById(herbId);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
+        HerbEntity herbEntity = herbService.getHerbById(herbId);
 
         HerbLikeEntity herbLikeEntity = new HerbLikeEntity();
         herbLikeEntity.setHerb(herbEntity);
@@ -67,8 +69,8 @@ public class HerbLikeServiceImpl implements HerbLikeService{
         }
 
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
-        HerbEntity herbEntity = herbRepository.findById(herbId);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
+        HerbEntity herbEntity = herbService.getHerbById(herbId);
 
         herbLikeRepository.deleteByMemberIdAndHerbId(memberEntity.getId(), herbEntity.getId());
 
@@ -87,8 +89,8 @@ public class HerbLikeServiceImpl implements HerbLikeService{
         if(email == null){
             return false;
         }
-        HerbEntity herbEntity = herbRepository.findById(herbId);
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        HerbEntity herbEntity = herbService.getHerbById(herbId);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
         log.info("member:{}", memberEntity.getEmail());
         return herbLikeRepository.existsByMemberIdAndHerbId(memberEntity.getId(), herbEntity.getId());
     }

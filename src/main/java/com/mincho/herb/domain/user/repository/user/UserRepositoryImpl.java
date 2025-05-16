@@ -1,9 +1,9 @@
 package com.mincho.herb.domain.user.repository.user;
 
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.domain.user.domain.Member;
 import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -49,7 +49,7 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public MemberEntity findByEmail2(String email) {
+    public MemberEntity findByEmailOrNull(String email) {
         return userJpaRepository.findByEmail(email).orElse(null);
     }
 }

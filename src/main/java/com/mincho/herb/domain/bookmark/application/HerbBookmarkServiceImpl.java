@@ -1,22 +1,23 @@
 package com.mincho.herb.domain.bookmark.application;
 
 
+import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
 import com.mincho.herb.domain.bookmark.dto.HerbBookmarkLogResponseDTO;
+import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
+import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
+import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
+import com.mincho.herb.domain.herb.application.herb.HerbService;
+import com.mincho.herb.domain.herb.entity.HerbEntity;
+import com.mincho.herb.domain.user.application.user.UserService;
+import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.global.aop.UserActivityAction;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
-import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
-import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
-import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
-import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
-import com.mincho.herb.domain.herb.entity.HerbEntity;
-import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
-import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.domain.user.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +27,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class HerbBookmarkServiceImpl implements HerbBookmarkService {
-
     private final HerbBookmarkRepository herbBookmarkRepository;
+    private final UserService userService;
+    private final HerbService herbService;
     private final CommonUtils commonUtils;
-    private final UserRepository userRepository;
-    private final HerbRepository herbRepository;
 
 
     // 관심약초 추가
@@ -44,8 +44,9 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다.");
         }
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
-        HerbEntity herbEntity = herbRepository.findById(herbId);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
+
+        HerbEntity herbEntity = herbService.getHerbById(herbId);
         
 
        HerbBookmarkEntity herbBookmarkEntity = herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbEntity.getId());
@@ -86,7 +87,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
             return false;
         }
 
-        MemberEntity memberEntity = memberEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = memberEntity = userService.getUserByEmail(email);
 
         return herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbId) != null;
 
@@ -97,13 +98,13 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     @Override
     public HerbBookmarkResponseDTO getBookmarks(int page, int size) {
 
-        Pageable pageable = (Pageable) PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
         String email = commonUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다.");
         }
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
 
         if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
@@ -137,7 +138,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     public void removeHerbBookmark(Long herbId) {
 
         String email = commonUtils.userCheck();
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
 
         if(memberEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");

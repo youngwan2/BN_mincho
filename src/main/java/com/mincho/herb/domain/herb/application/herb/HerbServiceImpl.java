@@ -1,11 +1,6 @@
 package com.mincho.herb.domain.herb.application.herb;
 
 import com.mincho.herb.domain.embedding.dto.RecommendHerbsDTO;
-import com.mincho.herb.global.aop.UserActivityAction;
-import com.mincho.herb.global.config.error.HttpErrorCode;
-import com.mincho.herb.global.dto.PageInfoDTO;
-import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.MapperUtils;
 import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.domain.HerbViews;
 import com.mincho.herb.domain.herb.dto.*;
@@ -13,7 +8,12 @@ import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.HerbViewsEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.herb.repository.herbViews.HerbViewsRepository;
-import com.mincho.herb.domain.user.repository.user.UserRepository;
+import com.mincho.herb.domain.user.application.user.UserService;
+import com.mincho.herb.global.aop.UserActivityAction;
+import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.dto.PageInfoDTO;
+import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.MapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @Service
 public class HerbServiceImpl implements HerbService{
     private final HerbRepository herbRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final HerbViewsRepository herbViewsRepository;
     private final VectorStore vectorStore;
     private final ChatModel chatModel;
@@ -58,13 +58,13 @@ public class HerbServiceImpl implements HerbService{
            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자만 접근할 수 있습니다.");
        }
 
-       String email = (String) SecurityContextHolder.getContext().getAuthentication().getName();
+       String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
        if(!email.contains("@")) {
            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
        }
 
-       Long adminId = userRepository.findByEmail(email).getId();
+       Long adminId = userService.getUserByEmail(email).getId();
 
         HerbEntity unsavedHerbEntity = HerbEntity.builder()
                 .cntntsSj(herbCreateRequestDTO.getCntntsSj())
@@ -84,12 +84,22 @@ public class HerbServiceImpl implements HerbService{
 
     // 약초명으로 약초 찾기
     @Override
-    public Herb getHerbByHerbName(String herbName) {
+    public HerbEntity getHerbByHerbName(String herbName) {
         HerbEntity herbEntity =  herbRepository.findByCntntsSj(herbName);
         if(herbEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "조회 데이터가 없습니다.");
         }
-        return herbEntity.toModel();
+        return herbEntity;
+    }
+
+    // ID 로 약초 찾기
+    @Override
+    public HerbEntity getHerbById(Long id) {
+        HerbEntity herbEntity =  herbRepository.findById(id);
+        if(herbEntity == null){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "조회 데이터가 없습니다.");
+        }
+        return herbEntity;
     }
 
 
@@ -190,10 +200,6 @@ public class HerbServiceImpl implements HerbService{
         if(roles.equalsIgnoreCase("ROLE_ADMIN")){
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자만 접근할 수 있습니다.");
         }
-
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Long adminId = userRepository.findByEmail(email).getId();
 
         HerbEntity herbEntity = herbRepository.findById(herbId);
 
