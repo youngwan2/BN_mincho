@@ -10,8 +10,8 @@ import com.mincho.herb.domain.post.entity.PostViewsEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepository;
 import com.mincho.herb.domain.post.repository.postViews.PostViewsRepository;
+import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.dto.PageInfoDTO;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-// TODO: 전체적으로 하는 일이 많음. 향후 개선 필요
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,9 +35,10 @@ public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     private final PostCategoryRepository postCategoryRepository;
     private final PostViewsRepository postViewsRepository;
-    private final UserRepository userRepository;
-    private final CommonUtils commonUtils;
+    private final UserService userService;
     private final S3Service s3Service;
+    private final CommonUtils commonUtils;
+
 
     // 조건 별 게시글 조회
     @Override
@@ -63,7 +63,7 @@ public class PostServiceImpl implements PostService{
     public DetailPostResponseDTO getDetailPostById(Long id) {
         String email = commonUtils.userCheck();
 
-        MemberEntity memberEntity = userRepository.findByEmailOrNull(email);
+        MemberEntity memberEntity = userService.getUserByEmailOrNull(email);
         Long userId = memberEntity == null ? 0L : memberEntity.getId();
 
 
@@ -133,7 +133,7 @@ public class PostServiceImpl implements PostService{
     @Transactional
     public void addPost(PostRequestDTO postRequestDTO, String email) {
         // 유저 조회
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
 
         // 바꾼 카테고리
         PostCategoryEntity changedCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
@@ -213,7 +213,7 @@ public class PostServiceImpl implements PostService{
 
         Pageable pageable = PageRequest.of(page, size);
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        MemberEntity memberEntity = userService.getUserByEmail(email);
 
         // 게시글 목록
         List<PostEntity> postEntities= postRepository.findByMemberId(memberEntity.getId(), pageable).toList();
