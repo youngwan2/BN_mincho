@@ -77,7 +77,6 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean emailVerification(VerificationRequestDTO verificationRequestDTO) {
         String value = (String) redisTemplate.opsForValue().get(verificationRequestDTO.getEmail());
-        log.info("input code: {}, auth code: {}", verificationRequestDTO.getCode(), value);
         boolean isVer = verificationRequestDTO.getCode().equals(value);
 
         if (isVer) {
@@ -96,7 +95,6 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean emailVerificationForReset(VerificationRequestDTO verificationRequestDTO) {
         String value = (String) redisTemplate.opsForValue().get(verificationRequestDTO.getEmail());
-        log.info("input code: {}, auth code: {}", verificationRequestDTO.getCode(), value);
 
         boolean isVer = verificationRequestDTO.getCode().equals(value);
 

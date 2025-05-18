@@ -40,12 +40,13 @@ public class S3Service {
      * MultipartFile을 받아 AWS S3에 업로드하고 접근 가능한 정적 URL을 반환
      *
      * @param file 업로드할 이미지 파일
+     * @param path S3 버킷 내 저장 경로
      * @return 업로드된 파일의 S3 URL
      * @throws RuntimeException 파일 업로드 중 IO 예외가 발생할 경우
      */
-    public String upload(MultipartFile file){
+    public String upload(MultipartFile file, String path){
         try {
-            String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            String key = path +"/"+ UUID.randomUUID() + "_" + file.getOriginalFilename();
 
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucket)

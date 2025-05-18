@@ -6,6 +6,8 @@ import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Post")
 @AllArgsConstructor
@@ -31,6 +33,11 @@ public class PostEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private PostCategoryEntity category;
+
+    @ElementCollection
+    @CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "tag")
+    private List<String> tags;
 
     public static PostEntity toEntity(Post post, MemberEntity memberEntity, PostCategoryEntity postCategoryEntity){
         PostEntity postEntity = new PostEntity();

@@ -10,7 +10,7 @@ import com.mincho.herb.global.dto.PageInfoDTO;
 import java.util.List;
 
 public interface HerbRepository {
-    void save(HerbEntity herbEntity);
+    HerbEntity save(HerbEntity herbEntity);
     void saveAll(List<HerbEntity> herbs);
     HerbEntity findByCntntsSj(String herbName);
     HerbEntity findById(Long id);
@@ -22,4 +22,6 @@ public interface HerbRepository {
     List<HerbDTO> findByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort, PageInfoDTO pageInfoDTO);
     Long countByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO); // 필터링된 약초 개수
     List<PopularityHerbsDTO> findAllByOrderByViewCountDesc();
+
+    HerbEntity removeHerbImagesByHerbId(Long herbId);
 }

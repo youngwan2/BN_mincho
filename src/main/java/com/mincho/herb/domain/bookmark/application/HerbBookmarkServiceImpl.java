@@ -6,7 +6,7 @@ import com.mincho.herb.domain.bookmark.dto.HerbBookmarkLogResponseDTO;
 import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
 import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
-import com.mincho.herb.domain.herb.application.herb.HerbService;
+import com.mincho.herb.domain.herb.application.herb.HerbQueryService;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.MemberEntity;
@@ -29,7 +29,7 @@ import java.util.List;
 public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     private final HerbBookmarkRepository herbBookmarkRepository;
     private final UserService userService;
-    private final HerbService herbService;
+    private final HerbQueryService herbQueryService;
     private final CommonUtils commonUtils;
 
 
@@ -46,7 +46,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
         MemberEntity memberEntity = userService.getUserByEmail(email);
 
-        HerbEntity herbEntity = herbService.getHerbById(herbId);
+        HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
         
 
        HerbBookmarkEntity herbBookmarkEntity = herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbEntity.getId());

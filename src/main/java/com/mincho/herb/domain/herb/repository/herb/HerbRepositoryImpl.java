@@ -31,8 +31,8 @@ public class HerbRepositoryImpl implements HerbRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public void save(HerbEntity herbEntity) {
-        herbJpaRepository.save(herbEntity);
+    public HerbEntity save(HerbEntity herbEntity) {
+        return herbJpaRepository.save(herbEntity);
     }
 
     @Override
@@ -169,5 +169,24 @@ public class HerbRepositoryImpl implements HerbRepository {
         return herbJpaRepository.findAllByOrderByViewCountDesc(pageable);
     }
 
+    // 약초 이미지 제거
+    @Override
+    public HerbEntity removeHerbImagesByHerbId(Long herbId) {
 
+        HerbEntity herbEntity = herbJpaRepository.findById(herbId).orElse(null);
+
+        if(herbEntity == null){
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 약초 데이터가 존재하지 않습니다.");
+        }
+
+        herbEntity.setImgUrl1(null);
+        herbEntity.setImgUrl2(null);
+        herbEntity.setImgUrl3(null);
+        herbEntity.setImgUrl4(null);
+        herbEntity.setImgUrl5(null);
+        herbEntity.setImgUrl6(null);
+
+        return herbEntity;
+
+    }
 }

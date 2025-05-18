@@ -3,6 +3,7 @@ package com.mincho.herb.domain.report.api;
 import com.mincho.herb.domain.report.application.ReportService;
 import com.mincho.herb.domain.report.dto.*;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,7 @@ public class ReportController {
     public ResponseEntity<Void> handleReport(
             @PathVariable Long reportId,
             @Valid  @RequestBody HandleReportRequestDTO requestDTO
-    ) {
+    ) throws MessagingException {
         reportService.handleReport(reportId, requestDTO);
 
         return ResponseEntity.status(HttpStatus.OK).build();

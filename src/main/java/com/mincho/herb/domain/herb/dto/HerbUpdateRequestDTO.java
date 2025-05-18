@@ -23,19 +23,14 @@ public class HerbUpdateRequestDTO {
     @NotEmpty(message = "한방명은 필수입니다.")
     private String hbdcNm; // 한방명
 
-    private String imgUrl1; // 추가 이미지 URL 1
-    private String imgUrl2; // 추가 이미지 URL 2
-    private String imgUrl3; // 추가 이미지 URL 3
-    private String imgUrl4; // 추가 이미지 URL 4
-    private String imgUrl5; // 추가 이미지 URL 5
-    private String imgUrl6; // 추가 이미지 URL 6
-
     @NotEmpty(message = "민간요법 설명은 필수입니다.")
     private String prvateTherpy; // 민간요법
 
-    @NotEmpty(message = "약초의 형태 설명은 필수입니다.")
-    private String stle; // 형태
-
-    @NotEmpty(message = "약초의 이용 부위 설명은 필수입니다.")
+    @NotEmpty(message = "이용 부위는 필수입니다.")
     private String useeRegn; // 이용 부위
+
+    private String growthForm; // 생장 형태
+    private String flowering; // 개화기
+    private String habitat;   // 분포 및 환경(재배환경)
+    private String harvest;   // 수확·건조
 }

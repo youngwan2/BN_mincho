@@ -54,8 +54,8 @@ public class ProfileController {
             ){
 
         log.info("file{}", image.getOriginalFilename());
-        String imageUrl = s3Service.upload(image);
-        profileService.updateProfileImage(imageUrl);
+
+        profileService.updateProfileImage( image );
 
         return ResponseEntity.noContent().build();
     }
