@@ -3,8 +3,6 @@ package com.mincho.herb.domain.notice.application;
 import com.mincho.herb.domain.notice.dto.NoticeResponseDTO;
 import com.mincho.herb.domain.notice.dto.NoticeSearchConditionDTO;
 import com.mincho.herb.domain.notice.repository.NoticeRepository;
-import com.mincho.herb.domain.user.repository.user.UserRepository;
-import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

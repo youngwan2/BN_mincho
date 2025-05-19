@@ -1,7 +1,7 @@
-package com.mincho.herb.domain.qna.repository.answer;
+package com.mincho.herb.domain.qna.repository.qna;
 
-import com.mincho.herb.domain.qna.entity.AnswerEntity;
+import com.mincho.herb.domain.qna.entity.QnaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AnswerJpaRepository extends JpaRepository<AnswerEntity, Long> {
+public interface QnaJpaRepository extends JpaRepository<QnaEntity, Long> {
 }

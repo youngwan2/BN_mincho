@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class QnaImage {
+public class AnswerImage {
     private Long id;
     private String imageUrl;
 }

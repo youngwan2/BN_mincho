@@ -1,4 +1,5 @@
 package com.mincho.herb.domain.qna.entity;
 
-public class QnaReactionType {
+public enum QnaReactionType {
+    LIKE, DISLIKE
 }

@@ -1,4 +1,21 @@
 package com.mincho.herb.domain.qna.entity;
 
-public class QnaReactionEntity {
+import com.mincho.herb.domain.user.entity.MemberEntity;
+import jakarta.persistence.*;
+
+@Entity
+public class QnaReactionEntity{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private QnaEntity qna;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private MemberEntity member;
+
+    @Enumerated(EnumType.STRING)
+    private QnaReactionType type;
 }
+

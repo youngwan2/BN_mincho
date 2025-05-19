@@ -1,5 +1,6 @@
-package com.mincho.herb.domain.qna.application;
+package com.mincho.herb.domain.qna.application.answer;
 
+import com.mincho.herb.domain.qna.application.answerImage.AnswerImageService;
 import com.mincho.herb.domain.qna.dto.AnswerRequestDTO;
 import com.mincho.herb.domain.qna.entity.AnswerEntity;
 import com.mincho.herb.domain.qna.entity.QnaEntity;
@@ -13,6 +14,10 @@ import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Service
@@ -21,11 +26,14 @@ import org.springframework.stereotype.Service;
 public class AnswerServiceImpl implements AnswerService {
     private final QnaRepository qnaRepository;
     private final AnswerRepository answerRepository;
+    private final AnswerImageService answerImageService;
     private final UserService userService;
     private final CommonUtils commonUtils;
 
+    // 답변 등록
     @Override
-    public void create(Long qnaId, AnswerRequestDTO requestDTO) {
+    @Transactional
+    public void create(Long qnaId, AnswerRequestDTO requestDTO, List<MultipartFile> images) {
         String email =throwAuthExceptionOrReturnEmail();
         QnaEntity qna = qnaRepository.findById(qnaId);
         MemberEntity writer = userService.getUserByEmail(email);
@@ -37,7 +45,37 @@ public class AnswerServiceImpl implements AnswerService {
                 .isAdopted(false)
                 .build();
 
-        answerRepository.save(entity);
+        AnswerEntity answerEntity= answerRepository.save(entity);
+
+        answerImageService.imageUpload(images, answerEntity);
+    }
+
+    
+    // 답변 수정
+    @Override
+    @Transactional
+    public void update(Long id, AnswerRequestDTO dto) {
+        String email = throwAuthExceptionOrReturnEmail();
+
+        MemberEntity writer = userService.getUserByEmail(email);
+
+
+        AnswerEntity answerEntity= answerRepository.findById(id);
+
+        MemberEntity memberEntity = answerEntity.getWriter();
+        if(!writer.equals(memberEntity)) {
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "답변수정 권한이 없습니다.");
+        }
+        answerEntity.setContent(dto.getContent());
+    }
+
+    // 답변 삭제
+    @Override
+    @Transactional
+    public void delete(Long id) {
+
+
+
     }
 
     // 유저 체크(성공 시 유저 이메일 반환)

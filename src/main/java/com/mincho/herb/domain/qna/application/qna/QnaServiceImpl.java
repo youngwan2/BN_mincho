@@ -1,5 +1,6 @@
-package com.mincho.herb.domain.qna.application;
+package com.mincho.herb.domain.qna.application.qna;
 
+import com.mincho.herb.domain.qna.application.qnaImage.QnaImageService;
 import com.mincho.herb.domain.qna.domain.Qna;
 import com.mincho.herb.domain.qna.dto.QnaDTO;
 import com.mincho.herb.domain.qna.dto.QnaRequestDTO;
@@ -7,6 +8,7 @@ import com.mincho.herb.domain.qna.dto.QnaResponseDTO;
 import com.mincho.herb.domain.qna.dto.QnaSearchConditionDTO;
 import com.mincho.herb.domain.qna.entity.AnswerEntity;
 import com.mincho.herb.domain.qna.entity.QnaEntity;
+import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.MemberEntity;
@@ -26,6 +28,7 @@ import java.util.List;
 public class QnaServiceImpl implements QnaService {
 
     private final QnaRepository qnaRepository;
+    private final AnswerRepository answerRepository;
     private final UserService userService;
     private final QnaImageService qnaImageService;
     private final CommonUtils commonUtils;
@@ -78,19 +81,19 @@ public class QnaServiceImpl implements QnaService {
         MemberEntity writer = userService.getUserByEmail(email);
         QnaEntity qnaEntity = qnaRepository.findById(id);
 
-
         // 권한 체크
         if(!qnaEntity.getWriter().getId().equals(writer.getId())){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "질문삭제 권한이 없습니다.");
         }
 
-//        // TODO: 답변이 달려 있으면 삭제 못하게 막기
-//        if (!qnaEntity.getAnswers().isEmpty()) {
-//            throw new CustomHttpException(HttpErrorCode.CONFLICT, "답변이 있는 질문은 삭제할 수 없습니다.");
-//        }
+        AnswerEntity answerEntity =  answerRepository.findByQnaId(qnaEntity.getId());
 
+        // TODO: 답변이 달려 있으면 삭제 못하게 막기
+        if (answerEntity !=null) {
+            throw new CustomHttpException(HttpErrorCode.CONFLICT, "답변이 있는 질문은 삭제할 수 없습니다.");
+        }
 
-        // 이미지 삭제
+        // 자식 테이블인 이미지 먼저 삭제
         qnaImageService.imageDelete(qnaImageService.getImages(id), qnaEntity);
 
         // 질문삭제
@@ -99,23 +102,10 @@ public class QnaServiceImpl implements QnaService {
 
     // 질문 상세 조회
     @Override
+    @Transactional(readOnly = true)
     public QnaDTO getById(Long id) {
-        String email = throwAuthExceptionOrReturnEmail();
-
-        QnaEntity qnaEntity = qnaRepository.findById(id);
-        List<String> imageUrls =qnaImageService.getImages(qnaEntity.getId());
-        return QnaDTO.builder()
-                .id(qnaEntity.getId())
-                .title(qnaEntity.getTitle())
-                .content(qnaEntity.getContent())
-                .isPrivate(qnaEntity.getIsPrivate())
-                .writer(qnaEntity.getWriter().getProfile().getNickname())
-                .isMine(qnaEntity.getWriter().getEmail().equals(email))
-                // TODO: 답변 목록 페이징 처리한 결과들 담아야 함
-                .answers(null)
-                .imageUrls(imageUrls)
-                .createdAt(qnaEntity.getCreatedAt())
-                .build();
+        String email = commonUtils.userCheck();
+        return qnaRepository.findById(id, email);
     }
 
 

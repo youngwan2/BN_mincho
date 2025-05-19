@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.qna.application;
+package com.mincho.herb.domain.qna.application.qna;
 
 import com.mincho.herb.domain.qna.dto.QnaDTO;
 import com.mincho.herb.domain.qna.dto.QnaRequestDTO;

@@ -1,9 +1,9 @@
-package com.mincho.herb.domain.qna.application.qna;
+package com.mincho.herb.domain.qna.application.qnaImage;
 
 import com.mincho.herb.domain.qna.entity.QnaEntity;
 import com.mincho.herb.domain.qna.entity.QnaImageEntity;
-import com.mincho.herb.domain.qna.repository.qnaImage.QnaImageRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
+import com.mincho.herb.domain.qna.repository.qnaImage.QnaImageRepository;
 import com.mincho.herb.global.config.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
@@ -17,6 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 
+
+/**
+ * QnaImageService 구현체로, Q&A 게시글에 첨부되는 이미지의 업로드, 조회, 수정, 삭제를 처리합니다.
+ * 이미지 파일은 S3에 저장되며, 이미지 메타데이터는 DB에 저장됩니다.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,13 +37,23 @@ public class QnaImageServiceImpl implements  QnaImageService {
             "jpg", "jpeg", "png", "webp", "svg"
     );
 
-    // 이미지 조회
+    /**
+     * 특정 Q&A 게시글의 이미지 URL 리스트를 조회합니다.
+     *
+     * @param qnaId Q&A 게시글 ID
+     * @return 이미지 URL 목록
+     */
     @Override
     public List<String> getImages(Long qnaId) {
         return qnaImageRepository.findAllImageUrlsByQnaId(qnaId);
     }
 
-    // 이미지 업로드
+    /**
+     * 이미지 파일을 업로드하고 DB에 저장합니다. (엔티티 직접 전달 버전)
+     *
+     * @param images    업로드할 이미지 파일 목록
+     * @param qnaEntity 이미지가 연결될 Q&A 게시글 엔티티
+     */
     @Override
     public void imageUpload(List<MultipartFile> images, QnaEntity qnaEntity) {
 
@@ -56,7 +71,12 @@ public class QnaImageServiceImpl implements  QnaImageService {
     }
 
 
-    // 이미지 업로드(API 전용)
+    /**
+     * 이미지 파일을 업로드하고 DB에 저장합니다. (ID만 전달되는 API용 버전)
+     *
+     * @param images 업로드할 이미지 파일 목록
+     * @param qnaId  Q&A 게시글 ID
+     */
     @Override
     @Transactional
     public void imageUpload(List<MultipartFile> images, Long qnaId) {
@@ -75,7 +95,12 @@ public class QnaImageServiceImpl implements  QnaImageService {
         });
     }
 
-    // 이미지 수정
+    /**
+     * 기존 이미지 목록을 비교하여 삭제 대상 이미지를 S3 및 DB에서 제거합니다.
+     *
+     * @param newImageUrls 최종적으로 유지될 이미지 URL 목록
+     * @param id           Q&A 게시글 ID
+     */
     @Override
     @Transactional
     public void imageUpdate(List<String> newImageUrls, Long id) {
@@ -98,7 +123,12 @@ public class QnaImageServiceImpl implements  QnaImageService {
     }
 
 
-    // 이미지 삭제
+    /**
+     * Q&A 게시글에 연결된 모든 이미지를 삭제합니다.
+     *
+     * @param imageUrls 삭제할 이미지 URL 목록
+     * @param qnaEntity 삭제할 Q&A 게시글 엔티티
+     */
     @Override
     @Transactional
     public void imageDelete(List<String> imageUrls, QnaEntity qnaEntity) {
@@ -112,7 +142,12 @@ public class QnaImageServiceImpl implements  QnaImageService {
     }
 
 
-    // 유저 체크(성공 시 유저 이메일 반환)
+    /**
+     * 로그인 여부를 확인하고 이메일을 반환합니다.
+     *
+     * @return 로그인된 사용자의 이메일
+     * @throws CustomHttpException 로그인되어 있지 않은 경우 예외 발생
+     */
     private String throwAuthExceptionOrReturnEmail(){
         String email = commonUtils.userCheck();
         if(email == null){
@@ -120,8 +155,13 @@ public class QnaImageServiceImpl implements  QnaImageService {
         }
         return email;
     }
-    
-    // 이미지 유효성 체크
+
+    /**
+     * 업로드된 이미지 파일의 유효성을 검사합니다.
+     *
+     * @param images 이미지 파일 목록
+     * @throws CustomHttpException 유효하지 않은 이미지가 포함된 경우 예외 발생
+     */
     private void throwValidImageException(List<MultipartFile> images){
         if(!images.isEmpty()){
             if (images.size() > MAX_IMAGE_COUNT) {

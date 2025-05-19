@@ -23,7 +23,6 @@
 
 ## 🔥 배포
 - **데모**: https://www.minchoherb.com
-- **배포 과정:** [Notion](https://youngwan2.notion.site/1e568acd779b80ef9cb7f760bc8f6e60)
 ![민초 아키텍처](https://github.com/user-attachments/assets/3c6aaa37-1bee-4035-a3b1-e3a40738d59e)
 
 ## ⚙ 기능
@@ -101,6 +100,11 @@
 |              | `GitHub Actions` | CI/CD 자동화로 빌드, 테스트, 배포 효율화 |
 
 <br><br>
+
+## 📃 문서
+- [REST API <링크>](https://documenter.getpostman.com/view/23804313/2sAYX2Njky)
+- [배포 히스토리 <링크>](https://youngwan2.notion.site/1e568acd779b80ef9cb7f760bc8f6e60)
+- [트러블슈팅 <링크>](https://youngwan2.notion.site/1f468acd779b8009a829e956086d6342)
 
 ## 🗂️ 프로젝트 구조
 ### 프론트엔드드

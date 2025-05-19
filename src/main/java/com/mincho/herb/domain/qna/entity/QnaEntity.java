@@ -1,12 +1,11 @@
 package com.mincho.herb.domain.qna.entity;
 
+import com.mincho.herb.domain.qna.domain.Qna;
 import com.mincho.herb.domain.user.entity.MemberEntity;
 import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Entity
 @Table(name = "qna")
@@ -24,7 +23,7 @@ public class QnaEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Lob
+    @Column(nullable = false, length = 1000)
     private String content;
 
     @Column(nullable = false)
@@ -34,9 +33,36 @@ public class QnaEntity extends BaseEntity {
     @JoinColumn(name = "writer_id")
     private MemberEntity writer;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @Builder.Default
+    private Long view = 0L ;
 
+    /**
+     * Qna 도메인 객체 → 엔티티로 변환
+     */
+    public static QnaEntity toEntity(Qna qna, MemberEntity writer) {
+        return QnaEntity.builder()
+                .id(qna.getId())
+                .title(qna.getTitle())
+                .content(qna.getContent())
+                .isPrivate(qna.getIsPrivate())
+                .writer(writer)
+                .view(qna.getView())
+                .build();
+    }
 
-
+    /**
+     * Qna 엔티티 → 도메인 객체로 변환
+     */
+    public Qna toDomain() {
+        return Qna.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .isPrivate(this.isPrivate)
+                .writerId(this.writer.getId())
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .view(this.view)
+                .build();
+    }
 }

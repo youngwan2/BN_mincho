@@ -1,4 +1,4 @@
-package com.mincho.herb.domain.qna.application.answer;
+package com.mincho.herb.domain.qna.application.answerImage;
 
 import com.mincho.herb.domain.qna.application.common.ImageService;
 import com.mincho.herb.domain.qna.entity.AnswerEntity;
