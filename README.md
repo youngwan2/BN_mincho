@@ -173,80 +173,46 @@ src/
 │   │   └── com/
 │   │       └── mincho/
 │   │           └── herb/
-│   │               ├── 📂domain/
-│   │               │   ├── 📂bookmark/
-│   │               │   │   ├── 📂api/
-│   │               │   │   │   └── 📜HerbBookmarkController.java
-│   │               │   │   ├── 📂application/
-│   │               │   │   │   ├── 📜HerbBookmarkService.java
-│   │               │   │   │   └── 📜HerbBookmarkServiceImpl.java
-│   │               │   │   ├── 📂domain/
-│   │               │   │   │   └── 📜HerbBookmark.java
-│   │               │   │   ├── 📂dto/
-│   │               │   │   │   ├── 📜HerbBookmarkCountResponse.java
-│   │               │   │   │   ├── 📜HerbBookmarkLogResponseDTO.java
-│   │               │   │   │   ├── 📜HerbBookmarkRequestDTO.java
-│   │               │   │   │   ├── 📜HerbBookmarkResponseDTO.java
-│   │               │   │   │   └── 📜MypageHerbBookmark.java
-│   │               │   │   ├── 📂entity/
-│   │               │   │   │   └── 📜HerbBookmarkEntity.java
-│   │               │   │   └── 📂repository/
-│   │               │   │       ├── 📜HerbBookmarkJpaRepository.java
-│   │               │   │       ├── 📜HerbBookmarkRepository.java
-│   │               │   │       └── 📜HerbBookmarkRepositoryImpl.java
-│   │               │   ├── 📂comment/
-│   │               │   ├── 📂embedding/
-│   │               │   ├── 📂herb/
-│   │               │   ├── 📂like/
-│   │               │   ├── 📂notice/
-│   │               │   ├── 📂notification/
-│   │               │   ├── 📂post/
-│   │               │   ├── 📂qna/
-│   │               │   ├── 📂report/
-│   │               │   └── 📂user/
-│   │               │     
-│   │               ├── 📂global/
-│   │               │   ├── 📂aop/
-│   │               │   │   ├── 📜UserActivityAction.java
-│   │               │   │   ├── 📜UserActivityJpaRepository.java
-│   │               │   │   ├── 📜UserActivityLogDTO.java
-│   │               │   │   ├── 📜UserActivityLogEntity.java
-│   │               │   │   ├── 📜UserActivityLoggingAspect.java
-│   │               │   │   └── 📜UserActivityService.java
-│   │               │   ├── 📂base/
-│   │               │   │   ├── 📜BaseCreatedAtEntity.java
-│   │               │   │   └── 📜BaseEntity.java
-│   │               │   ├── 📂config/
-│   │               │   │   ├── 📂error/
-│   │               │   │   │   ├── 📜ErrorResponse.java
-│   │               │   │   │   ├── 📜HttpErrorCode.java
-│   │               │   │   │   └── 📜HttpErrorType.java
-│   │               │   │   ├── 📂success/
-│   │               │   │   │   ├── 📜HttpSuccessCode.java
-│   │               │   │   │   ├── 📜HttpSuccessType.java
-│   │               │   │   │   └── 📜SuccessResponse.java
-│   │               │   │   ├── 📜MailConfig.java
-│   │               │   │   ├── 📜QuerydslConfig.java
-│   │               │   │   ├── 📜RedisConfig.java
-│   │               │   │   ├── 📜S3Config.java
-│   │               │   │   └── 📜SecurityConfig.java
-│   │               │   ├── 📂exception/
-│   │               │   │   ├── 📜CustomHttpException.java
-│   │               │   │   └── 📜GlobalException.java
-│   │               │   ├── 📂io/
-│   │               │   │   └── 📜EmailService.java
-│   │               │   └── 📂util/
-│   │               │       ├── 📜CommonUtils.java
-│   │               │       ├── 📜CookieUtils.java
-│   │               │       ├── 📜FloatArrayVectorConverter.java
-│   │               │       ├── 📜JWTUtils.java
-│   │               │       └── 📜MapperUtils.java
-│   │               ├── 📂infra/
-│   │               │   ├── 📂auth/
-│   │               │   └── 📂health/
-│   │               │       └── 📜CheckController.java
-│   │               └── 📜HerbApplication.java
+│   │               ├── 📂domain/                         # 도메인별 비즈니스 로직 계층
+│   │               │   │
+│   │               │   ├── 📂bookmark/                     # 약초 즐겨찾기 기능 관련 코드
+│   │               │   │   ├── 📂api/                        # 컨트롤러 계층 (REST API 엔드포인트)
+│   │               │   │   ├── 📂application/                # 서비스 인터페이스 및 구현체 (비즈니스 로직)
+│   │               │   │   ├── 📂domain/                     # 도메인 모델 
+│   │               │   │   ├── 📂dto/                        # 요청 및 응답 DTO 클래스
+│   │               │   │   ├── 📂entity/                     # JPA 엔티티 클래스
+│   │               │   │   └── 📂repository/                 # JPA 및 사용자 정의 리포지토리  ==> 위 구조는 재사용
+│   │               │   │
+│   │               │   ├── 📂comment/                      # 댓글 기능 관련 모듈
+│   │               │   ├── 📂embedding/                    # 임베딩 및 유사도 분석 관련 모듈
+│   │               │   ├── 📂herb/                         # 약초 정보 관련 CRUD 기능
+│   │               │   ├── 📂like/                         # 좋아요 기능 관련 모듈
+│   │               │   ├── 📂notice/                       # 공지사항 게시판 관련 모듈
+│   │               │   ├── 📂notification/                 # SSE 알림 기능 관련 모듈
+│   │               │   ├── 📂post/                         # 커뮤니티 게시글 관련 기능
+│   │               │   ├── 📂qna/                          # QnA 게시판 관련 기능
+│   │               │   ├── 📂report/                       # 게시글/댓글 신고 기능
+│   │               │   └── 📂user/                         # 사용자 관리 및 인증 관련 기능
+│   │               │
+│   │               ├── 📂global/                         # 전역 공통 기능
+│   │               │   ├── 📂aop/                          # AOP 로깅 (유저 활동 기록 등)
+│   │               │   ├── 📂base/                         # 공통 엔티티 속성 정의 (생성일 등)
+│   │               │   ├── 📂config/                       # 설정 클래스
+│   │               │   │   ├── 📂error/                       # 에러 응답 포맷 및 코드
+│   │               │   │   ├── 📂success/                     # 성공 응답 포맷 및 코드
+│   │               │   │   ├── 📜MailConfig.java              # 메일 발송 설정
+│   │               │   │   ├── 📜QuerydslConfig.java          # QueryDSL 설정
+│   │               │   │   ├── 📜RedisConfig.java             # Redis 설정
+│   │               │   │   ├── 📜S3Config.java                # AWS S3 설정
+│   │               │   │   └── 📜SecurityConfig.java          # Spring Security 설정
+│   │               │   ├── 📂exception/                    # 전역 예외 처리 정의
+│   │               │   ├── 📂io/                           # 외부 통신 서비스 (메일 등)
+│   │               │   └── 📂util/                         # 공통 유틸리티 클래스
+│   │               ├── 📂infra/                          # 인프라 관련 기능 (헬스체크, 인증 등)
+│   │               │   ├── 📂auth/                         # 인프라 인증 연동
+│   │               │   └── 📂health/                       # 배포 후 서버 상태 확인용 컨트롤러
+│   │               └── 📜HerbApplication.java            # Spring Boot 메인 클래스
 │   └── 📂resources/
-│       └── 📜application.yml
-└── 📂test/
+│       └── 📜application.yml                             # 애플리케이션 환경설정 파일
+└── 📂test/                                               # 테스트 코드
 ```
