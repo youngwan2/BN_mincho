@@ -167,4 +167,86 @@
 ```
 ### 백엔드
 ```
+src/
+├── main/
+│   ├── java/
+│   │   └── com/
+│   │       └── mincho/
+│   │           └── herb/
+│   │               ├── 📂domain/
+│   │               │   ├── 📂bookmark/
+│   │               │   │   ├── 📂api/
+│   │               │   │   │   └── 📜HerbBookmarkController.java
+│   │               │   │   ├── 📂application/
+│   │               │   │   │   ├── 📜HerbBookmarkService.java
+│   │               │   │   │   └── 📜HerbBookmarkServiceImpl.java
+│   │               │   │   ├── 📂domain/
+│   │               │   │   │   └── 📜HerbBookmark.java
+│   │               │   │   ├── 📂dto/
+│   │               │   │   │   ├── 📜HerbBookmarkCountResponse.java
+│   │               │   │   │   ├── 📜HerbBookmarkLogResponseDTO.java
+│   │               │   │   │   ├── 📜HerbBookmarkRequestDTO.java
+│   │               │   │   │   ├── 📜HerbBookmarkResponseDTO.java
+│   │               │   │   │   └── 📜MypageHerbBookmark.java
+│   │               │   │   ├── 📂entity/
+│   │               │   │   │   └── 📜HerbBookmarkEntity.java
+│   │               │   │   └── 📂repository/
+│   │               │   │       ├── 📜HerbBookmarkJpaRepository.java
+│   │               │   │       ├── 📜HerbBookmarkRepository.java
+│   │               │   │       └── 📜HerbBookmarkRepositoryImpl.java
+│   │               │   ├── 📂comment/
+│   │               │   ├── 📂embedding/
+│   │               │   ├── 📂herb/
+│   │               │   ├── 📂like/
+│   │               │   ├── 📂notice/
+│   │               │   ├── 📂notification/
+│   │               │   ├── 📂post/
+│   │               │   ├── 📂qna/
+│   │               │   ├── 📂report/
+│   │               │   └── 📂user/
+│   │               │     
+│   │               ├── 📂global/
+│   │               │   ├── 📂aop/
+│   │               │   │   ├── 📜UserActivityAction.java
+│   │               │   │   ├── 📜UserActivityJpaRepository.java
+│   │               │   │   ├── 📜UserActivityLogDTO.java
+│   │               │   │   ├── 📜UserActivityLogEntity.java
+│   │               │   │   ├── 📜UserActivityLoggingAspect.java
+│   │               │   │   └── 📜UserActivityService.java
+│   │               │   ├── 📂base/
+│   │               │   │   ├── 📜BaseCreatedAtEntity.java
+│   │               │   │   └── 📜BaseEntity.java
+│   │               │   ├── 📂config/
+│   │               │   │   ├── 📂error/
+│   │               │   │   │   ├── 📜ErrorResponse.java
+│   │               │   │   │   ├── 📜HttpErrorCode.java
+│   │               │   │   │   └── 📜HttpErrorType.java
+│   │               │   │   ├── 📂success/
+│   │               │   │   │   ├── 📜HttpSuccessCode.java
+│   │               │   │   │   ├── 📜HttpSuccessType.java
+│   │               │   │   │   └── 📜SuccessResponse.java
+│   │               │   │   ├── 📜MailConfig.java
+│   │               │   │   ├── 📜QuerydslConfig.java
+│   │               │   │   ├── 📜RedisConfig.java
+│   │               │   │   ├── 📜S3Config.java
+│   │               │   │   └── 📜SecurityConfig.java
+│   │               │   ├── 📂exception/
+│   │               │   │   ├── 📜CustomHttpException.java
+│   │               │   │   └── 📜GlobalException.java
+│   │               │   ├── 📂io/
+│   │               │   │   └── 📜EmailService.java
+│   │               │   └── 📂util/
+│   │               │       ├── 📜CommonUtils.java
+│   │               │       ├── 📜CookieUtils.java
+│   │               │       ├── 📜FloatArrayVectorConverter.java
+│   │               │       ├── 📜JWTUtils.java
+│   │               │       └── 📜MapperUtils.java
+│   │               ├── 📂infra/
+│   │               │   ├── 📂auth/
+│   │               │   └── 📂health/
+│   │               │       └── 📜CheckController.java
+│   │               └── 📜HerbApplication.java
+│   └── 📂resources/
+│       └── 📜application.yml
+└── 📂test/
 ```
