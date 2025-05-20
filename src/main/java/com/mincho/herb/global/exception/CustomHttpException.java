@@ -1,6 +1,6 @@
 package com.mincho.herb.global.exception;
 
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import lombok.Getter;
 
 @Getter

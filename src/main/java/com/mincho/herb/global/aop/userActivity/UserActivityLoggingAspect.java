@@ -1,4 +1,4 @@
-package com.mincho.herb.global.aop;
+package com.mincho.herb.global.aop.userActivity;
 
 import com.mincho.herb.domain.herb.dto.HerbDetailResponseDTO;
 import com.mincho.herb.domain.like.dto.LikeHerbResponseDTO;

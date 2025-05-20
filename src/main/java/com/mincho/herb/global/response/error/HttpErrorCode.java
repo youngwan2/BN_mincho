@@ -1,4 +1,4 @@
-package com.mincho.herb.global.config.error;
+package com.mincho.herb.global.response.error;
 
 import lombok.Getter;
 

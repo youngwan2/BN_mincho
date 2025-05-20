@@ -1,7 +1,7 @@
 package com.mincho.herb.global.exception;
 
-import com.mincho.herb.global.config.error.ErrorResponse;
-import com.mincho.herb.global.config.error.HttpErrorType;
+import com.mincho.herb.global.response.error.ErrorResponse;
+import com.mincho.herb.global.response.error.HttpErrorType;
 import jakarta.mail.SendFailedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

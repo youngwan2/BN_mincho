@@ -1,4 +1,4 @@
-package com.mincho.herb.global.config.error;
+package com.mincho.herb.global.response.error;
 
 public enum HttpErrorType {
         BAD_REQUEST,

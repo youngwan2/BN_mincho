@@ -2,11 +2,11 @@ package com.mincho.herb.domain.herb.api;
 
 import com.mincho.herb.domain.herb.application.herb.HerbQueryService;
 import com.mincho.herb.domain.herb.dto.*;
-import com.mincho.herb.global.config.error.ErrorResponse;
-import com.mincho.herb.global.config.error.HttpErrorType;
-import com.mincho.herb.global.config.success.HttpSuccessType;
-import com.mincho.herb.global.config.success.SuccessResponse;
-import com.mincho.herb.global.dto.PageInfoDTO;
+import com.mincho.herb.global.response.error.ErrorResponse;
+import com.mincho.herb.global.response.error.HttpErrorType;
+import com.mincho.herb.global.response.success.HttpSuccessType;
+import com.mincho.herb.global.response.success.SuccessResponse;
+import com.mincho.herb.global.page.PageInfoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.mincho.herb.global.config.success;
+package com.mincho.herb.global.response.success;
 
 public enum HttpSuccessType {
         OK,                 // 요청이 성공적으로 처리됨

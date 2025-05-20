@@ -1,7 +1,6 @@
 package com.mincho.herb.infra.auth;
 
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -46,7 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (accessToken != null) {
                 
                 // 토큰이 만료 되었는가?  NO! 토큰 만료 안 됨 유효한 토큰임
-                if (!jwtAuthProvider.checkToken(accessToken)) {
+                if (!jwtAuthProvider.isExpiredToken(accessToken)) {
                  
                     String email = jwtAuthProvider.getEmail(accessToken);
                     logger.info("email: "+ email);
@@ -57,14 +56,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     // 사용자 정보 저장
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     logger.info("JwtAuthFilter 처리 성공 " + authentication.getAuthorities().iterator().next().getAuthority());
+                } else {
+                    // 액세스 토큰 재발급 요청
+                    handleExpiredToken(request, response);
                 }
             }
             filterChain.doFilter(request, response);
 
-        } catch (ExpiredJwtException ex) {
-            logger.info("tokenExpiredError: "+ ex.getMessage());
-            // JWT 만료 예외 처리
-            handleExpiredToken(request, response);
         } catch (Exception ex) {
             // 기타 예외 처리
             logger.error("JwtAuthFilter: " + ex.getMessage());
@@ -96,25 +94,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             // 리프레쉬 토큰이 만료? true : false
-            Boolean isValidRefreshToken = jwtAuthProvider.checkToken(refreshToken);
+            Boolean isValidRefreshToken = jwtAuthProvider.isExpiredToken(refreshToken);
 
             // refresh 토큰이 만료되지 않았다면 해당 토큰으로 사용자의 이메일(식별용) 정보를 가져온다.
             if (!isValidRefreshToken) {
                 String email = jwtAuthProvider.getEmail(refreshToken);
 
-                // 새로운 accessToken 발급
-                String newAccessToken = jwtAuthProvider.createAccessToken(email, 60*60*10*1000L);
-
-                // 새로운 accessToken으로 인증
-                Collection<GrantedAuthority> authorities = jwtAuthProvider.getAuthorities(newAccessToken);
+                Collection<GrantedAuthority> authorities = jwtAuthProvider.getAuthorities(refreshToken);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
+                // 새로운 accessToken 발급
+                String newAccessToken = jwtAuthProvider.createAccessToken(email, authorities.iterator().next().getAuthority(), 60*60*10*1000L );
+
+                logger.info("new token:"+ newAccessToken);
+
+
                 // 새로운 accessToken을 헤더로 클라이언트에 전달
                 response.setHeader("Authorization","Bearer "+newAccessToken);
-
-                logger.info("JwtAuthFilter - new token:"+ newAccessToken);
-                logger.info("JwtAuthFilter - refreshToken으로 accessToken 재발급 완료");
+                logger.info("refreshToken으로 accessToken 재발급 완료");
 
                 // 리프레쉬 토큰이 만료 되었다면
             } else {

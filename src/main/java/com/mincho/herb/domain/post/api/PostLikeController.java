@@ -2,10 +2,10 @@ package com.mincho.herb.domain.post.api;
 
 import com.mincho.herb.domain.post.application.postLike.PostLikeService;
 import com.mincho.herb.domain.post.dto.LikeResponseDTO;
-import com.mincho.herb.global.config.error.ErrorResponse;
-import com.mincho.herb.global.config.error.HttpErrorType;
-import com.mincho.herb.global.config.success.HttpSuccessType;
-import com.mincho.herb.global.config.success.SuccessResponse;
+import com.mincho.herb.global.response.error.ErrorResponse;
+import com.mincho.herb.global.response.error.HttpErrorType;
+import com.mincho.herb.global.response.success.HttpSuccessType;
+import com.mincho.herb.global.response.success.SuccessResponse;
 import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

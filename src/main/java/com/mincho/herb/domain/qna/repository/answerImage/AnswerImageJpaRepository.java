@@ -16,7 +16,7 @@ public interface AnswerImageJpaRepository extends JpaRepository<AnswerImageEntit
     @Query("DELETE FROM AnswerImageEntity qi WHERE qi.answer.id = :answerId")
     void deleteByAnswerId(@Param("answerId") Long answerId);
 
-    Optional<List<QnaImageEntity>> findAllByAnswerId(Long qndId);
+    Optional<List<AnswerImageEntity>> findAllByAnswerId(Long qndId);
 
     @Modifying
     @Query("DELETE FROM AnswerImageEntity qi WHERE qi.imageUrl NOT IN :urls ")

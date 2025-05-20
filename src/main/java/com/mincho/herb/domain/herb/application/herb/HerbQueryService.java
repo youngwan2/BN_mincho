@@ -2,7 +2,7 @@ package com.mincho.herb.domain.herb.application.herb;
 
 import com.mincho.herb.domain.herb.dto.*;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
-import com.mincho.herb.global.dto.PageInfoDTO;
+import com.mincho.herb.global.page.PageInfoDTO;
 
 import java.util.List;
 

@@ -10,4 +10,11 @@ public interface AnswerRepository{
     AnswerEntity findById(Long id);
 
     AnswerEntity findByQnaId(Long qneId);
+
+    void deleteById(Long answerId);
+
+    Boolean existsByQnaIdAndIdAndIsAdoptedTrue(Long qnaId, Long answerId);
+    Boolean existsByQnaId(Long qnaId);
+    Boolean existsByQnaIdAndWriterId(Long qnaId, Long writerId);
+
 }

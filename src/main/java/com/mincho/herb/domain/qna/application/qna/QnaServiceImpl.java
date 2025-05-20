@@ -6,13 +6,12 @@ import com.mincho.herb.domain.qna.dto.QnaDTO;
 import com.mincho.herb.domain.qna.dto.QnaRequestDTO;
 import com.mincho.herb.domain.qna.dto.QnaResponseDTO;
 import com.mincho.herb.domain.qna.dto.QnaSearchConditionDTO;
-import com.mincho.herb.domain.qna.entity.AnswerEntity;
 import com.mincho.herb.domain.qna.entity.QnaEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +43,7 @@ public class QnaServiceImpl implements QnaService {
                 .title(requestDTO.getTitle())
                 .content(requestDTO.getTitle())
                 .isPrivate(requestDTO.getIsPrivate())
+                .view(0L)
                 .build();
         QnaEntity qnaEntity =qnaRepository.save(QnaEntity.toEntity(qna, writer)); // 질문 등록
         
@@ -86,10 +86,10 @@ public class QnaServiceImpl implements QnaService {
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "질문삭제 권한이 없습니다.");
         }
 
-        AnswerEntity answerEntity =  answerRepository.findByQnaId(qnaEntity.getId());
+
 
         // TODO: 답변이 달려 있으면 삭제 못하게 막기
-        if (answerEntity !=null) {
+        if (answerRepository.existsByQnaId(qnaEntity.getId())) {
             throw new CustomHttpException(HttpErrorCode.CONFLICT, "답변이 있는 질문은 삭제할 수 없습니다.");
         }
 

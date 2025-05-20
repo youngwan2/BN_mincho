@@ -4,11 +4,10 @@ import com.mincho.herb.domain.qna.dto.*;
 import com.mincho.herb.domain.qna.entity.*;
 import com.mincho.herb.domain.user.entity.QMemberEntity;
 import com.mincho.herb.domain.user.entity.QProfileEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.group.GroupBy;
-import com.querydsl.core.group.GroupByList;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 
 
 /**

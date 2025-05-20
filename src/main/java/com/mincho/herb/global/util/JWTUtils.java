@@ -1,6 +1,11 @@
 package com.mincho.herb.global.util;
 
+import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.mincho.herb.global.exception.CustomHttpException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JWTUtils {
 
@@ -21,6 +27,8 @@ public class JWTUtils {
 
     // JWT 생성 메소드
     public String createJwt(String email, String role, Long expiredMs) {
+        log.info("current time:{}", new Date(System.currentTimeMillis()));
+        log.info("expire time:{}", new Date(System.currentTimeMillis() + expiredMs));
         return Jwts.builder()
                 .claim("email", email) // 사용자 이름 클레임 추가
                 .claim("role", role)         // 역할 클레임 추가
@@ -42,7 +50,25 @@ public class JWTUtils {
 
     // JWT의 만료 여부 확인
     public Boolean isExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try {
+            Date expiration = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .clockSkewSeconds(60)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+            log.info("expiration: {}", expiration); // 만료 시간
+
+            return expiration.before(new Date());
+
+        } catch (ExpiredJwtException e) {
+            log.error(e.getMessage());
+            return true; // 만료된 토큰
+        } catch (JwtException e) {
+            log.error(e.getMessage());
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "유효하지 않은 JWT입니다.");
+        }
     }
 
     public String getCategory(String token) {

@@ -1,4 +1,4 @@
-package com.mincho.herb.global.config.success;
+package com.mincho.herb.global.response.success;
 
 import lombok.Getter;
 

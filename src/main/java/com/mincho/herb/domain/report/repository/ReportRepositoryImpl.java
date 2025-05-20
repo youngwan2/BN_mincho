@@ -5,7 +5,7 @@ import com.mincho.herb.domain.report.dto.ReportSearchConditionDTO;
 import com.mincho.herb.domain.report.dto.ReportsResponseDTO;
 import com.mincho.herb.domain.report.entity.QReportEntity;
 import com.mincho.herb.domain.report.entity.ReportEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;

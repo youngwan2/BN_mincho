@@ -2,7 +2,7 @@ package com.mincho.herb.domain.herb.application.herb;
 
 import com.mincho.herb.domain.embedding.dto.RecommendHerbsDTO;
 import com.mincho.herb.domain.herb.dto.HerbDTO;
-import com.mincho.herb.global.aop.UserActivityAction;
+import com.mincho.herb.global.aop.userActivity.UserActivityAction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.Generation;
