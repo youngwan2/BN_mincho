@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.qna.repository.qnaImage;
 
 import com.mincho.herb.domain.qna.entity.QnaImageEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

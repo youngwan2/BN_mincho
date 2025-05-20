@@ -5,7 +5,7 @@ import com.mincho.herb.domain.qna.entity.AnswerEntity;
 import com.mincho.herb.domain.qna.entity.AnswerImageEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.answerImage.AnswerImageRepository;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
 import com.mincho.herb.infra.auth.S3Service;
@@ -41,7 +41,9 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
     // 이미지 업로드
     @Override
     public void imageUpload(List<MultipartFile> images, AnswerEntity answerEntity) {
-
+        if(images == null) {return;} // 이미지 업로드 시도 자체가 없으면 그냥 탈출
+        
+        
         throwValidImageException(images);
 
         // 이미지 업로드(S3, DB)
@@ -60,8 +62,11 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
     @Override
     @Transactional
     public void imageUpload(List<MultipartFile> images, Long answerId) {
-        throwValidImageException(images);
 
+        if(images == null) {return;}
+
+
+        throwValidImageException(images);
 
         AnswerEntity answerEntity = answerRepository.findById(answerId);
 
@@ -124,6 +129,8 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
 
     // 이미지 유효성 체크
     private void throwValidImageException(List<MultipartFile> images){
+        if(images == null) { return;}
+
         if(!images.isEmpty()){
             if (images.size() > MAX_IMAGE_COUNT) {
                 throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "이미지는 최대 3개까지만 업로드할 수 있습니다.");
@@ -140,10 +147,11 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
                 }
 
                 log.info("image type:{}", image.getContentType());
+
                 if (!ALLOWED_EXTENSIONS.contains(Objects.requireNonNull(image.getContentType()).split("/")[1])) {
                     throw new CustomHttpException(HttpErrorCode.BAD_REQUEST,"지원하지 않는 이미지 형식입니다. (JPEG, PNG, webp, svg 만 허용)");
                 }
             }
-        }
+            }
     }
 }

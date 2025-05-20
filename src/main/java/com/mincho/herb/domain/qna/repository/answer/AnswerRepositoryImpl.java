@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.qna.repository.answer;
 
 import com.mincho.herb.domain.qna.entity.AnswerEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -24,5 +24,25 @@ public class AnswerRepositoryImpl implements AnswerRepository {
     @Override
     public AnswerEntity findByQnaId(Long qnaId) {
         return answerJpaRepository.findByQnaId(qnaId).orElse(null);
+    }
+
+    @Override
+    public void deleteById(Long answerId) {
+        answerJpaRepository.deleteById(answerId);
+    }
+
+    @Override
+    public Boolean existsByQnaIdAndIdAndIsAdoptedTrue(Long qnaId, Long answerId) {
+        return answerJpaRepository.existsByQnaIdAndIdAndIsAdoptedTrue(qnaId, answerId);
+    }
+
+    @Override
+    public Boolean existsByQnaId(Long qnaId) {
+        return answerJpaRepository.existsByQnaId(qnaId);
+    }
+
+    @Override
+    public Boolean existsByQnaIdAndWriterId(Long qnaId, Long writerId) {
+        return answerJpaRepository.existsByQnaIdAndWriterId(qnaId, writerId);
     }
 }

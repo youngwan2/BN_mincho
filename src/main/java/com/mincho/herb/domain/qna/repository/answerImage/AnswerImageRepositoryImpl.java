@@ -2,7 +2,7 @@ package com.mincho.herb.domain.qna.repository.answerImage;
 
 import com.mincho.herb.domain.qna.entity.AnswerImageEntity;
 import com.mincho.herb.domain.qna.entity.QnaImageEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -26,7 +26,7 @@ public class AnswerImageRepositoryImpl implements  AnswerImageRepository {
     // 이미지 조회
     @Override
     public List<String> findAllImageUrlsByAnswerId(Long qnaId) {
-        return answerImageJpaRepository.findAllByAnswerId(qnaId).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "등록된 이미지를 찾을 수 없습니다.")).stream().map(QnaImageEntity::getImageUrl).toList();
+        return answerImageJpaRepository.findAllByAnswerId(qnaId).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "등록된 이미지를 찾을 수 없습니다.")).stream().map(AnswerImageEntity::getImageUrl).toList();
     }
 
     @Override

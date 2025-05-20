@@ -1,4 +1,4 @@
-package com.mincho.herb.global.aop;
+package com.mincho.herb.global.aop.userActivity;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

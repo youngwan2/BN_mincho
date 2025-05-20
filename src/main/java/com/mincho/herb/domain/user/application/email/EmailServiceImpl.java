@@ -2,7 +2,7 @@ package com.mincho.herb.domain.user.application.email;
 
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
 import jakarta.mail.MessagingException;

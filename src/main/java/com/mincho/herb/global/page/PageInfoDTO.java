@@ -1,4 +1,4 @@
-package com.mincho.herb.global.dto;
+package com.mincho.herb.global.page;
 
 import lombok.Builder;
 import lombok.Data;

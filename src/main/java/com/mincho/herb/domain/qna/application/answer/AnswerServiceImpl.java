@@ -8,7 +8,7 @@ import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +38,16 @@ public class AnswerServiceImpl implements AnswerService {
         QnaEntity qna = qnaRepository.findById(qnaId);
         MemberEntity writer = userService.getUserByEmail(email);
 
+        // 질문자 본인의 질문이라면 답변 금지
+        if(qna.getWriter().equals(writer)){
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "본인의 질문에 답변할 수 없습니다.");
+        }
+
+        // 이미 답변자가 답변을 적은 글이라면 중복 답변 금지
+        if(answerRepository.existsByQnaIdAndWriterId(qnaId, writer.getId())){
+            throw new CustomHttpException(HttpErrorCode.CONFLICT, "이미 답변을 작성한 질문입니다.");
+        }
+
         AnswerEntity entity = AnswerEntity.builder()
                 .qna(qna)
                 .writer(writer)
@@ -57,13 +67,12 @@ public class AnswerServiceImpl implements AnswerService {
     public void update(Long id, AnswerRequestDTO dto) {
         String email = throwAuthExceptionOrReturnEmail();
 
-        MemberEntity writer = userService.getUserByEmail(email);
-
-
+        MemberEntity member = userService.getUserByEmail(email); // 수정 요청한 유저
         AnswerEntity answerEntity= answerRepository.findById(id);
+        MemberEntity writer = answerEntity.getWriter(); // 답변 작성자
 
-        MemberEntity memberEntity = answerEntity.getWriter();
-        if(!writer.equals(memberEntity)) {
+        // 요청 유저와 답변 작성자가 동일한가?
+        if(!writer.equals(member)) {
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "답변수정 권한이 없습니다.");
         }
         answerEntity.setContent(dto.getContent());
@@ -72,10 +81,47 @@ public class AnswerServiceImpl implements AnswerService {
     // 답변 삭제
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long answerId) {
+        String email = throwAuthExceptionOrReturnEmail();
+
+        MemberEntity member =userService.getUserByEmail(email);
+        AnswerEntity answerEntity= answerRepository.findById(answerId);
+        MemberEntity writer = answerEntity.getWriter(); // 답변 작성자
+
+        // 요청 유저와 답변 작성자가 동일인인가?
+        if(!writer.equals(member)) {
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "답변삭제 권한이 없습니다.");
+        }
+
+        // 답변 삭제 전 이미지 삭제
+        answerImageService.imageDelete(answerImageService.getImages(answerId), answerEntity);
+
+        // 답변 삭제
+        answerRepository.deleteById(answerId);
+    }
 
 
+    // 답변 채택
+    @Override
+    public void adopt(Long answerId) {
+        String email = throwAuthExceptionOrReturnEmail();
 
+        MemberEntity writer = userService.getUserByEmail(email);
+        AnswerEntity answerEntity= answerRepository.findById(answerId);
+        QnaEntity qnaEntity= qnaRepository.findById(answerId);
+
+        // 요청 유저와 질문자가 동일한가?
+        if(!writer.equals(qnaEntity.getWriter())){
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "답변채택 권한이 없습니다.");
+        }
+
+        // 이미 채택된 답변이 있는가?
+        if(answerRepository.existsByQnaIdAndIdAndIsAdoptedTrue(qnaEntity.getId(), answerId)){
+            throw new CustomHttpException(HttpErrorCode.CONFLICT, "이미 채택된 답변이 있습니다.");
+        }
+
+        // 답변 채택
+        answerEntity.setIsAdopted(true);
     }
 
     // 유저 체크(성공 시 유저 이메일 반환)

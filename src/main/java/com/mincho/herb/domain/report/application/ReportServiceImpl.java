@@ -6,7 +6,7 @@ import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
 import com.mincho.herb.domain.report.repository.ReportRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.global.config.error.HttpErrorCode;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.io.EmailService;
 import com.mincho.herb.global.util.CommonUtils;

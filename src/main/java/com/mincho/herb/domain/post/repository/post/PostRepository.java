@@ -5,7 +5,7 @@ import com.mincho.herb.domain.post.dto.PostDTO;
 import com.mincho.herb.domain.post.dto.SearchConditionDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.global.dto.PageInfoDTO;
+import com.mincho.herb.global.page.PageInfoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

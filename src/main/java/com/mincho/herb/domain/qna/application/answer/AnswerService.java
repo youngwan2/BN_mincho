@@ -9,5 +9,6 @@ public interface AnswerService {
     void create(Long qnaId, AnswerRequestDTO requestDTO, List<MultipartFile> images);
     void update(Long id, AnswerRequestDTO dto);
     void delete(Long id);
+    void adopt(Long answerId);
 
 }
