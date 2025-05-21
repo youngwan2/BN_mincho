@@ -1,7 +1,7 @@
 
 프론트엔드 README.md : https://github.com/youngwan2/FN_mincho
 
-# 🌿 사용자 증상 기반 약초 추천 커뮤니티, 민초
+# 사용자 증상 기반 약초 추천 커뮤니티, 민초
 ## 📌 프로젝트 개요
 민간 약초에 대한 정보를 공유하고, 사용자 증상을 기반으로 알맞은 약초를 추천하는 서비스를 중심으로 사용자들이 직접 약초 관련 경험을 나눌 수 있는 커뮤니티 웹사이트입니다. 
 <br><br>    
@@ -28,7 +28,7 @@
 ## 🔥 배포
 - **데모**: https://www.minchoherb.com
 <br><br>
-## 시스템 아키텍처
+## 🖇시스템 아키텍처
 ![민초 아키텍처](https://github.com/user-attachments/assets/3c6aaa37-1bee-4035-a3b1-e3a40738d59e)
 
 ## ⚙ 기능
