@@ -4,6 +4,7 @@ import com.mincho.herb.domain.herb.dto.*;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.global.page.PageInfoDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface HerbRepository {
@@ -23,4 +24,7 @@ public interface HerbRepository {
     HerbEntity removeHerbImagesByHerbId(Long herbId);
 
     HerbStatisticsDTO findHerbStatics();
+
+    // 일별 포스트 통계
+    List<DailyHerbStatisticsDTO> findDailyHerbStatistics(LocalDate startDate, LocalDate endDate);
 }
