@@ -6,7 +6,7 @@ import com.mincho.herb.domain.notice.dto.NoticeResponseDTO;
 import com.mincho.herb.domain.notice.dto.NoticeSearchConditionDTO;
 import com.mincho.herb.domain.notice.entity.NoticeEntity;
 import com.mincho.herb.domain.notice.repository.NoticeRepository;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -44,7 +44,7 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
     @Transactional
     public void create(NoticeRequestDTO dto) {
 
-        MemberEntity memberEntity = adminCheckAndReturnAdmin();
+        UserEntity userEntity = adminCheckAndReturnAdmin();
 
         NoticeEntity board = com.mincho.herb.domain.notice.entity.NoticeEntity.builder()
                 .title(dto.getTitle())
@@ -53,7 +53,7 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
                 .pinned(dto.getPinned() != null ? dto.getPinned() : false)
                 .tags(dto.getTags())
                 .publishedAt(java.time.LocalDateTime.now())
-                .admin(memberEntity)
+                .admin(userEntity)
                 .deleted(false)
                 .build();
 
@@ -142,19 +142,19 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
 
 
     /** 해당 사용자가 관리자 권한이 있는지 확인합니다. */
-    private MemberEntity adminCheckAndReturnAdmin(){
+    private UserEntity adminCheckAndReturnAdmin(){
         String email = commonUtils.userCheck();
         if (email == null) {
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
         }
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
 
-        if (!memberEntity.getRole().equals("ROLE_ADMIN")) {
+        if (!userEntity.getRole().equals("ROLE_ADMIN")) {
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자 권한이 없습니다.");
         }
 
-        return memberEntity;
+        return userEntity;
     }
 }
 

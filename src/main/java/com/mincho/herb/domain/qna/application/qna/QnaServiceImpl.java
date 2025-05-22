@@ -10,7 +10,7 @@ import com.mincho.herb.domain.qna.entity.QnaEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
@@ -37,7 +37,7 @@ public class QnaServiceImpl implements QnaService {
     public QnaEntity create(QnaRequestDTO requestDTO, List<MultipartFile> images) {
         String email = throwAuthExceptionOrReturnEmail();
 
-        MemberEntity writer = userService.getUserByEmail(email);
+        UserEntity writer = userService.getUserByEmail(email);
 
         Qna qna = Qna.builder()
                 .title(requestDTO.getTitle())
@@ -59,7 +59,7 @@ public class QnaServiceImpl implements QnaService {
     public void update(Long qnaId, QnaRequestDTO requestDTO) {
         String email =throwAuthExceptionOrReturnEmail();
 
-        MemberEntity writer = userService.getUserByEmail(email);
+        UserEntity writer = userService.getUserByEmail(email);
         QnaEntity qnaEntity = qnaRepository.findById(qnaId);
 
         // 글쓴 사람과 수정 요청한 사람이 동일한가?
@@ -78,7 +78,7 @@ public class QnaServiceImpl implements QnaService {
     public void delete(Long id) {
         String email = throwAuthExceptionOrReturnEmail();
 
-        MemberEntity writer = userService.getUserByEmail(email);
+        UserEntity writer = userService.getUserByEmail(email);
         QnaEntity qnaEntity = qnaRepository.findById(id);
 
         // 권한 체크

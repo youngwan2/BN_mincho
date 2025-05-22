@@ -2,8 +2,8 @@ package com.mincho.herb.domain.qna.repository.qna;
 
 import com.mincho.herb.domain.qna.dto.*;
 import com.mincho.herb.domain.qna.entity.*;
-import com.mincho.herb.domain.user.entity.QMemberEntity;
 import com.mincho.herb.domain.user.entity.QProfileEntity;
+import com.mincho.herb.domain.user.entity.QUserEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.querydsl.core.BooleanBuilder;
@@ -80,7 +80,7 @@ public class QnaRepositoryImpl implements QnaRepository {
         QAnswerImageEntity qAnswerImageEntity = QAnswerImageEntity.answerImageEntity;
         QAnswerEntity qAnswerEntity = QAnswerEntity.answerEntity;
 
-        QMemberEntity qAnswerWriter = new QMemberEntity("answerWriter");
+        QUserEntity qAnswerWriter = new QUserEntity("answerWriter");
         QProfileEntity qAnswerProfile = new QProfileEntity("answerProfile");
 
 
@@ -155,7 +155,7 @@ public class QnaRepositoryImpl implements QnaRepository {
         QQnaEntity qnaEntity = QQnaEntity.qnaEntity;
         QQnaImageEntity qQnaImageEntity = QQnaImageEntity.qnaImageEntity;
         QAnswerEntity qAnswerEntity = QAnswerEntity.answerEntity;
-        QMemberEntity qAnswerWriter = new QMemberEntity("answerWriter");
+        QUserEntity qAnswerWriter = new QUserEntity("answerWriter");
         QProfileEntity qAnswerProfile = new QProfileEntity("answerProfile");
 
         BooleanBuilder builder = new BooleanBuilder();

@@ -6,7 +6,7 @@ import com.mincho.herb.domain.notification.dto.NotificationsResponse;
 import com.mincho.herb.domain.notification.entity.NotificationEntity;
 import com.mincho.herb.domain.notification.repository.NotificationRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -83,7 +83,7 @@ class NotificationServiceImplTest {
         int size = 10;
         String email = "user@example.com";
 
-        when(userService.getUserByEmail(email)).thenReturn(new MemberEntity(1L, null, null, null, null, null, null));
+        when(userService.getUserByEmail(email)).thenReturn(new UserEntity(1L, null, null, null, null, null, null, null));
         when(notificationRepository.findAllByUserId(anyLong(), any(Pageable.class))).thenReturn(List.of());
         when(notificationRepository.countByUserId(anyLong())).thenReturn(0L);
 
@@ -151,7 +151,7 @@ class NotificationServiceImplTest {
         setUpMockAuthentication(); // Mock Authentication
 
 
-        MemberEntity user = new MemberEntity(1L, null, null, null, null, null, null);
+        UserEntity user = new UserEntity(1L, null, null, null, null, null, null, null);
 
         when(userService.getUserByEmail(mockEmail)).thenReturn(user);
         when(notificationRepository.existsByUserIdAndIsReadFalse(anyLong())).thenReturn(false);

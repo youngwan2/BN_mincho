@@ -6,7 +6,7 @@ import com.mincho.herb.domain.like.dto.LikeHerbResponseDTO;
 import com.mincho.herb.domain.like.entity.HerbLikeEntity;
 import com.mincho.herb.domain.like.repository.HerbLikeRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.aop.userActivity.UserActivityAction;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -42,12 +42,12 @@ public class HerbLikeServiceImpl implements HerbLikeService{
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다");
         }
 
-        MemberEntity memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userService.getUserByEmail(email);
         HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
 
         HerbLikeEntity herbLikeEntity = new HerbLikeEntity();
         herbLikeEntity.setHerb(herbEntity);
-        herbLikeEntity.setMember(memberEntity);
+        herbLikeEntity.setUser(userEntity);
 
         herbLikeRepository.insertHerbLike(herbLikeEntity);
         return LikeHerbResponseDTO.builder()
@@ -67,10 +67,10 @@ public class HerbLikeServiceImpl implements HerbLikeService{
         }
 
 
-        MemberEntity memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userService.getUserByEmail(email);
         HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
 
-        herbLikeRepository.deleteByMemberIdAndHerbId(memberEntity.getId(), herbEntity.getId());
+        herbLikeRepository.deleteByMemberIdAndHerbId(userEntity.getId(), herbEntity.getId());
 
     }
 
@@ -88,8 +88,8 @@ public class HerbLikeServiceImpl implements HerbLikeService{
             return false;
         }
         HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
-        MemberEntity memberEntity = userService.getUserByEmail(email);
-        log.info("member:{}", memberEntity.getEmail());
-        return herbLikeRepository.existsByMemberIdAndHerbId(memberEntity.getId(), herbEntity.getId());
+        UserEntity userEntity = userService.getUserByEmail(email);
+        log.info("user:{}", userEntity.getEmail());
+        return herbLikeRepository.existsByMemberIdAndHerbId(userEntity.getId(), herbEntity.getId());
     }
 }

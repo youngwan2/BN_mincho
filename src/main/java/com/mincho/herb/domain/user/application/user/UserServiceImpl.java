@@ -7,11 +7,11 @@ import com.mincho.herb.domain.like.repository.HerbLikeRepository;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postLike.PostLikeRepository;
-import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
@@ -55,7 +55,7 @@ public class UserServiceImpl implements  UserService{
     // 회원가입
     @Override
     @Transactional
-    public Member register(RegisterRequestDTO registerDTO) {
+    public User register(RegisterRequestDTO registerDTO) {
         DuplicateCheckDTO duplicateCheckDTO = new DuplicateCheckDTO(registerDTO.getEmail());
         boolean hasUser = dueCheck(duplicateCheckDTO);
         if(hasUser){
@@ -63,13 +63,13 @@ public class UserServiceImpl implements  UserService{
         }
         String encodePw = bCryptPasswordEncoder.encode(registerDTO.getPassword());
 
-        Member member = Member.builder()
+        User user = User.builder()
                 .email(registerDTO.getEmail())
                 .password(encodePw)
                 .role("ROLE_USER")
                 .build();
 
-        return userRepository.save(member);
+        return userRepository.save(user);
     }
 
     // 유저 중복 체크
@@ -81,13 +81,13 @@ public class UserServiceImpl implements  UserService{
     // 비밀번호 일치 유무 체크
     @Override
     public boolean checkPassword(String email, String rawPassword) {
-        MemberEntity member  = userRepository.findByEmail(email);
+        UserEntity User  = userRepository.findByEmail(email);
 
-        if(member.getProviderId() == null) {
+        if(User.getProviderId() == null) {
             throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "소셜 로그인 유저는 이용할 수 없습니다.");
         }
 
-        String password = member.getPassword();
+        String password = User.getPassword();
         return bCryptPasswordEncoder.matches(rawPassword, password );
     }
 
@@ -104,12 +104,12 @@ public class UserServiceImpl implements  UserService{
             // 토큰 생성
             String accessToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 10* 1000L);
             String refreshToken = jwtAuthProvider.generateToken(authentication, 60 * 60 * 24 * 30 * 1000L);
-            MemberEntity memberEntity = userRepository.findByEmail(loginRequestDTO.getEmail());
-            if(memberEntity == null){
+            UserEntity userEntity = userRepository.findByEmail(loginRequestDTO.getEmail());
+            if(userEntity == null){
                 throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
             }
 
-            refreshTokenRepository.saveRefreshToken(refreshToken, memberEntity);
+            refreshTokenRepository.saveRefreshToken(refreshToken, userEntity);
 
             Map<String, String> map = new HashMap<>();
             map.put("access", accessToken);
@@ -125,26 +125,26 @@ public class UserServiceImpl implements  UserService{
     public void deleteUser(String email) {
         boolean hasUser =userRepository.existsByEmail(email);
         if(!hasUser) throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
 
         // 연관 테이블 정리
-        herbBookmarkRepository.deleteByMember(memberEntity);
-        profileRepository.deleteByMember(memberEntity);
-        refreshTokenRepository.deleteByMember(memberEntity);
-        herbLikeRepository.deleteByMember(memberEntity);
-        postLikeRepository.deleteByMember(memberEntity);
+        herbBookmarkRepository.deleteByUser(userEntity);
+        profileRepository.deleteByUser(userEntity);
+        refreshTokenRepository.deleteByUser(userEntity);
+        herbLikeRepository.deleteByUser(userEntity);
+        postLikeRepository.deleteByUser(userEntity);
 
-        List<PostEntity> postEntities = postRepository.findAllByMember(memberEntity);
-        List<CommentEntity> commentEntities = commentRepository.findAllByMember(memberEntity);
+        List<PostEntity> postEntities = postRepository.findAllByUser(userEntity);
+        List<CommentEntity> commentEntities = commentRepository.findAllByUser(userEntity);
 
         // 댓글과 연관관계 끊기
         for(CommentEntity commentEntity : commentEntities){
-            commentEntity.setMember(null);
+            commentEntity.setUser(null);
         }
 
         // 게시글과 연관관계 끊기
         for (PostEntity postEntity : postEntities) {
-            postEntity.setMember(null);
+            postEntity.setUser(null);
         }
 
         // 제일 마지막 유저 탈퇴
@@ -161,16 +161,16 @@ public class UserServiceImpl implements  UserService{
 
     // 유저 조회
     @Override
-    public MemberEntity getUserByEmail(String email) {
-        MemberEntity memberEntity = userRepository.findByEmail(email);
-        if(memberEntity == null){
+    public UserEntity getUserByEmail(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if(userEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
-        return memberEntity;
+        return userEntity;
     }
 
     @Override
-    public MemberEntity getUserByEmailOrNull(String email) {
+    public UserEntity getUserByEmailOrNull(String email) {
         return userRepository.findByEmailOrNull(email);
     }
 
@@ -184,12 +184,12 @@ public class UserServiceImpl implements  UserService{
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
         }
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
-        if(memberEntity == null) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if(userEntity == null) {
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "유저 정보를 찾을 수 없습니다.");
         }
 
-        refreshTokenRepository.removeRefreshTokenAllByUserId(memberEntity.getId());
+        refreshTokenRepository.removeRefreshTokenAllByUserId(userEntity.getId());
     }
 
     

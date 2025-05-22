@@ -5,7 +5,7 @@ import com.mincho.herb.domain.notice.dto.NoticeResponseDTO;
 import com.mincho.herb.domain.notice.dto.NoticeSearchConditionDTO;
 import com.mincho.herb.domain.notice.entity.NoticeEntity;
 import com.mincho.herb.domain.notice.entity.QNoticeEntity;
-import com.mincho.herb.domain.user.entity.QMemberEntity;
+import com.mincho.herb.domain.user.entity.QUserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -33,7 +33,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     public NoticeResponseDTO search(NoticeSearchConditionDTO condition, Pageable pageable) {
 
         QNoticeEntity notice = QNoticeEntity.noticeEntity;
-        QMemberEntity member = QMemberEntity.memberEntity;
+        QUserEntity user = QUserEntity.userEntity;
 
         // 조건부 처리
         BooleanBuilder builder = new BooleanBuilder();
@@ -68,7 +68,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
         List<NoticeDTO> notices = queryFactory
                 .select(notice)
                 .from(notice)
-                .leftJoin(notice.admin, member)
+                .leftJoin(notice.admin, user)
                 .where(builder.and(notice.deleted.isFalse())) // 삭제 안 된 글만
                 .orderBy(notice.pinned.desc(), notice.publishedAt.desc()) // 고정글 우선, 최신순
                 .offset(pageable.getOffset())

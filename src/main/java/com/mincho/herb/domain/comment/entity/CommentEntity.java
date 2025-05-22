@@ -2,7 +2,7 @@ package com.mincho.herb.domain.comment.entity;
 
 import com.mincho.herb.domain.comment.domain.Comment;
 import com.mincho.herb.domain.post.entity.PostEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,7 +25,7 @@ public class CommentEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name ="post_id")
@@ -37,12 +37,12 @@ public class CommentEntity extends BaseEntity {
     private Long level;
     private Boolean deleted;
 
-    public static CommentEntity toEntity(Comment comment, MemberEntity memberEntity, CommentEntity parentComment, PostEntity postEntity){
+    public static CommentEntity toEntity(Comment comment, UserEntity userEntity, CommentEntity parentComment, PostEntity postEntity){
         CommentEntity commentEntity = new CommentEntity();
                 commentEntity.id = comment.getId();
                 commentEntity.contents = comment.getContents();
                 commentEntity.parentComment = parentComment;
-                commentEntity.member = memberEntity;
+                commentEntity.user = userEntity;
                 commentEntity.post = postEntity;
                 commentEntity.level = comment.getLevel();
                 commentEntity.deleted = comment.getDeleted();

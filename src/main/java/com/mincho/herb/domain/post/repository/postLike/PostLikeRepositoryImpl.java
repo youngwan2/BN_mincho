@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.repository.postLike;
 
 import com.mincho.herb.domain.post.entity.PostLikeEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -31,7 +31,7 @@ public class PostLikeRepositoryImpl implements PostLikeRepository{
     }
 
     @Override
-    public void deleteByMember(MemberEntity member) {
-        postLikeJpaRepository.deleteByMember(member);
+    public void deleteByUser(UserEntity user) {
+        postLikeJpaRepository.deleteByUser(user);
     }
 }

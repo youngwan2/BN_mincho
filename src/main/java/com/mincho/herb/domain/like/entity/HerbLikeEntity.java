@@ -2,7 +2,7 @@ package com.mincho.herb.domain.like.entity;
 
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.like.domain.HerbLike;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,7 +18,7 @@ public class HerbLikeEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "herb_id")
@@ -27,7 +27,7 @@ public class HerbLikeEntity {
     public static HerbLikeEntity toEntity(HerbLike herbLike){
         HerbLikeEntity herbLikeEntity = new HerbLikeEntity();
         herbLikeEntity.id = herbLike.getId();
-        herbLikeEntity.member = MemberEntity.toEntity(herbLike.getMember());
+        herbLikeEntity.user = UserEntity.toEntity(herbLike.getUser());
         herbLikeEntity.herb = HerbEntity.toEntity(herbLike.getHerb());
 
         return herbLikeEntity;
@@ -36,7 +36,7 @@ public class HerbLikeEntity {
     public HerbLike toModel(){
         return HerbLike.builder()
                 .id(this.id)
-                .member(this.member.toModel())
+                .user(this.user.toModel())
                 .herb(this.herb.toModel())
                 .build();
     }

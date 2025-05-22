@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.entity;
 
 import com.mincho.herb.domain.post.domain.Post;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +28,7 @@ public class PostEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -39,12 +39,12 @@ public class PostEntity extends BaseEntity {
     @Column(name = "tag")
     private List<String> tags;
 
-    public static PostEntity toEntity(Post post, MemberEntity memberEntity, PostCategoryEntity postCategoryEntity){
+    public static PostEntity toEntity(Post post, UserEntity userEntity, PostCategoryEntity postCategoryEntity){
         PostEntity postEntity = new PostEntity();
         postEntity.id= post.getId();
         postEntity.title = post.getTitle();
         postEntity.contents = post.getContents();
-        postEntity.member = memberEntity;
+        postEntity.user = userEntity;
         postEntity.category = postCategoryEntity;
 
         return postEntity;
@@ -56,7 +56,7 @@ public class PostEntity extends BaseEntity {
                 .title(this.title)
                 .contents(this.contents)
                 .category(this.category.getCategory())
-                .member(this.member.toModel())
+                .user(this.user.toModel())
                 .build();
     }
 }

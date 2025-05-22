@@ -4,7 +4,7 @@ import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.user.dto.StatisticsResponseDTO;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +28,12 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         String email = commonUtils.userCheck();
 
-        MemberEntity memberEntity = userRepository.findByEmail(email);
+        UserEntity userEntity = userRepository.findByEmail(email);
 
-        log.info("조회 유저의 ID:{}", memberEntity.getId());
-        Long commentCount = commentRepository.countByMemberId(memberEntity.getId());
-        Long herbBookmarkCount = herbBookmarkRepository.countByMemberId(memberEntity.getId());
-        Long postCount = postRepository.countByMemberId(memberEntity.getId());
+        log.info("조회 유저의 ID:{}", userEntity.getId());
+        Long commentCount = commentRepository.countByMemberId(userEntity.getId());
+        Long herbBookmarkCount = herbBookmarkRepository.countByUserId(userEntity.getId());
+        Long postCount = postRepository.countByUserId(userEntity.getId());
 
         return StatisticsResponseDTO.builder()
                 .bookmarkCount(herbBookmarkCount)

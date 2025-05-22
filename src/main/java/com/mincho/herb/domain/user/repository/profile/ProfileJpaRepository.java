@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.user.repository.profile;
 
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface ProfileJpaRepository extends JpaRepository<ProfileEntity, Long> {
 
     @Modifying
-    @Query("UPDATE Profile p SET p.nickname = :nickname, p.introduction = :introduction, p.avatarUrl = :avatarUrl WHERE p.member.id = :userId")
+    @Query("UPDATE Profile p SET p.nickname = :nickname, p.introduction = :introduction, p.avatarUrl = :avatarUrl WHERE p.user.id = :userId")
     void updateProfile(
                           @Param("nickname") String nickname,
                           @Param("introduction") String introduction,
@@ -18,11 +18,11 @@ public interface ProfileJpaRepository extends JpaRepository<ProfileEntity, Long>
                           @Param("userId") Long userId
                           );
 
-    @Query("SELECT m FROM Profile m WHERE m.member.id = :userId")
+    @Query("SELECT m FROM Profile m WHERE m.user.id = :userId")
     ProfileEntity findProfileByUser(@Param("userId") Long userId);
 
     @Modifying
-    @Query("DELETE FROM Profile p WHERE p.member = :member")
-    void deleteByMember(MemberEntity member);
+    @Query("DELETE FROM Profile p WHERE p.user = :user")
+    void deleteByUser(UserEntity user);
 
 }

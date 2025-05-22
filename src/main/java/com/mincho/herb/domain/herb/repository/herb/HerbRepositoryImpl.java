@@ -1,15 +1,13 @@
 package com.mincho.herb.domain.herb.repository.herb;
 
-import com.mincho.herb.domain.herb.dto.HerbDTO;
-import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
-import com.mincho.herb.domain.herb.dto.HerbSort;
-import com.mincho.herb.domain.herb.dto.PopularityHerbsDTO;
+import com.mincho.herb.domain.herb.dto.*;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbViewsEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.page.PageInfoDTO;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.MathUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -20,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -107,15 +107,15 @@ public class HerbRepositoryImpl implements HerbRepository {
         // == 정렬
         OrderSpecifier<?> orderSpecifier = herbEntity.cntntsSj.asc(); // 기본은 이름 순으로
 
-        if("cntntsSj".equals(herbSort.getSort())){
+        if(herbSort.getSort() != null && "cntntsSj".equals(herbSort.getSort())){
             orderSpecifier = herbEntity.cntntsSj.asc();
         }
 
-        if("latest".equals(herbSort.getSort())){
+        if(herbSort.getSort() != null && "latest".equals(herbSort.getSort())){
             orderSpecifier = herbEntity.id.desc();
         }
 
-        if("views".equals(herbSort.getSort()) && "desc".equals(herbSort.getOrderBy())){
+        if(herbSort.getSort() != null && "views".equals(herbSort.getSort()) && "desc".equals(herbSort.getOrderBy())){
             orderSpecifier = herbViewsEntity.viewCount.coalesce(0L).desc();
         }
 
@@ -188,5 +188,52 @@ public class HerbRepositoryImpl implements HerbRepository {
 
         return herbEntity;
 
+    }
+
+    // 약초 통계
+    @Override
+    public HerbStatisticsDTO findHerbStatics() {
+
+        QHerbEntity herb = QHerbEntity.herbEntity;
+
+
+        LocalDate now = LocalDate.now();
+
+        // 이번 달 시작일
+        LocalDateTime startOfMonth = now.withDayOfMonth(1).atStartOfDay();
+
+        // 저번 달 시작일
+        LocalDateTime startOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1).atStartOfDay();
+
+        // 저번 달 종료일
+        LocalDateTime endOfPreviousMonth = startOfMonth.minusNanos(1);
+
+
+        // 약초 총 개수
+        Long totalCount = jpaQueryFactory.select(herb.count())
+                .from(herb)
+                .fetchOne();
+
+        // 현재 약초 개수
+        Long currentCount = jpaQueryFactory.select(herb.count())
+                .from(herb)
+                .where(herb.createdAt.goe(startOfMonth))
+                .fetchOne();
+
+        // 저번 달 약초 개수
+        Long previousCount = jpaQueryFactory.select(herb.count())
+                .from(herb)
+                .where(herb.createdAt.between(startOfPreviousMonth, endOfPreviousMonth))
+                .fetchOne();
+
+        // 증감율
+        double growthRate = MathUtil.getGrowthRate(previousCount, currentCount);
+
+        return HerbStatisticsDTO.builder()
+                .totalCount(totalCount)
+                .currentMonthCount(currentCount)
+                .previousMonthCount(previousCount)
+                .growthRate(growthRate)
+                .build();
     }
 }

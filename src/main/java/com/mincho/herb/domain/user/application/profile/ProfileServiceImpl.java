@@ -1,11 +1,11 @@
 package com.mincho.herb.domain.user.application.profile;
 
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.global.response.error.HttpErrorCode;
@@ -33,16 +33,16 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void updateProfile(ProfileRequestDTO profileRequestDTO, String email) {
-        MemberEntity memberEntity = userService.getUserByEmail(email) ;
-        Profile newProfile = ProfileEntity.toEntity(Profile.withChangeProfile(profileRequestDTO), memberEntity).toModel();
+        UserEntity userEntity = userService.getUserByEmail(email) ;
+        Profile newProfile = ProfileEntity.toEntity(Profile.withChangeProfile(profileRequestDTO), userEntity).toModel();
 
-        profileRepository.updateProfile(newProfile, memberEntity);
+        profileRepository.updateProfile(newProfile, userEntity);
     }
 
     // 프로필 조회
     @Override
     public ProfileResponseDTO getUserProfile(String email) {
-        MemberEntity member = userService.getUserByEmail(email);
+        UserEntity member = userService.getUserByEmail(email);
 
         ProfileEntity profileEntity=  profileRepository.findProfileByUser(member);
 
@@ -63,7 +63,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다. 로그인 후 다시시도 해주세요.");
         }
 
-        MemberEntity member = userService.getUserByEmail(email);
+        UserEntity member = userService.getUserByEmail(email);
         ProfileEntity profileEntity = profileRepository.findProfileByUser(member);
 
         String imageUrl = s3Service.upload(imageFile, "users/"+member.getId()+"/"); // s3 이미지 업로드
@@ -75,15 +75,15 @@ public class ProfileServiceImpl implements ProfileService {
     // 프로필 생성
     @Override
     @Transactional
-    public Profile insertProfile(Member member) {
+    public Profile insertProfile(User user) {
         Profile profile = Profile.builder()
                 .nickname(null)
                 .introduction(null)
                 .avatarUrl(null)
                 .build();
-        MemberEntity memberEntity = MemberEntity.toEntity(member);
+        UserEntity userEntity = UserEntity.toEntity(user);
 
-        ProfileEntity profileEntity = ProfileEntity.toEntity(profile, memberEntity);
+        ProfileEntity profileEntity = ProfileEntity.toEntity(profile, userEntity);
         return profileRepository.saveProfile(profileEntity);
     }
 }

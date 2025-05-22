@@ -2,7 +2,7 @@ package com.mincho.herb.domain.comment.repository;
 
 import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,30 +57,30 @@ public class CommentRepositoryImpl implements CommentRepository{
     /* 임시 쿼리 */
     @Override
     public List<CommentDTO> findByPostIdAndMemberId(Long postId, Long memberId) {
-        return commentJpaRepository.findByPostIdAndMemberId(postId, memberId);
+        return commentJpaRepository.findByPostIdAndUserId(postId, memberId);
     }
 
     @Override
-    public List<CommentDTO> findByParentCommentIdAndMemberId(Long parentCommentId, Long memberId) {
-        return commentJpaRepository.findByParentCommentIdAndMemberId(parentCommentId, memberId);
+    public List<CommentDTO> findByParentCommentIdAndUserId(Long parentCommentId, Long memberId) {
+        return commentJpaRepository.findByParentCommentIdAndUserId(parentCommentId, memberId);
     }
 
     // 유저의 모든 댓글 목록 조회
     @Override
-    public List<CommentEntity> findAllByMember(MemberEntity member) {
-        return commentJpaRepository.findAllByMember(member);
+    public List<CommentEntity> findAllByUser(UserEntity user) {
+        return commentJpaRepository.findAllByUser(user);
     }
 
     /** 마이페이지 */
     // 사용자별 댓글 개수
     @Override
     public Long countByMemberId(Long memberId) {
-        return commentJpaRepository.countByMemberId(memberId);
+        return commentJpaRepository.countByUserId(memberId);
     }
 
     // 사용자별 댓글 조회
     @Override
     public Page<CommentEntity> findByMemberId(Long memberId, Pageable pageable) {
-        return commentJpaRepository.findByMemberId(memberId, pageable);
+        return commentJpaRepository.findByUserId(memberId, pageable);
     }
 }

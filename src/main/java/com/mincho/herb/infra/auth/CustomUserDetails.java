@@ -1,6 +1,6 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails, OAuth2User {
 
-    private final Member member;
+    private final User user;
     private final Map<String, Object> attributes; // 구글에서 받아온 정보를 관리
 
 
@@ -29,7 +29,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        String role = member.getRole();
+        String role = user.getRole();
         log.info("userDetails ROLE:{}", role);
 
         // 컬렉션 객체에 사용자의 권한을 추가
@@ -44,12 +44,12 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return user.getEmail();
     }
 
     @Override

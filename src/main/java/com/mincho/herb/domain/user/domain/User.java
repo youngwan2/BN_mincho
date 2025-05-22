@@ -4,10 +4,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
-public class Member {
+public class User {
     private Long id;
     private String email;
     private String password;
@@ -15,4 +17,6 @@ public class Member {
     private Profile profile;
     private String provider;
     private String providerId;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLoginAt;
 }

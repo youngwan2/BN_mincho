@@ -55,6 +55,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/users/send-verification-code").permitAll()
                             .requestMatchers("/api/v1/notification/**").permitAll()
                             .requestMatchers("/api/v1/users/**").hasRole("USER")
+                            .requestMatchers("/api/v1/dashboard/**").hasRole("ADMIN") // 관리자만 허용
                             .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // 관리자만 허용
                             .anyRequest().permitAll()
         );

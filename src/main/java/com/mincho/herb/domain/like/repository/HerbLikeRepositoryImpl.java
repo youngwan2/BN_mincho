@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.like.repository;
 
 import com.mincho.herb.domain.like.entity.HerbLikeEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ public class HerbLikeRepositoryImpl implements HerbLikeRepository{
 
     @Override
     public Boolean existsByMemberIdAndHerbId(Long memberId, Long herbId) {
-        return herbLikeJpaRepository.existsByMemberIdAndHerbId(memberId, herbId) > 0;
+        return herbLikeJpaRepository.existsByUserIdAndHerbId(memberId, herbId) > 0;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class HerbLikeRepositoryImpl implements HerbLikeRepository{
     @Override
     @Transactional
     public void deleteByMemberIdAndHerbId(Long memberId, Long herbId) {
-        herbLikeJpaRepository.deleteByMemberIdAndHerbId(memberId, herbId);
+        herbLikeJpaRepository.deleteByUserIdAndHerbId(memberId, herbId);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class HerbLikeRepositoryImpl implements HerbLikeRepository{
     }
 
     @Override
-    public void deleteByMember(MemberEntity member) {
-        herbLikeJpaRepository.deleteByMember(member);
+    public void deleteByUser(UserEntity member) {
+        herbLikeJpaRepository.deleteByUser(member);
     }
 }

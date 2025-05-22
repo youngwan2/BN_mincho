@@ -1,9 +1,6 @@
 package com.mincho.herb.domain.herb.repository.herb;
 
-import com.mincho.herb.domain.herb.dto.HerbDTO;
-import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
-import com.mincho.herb.domain.herb.dto.HerbSort;
-import com.mincho.herb.domain.herb.dto.PopularityHerbsDTO;
+import com.mincho.herb.domain.herb.dto.*;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.global.page.PageInfoDTO;
 
@@ -24,4 +21,6 @@ public interface HerbRepository {
     List<PopularityHerbsDTO> findAllByOrderByViewCountDesc();
 
     HerbEntity removeHerbImagesByHerbId(Long herbId);
+
+    HerbStatisticsDTO findHerbStatics();
 }

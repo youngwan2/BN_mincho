@@ -8,7 +8,7 @@ import com.mincho.herb.domain.qna.entity.QnaEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +57,7 @@ public class AnswerServiceImplTest {
     @Mock
     private CommonUtils commonUtils;
 
-    private MemberEntity member;
+    private UserEntity member;
     private QnaEntity qna;
     private AnswerRequestDTO requestDTO;
 
@@ -67,8 +67,8 @@ public class AnswerServiceImplTest {
      */
     @BeforeEach
     void setUp() {
-        member = MemberEntity.builder().id(1L).email("test@example.com").build();
-        qna = QnaEntity.builder().id(1L).writer(MemberEntity.builder().id(2L).build()).build();
+        member = UserEntity.builder().id(1L).email("test@example.com").build();
+        qna = QnaEntity.builder().id(1L).writer(UserEntity.builder().id(2L).build()).build();
         requestDTO = new AnswerRequestDTO();
         requestDTO.setContent("답변 내용");
     }

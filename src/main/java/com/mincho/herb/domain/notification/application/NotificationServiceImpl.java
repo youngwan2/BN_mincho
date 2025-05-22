@@ -7,7 +7,7 @@ import com.mincho.herb.domain.notification.dto.NotificationsResponse;
 import com.mincho.herb.domain.notification.entity.NotificationEntity;
 import com.mincho.herb.domain.notification.repository.NotificationRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +98,7 @@ public class NotificationServiceImpl  implements NotificationService{
             return null;
         }
 
-        MemberEntity member = userService.getUserByEmail(email);
+        UserEntity member = userService.getUserByEmail(email);
         Long userId = member.getId();
 
         // 알림 목록
@@ -174,7 +174,7 @@ public class NotificationServiceImpl  implements NotificationService{
         if(!email.contains("@")){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
         }
-        MemberEntity member = userService.getUserByEmail(email);
+        UserEntity member = userService.getUserByEmail(email);
         notificationRepository.deleteAllByIsReadTrue(member.getId());
 
     }
@@ -200,7 +200,7 @@ public class NotificationServiceImpl  implements NotificationService{
         if(!email.contains("@")){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"요청 권한이 없습니다.");
         }
-        MemberEntity member = userService.getUserByEmail(email);
+        UserEntity member = userService.getUserByEmail(email);
         Boolean isRead = notificationRepository.existsByUserIdAndIsReadFalse(member.getId());
 
         return NotificationReadStateResponseDTO.builder()

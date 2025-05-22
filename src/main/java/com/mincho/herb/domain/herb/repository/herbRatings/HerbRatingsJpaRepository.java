@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface HerbRatingsJpaRepository extends JpaRepository<HerbRatingsEntity, Long> {
 
-    List<HerbRatingsEntity> findAllByMemberId(Long memberId);
+    List<HerbRatingsEntity> findAllByUserId(Long userId);
     List<HerbRatingsEntity> findAllByHerbId(Long herbId);
 }

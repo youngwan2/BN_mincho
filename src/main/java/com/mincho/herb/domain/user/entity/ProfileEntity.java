@@ -28,17 +28,17 @@ public class ProfileEntity {
 
     @OneToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    private UserEntity user;
 
 
 
-    public static ProfileEntity toEntity(Profile profileDomain, MemberEntity member){
+    public static ProfileEntity toEntity(Profile profileDomain, UserEntity member){
         ProfileEntity profileEntity = new ProfileEntity();
         profileEntity.id = profileEntity.getId();
         profileEntity.nickname = profileDomain.getNickname();
         profileEntity.introduction = profileDomain.getIntroduction();
         profileEntity.avatarUrl= profileDomain.getAvatarUrl();
-        profileEntity.member = member;
+        profileEntity.user = member;
         return profileEntity;
     }
 

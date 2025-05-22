@@ -7,7 +7,7 @@ import com.mincho.herb.domain.qna.entity.QnaEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.util.CommonUtils;
@@ -36,7 +36,7 @@ public class AnswerServiceImpl implements AnswerService {
     public void create(Long qnaId, AnswerRequestDTO requestDTO, List<MultipartFile> images) {
         String email =throwAuthExceptionOrReturnEmail();
         QnaEntity qna = qnaRepository.findById(qnaId);
-        MemberEntity writer = userService.getUserByEmail(email);
+        UserEntity writer = userService.getUserByEmail(email);
 
         // 질문자 본인의 질문이라면 답변 금지
         if(qna.getWriter().equals(writer)){
@@ -67,9 +67,9 @@ public class AnswerServiceImpl implements AnswerService {
     public void update(Long id, AnswerRequestDTO dto) {
         String email = throwAuthExceptionOrReturnEmail();
 
-        MemberEntity member = userService.getUserByEmail(email); // 수정 요청한 유저
+        UserEntity member = userService.getUserByEmail(email); // 수정 요청한 유저
         AnswerEntity answerEntity= answerRepository.findById(id);
-        MemberEntity writer = answerEntity.getWriter(); // 답변 작성자
+        UserEntity writer = answerEntity.getWriter(); // 답변 작성자
 
         // 요청 유저와 답변 작성자가 동일한가?
         if(!writer.equals(member)) {
@@ -84,9 +84,9 @@ public class AnswerServiceImpl implements AnswerService {
     public void delete(Long answerId) {
         String email = throwAuthExceptionOrReturnEmail();
 
-        MemberEntity member =userService.getUserByEmail(email);
+        UserEntity member =userService.getUserByEmail(email);
         AnswerEntity answerEntity= answerRepository.findById(answerId);
-        MemberEntity writer = answerEntity.getWriter(); // 답변 작성자
+        UserEntity writer = answerEntity.getWriter(); // 답변 작성자
 
         // 요청 유저와 답변 작성자가 동일인인가?
         if(!writer.equals(member)) {
@@ -106,7 +106,7 @@ public class AnswerServiceImpl implements AnswerService {
     public void adopt(Long answerId) {
         String email = throwAuthExceptionOrReturnEmail();
 
-        MemberEntity writer = userService.getUserByEmail(email);
+        UserEntity writer = userService.getUserByEmail(email);
         AnswerEntity answerEntity= answerRepository.findById(answerId);
         QnaEntity qnaEntity= qnaRepository.findById(answerId);
 

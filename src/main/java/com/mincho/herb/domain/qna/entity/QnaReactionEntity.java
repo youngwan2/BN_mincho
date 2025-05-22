@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.qna.entity;
 
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,7 +13,7 @@ public class QnaReactionEntity{
     private QnaEntity qna;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private MemberEntity member;
+    private UserEntity user;
 
     @Enumerated(EnumType.STRING)
     private QnaReactionType type;
