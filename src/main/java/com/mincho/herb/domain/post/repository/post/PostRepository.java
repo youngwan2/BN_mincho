@@ -1,15 +1,13 @@
 package com.mincho.herb.domain.post.repository.post;
 
-import com.mincho.herb.domain.post.dto.PostCountDTO;
-import com.mincho.herb.domain.post.dto.PostDTO;
-import com.mincho.herb.domain.post.dto.PostStatisticsDTO;
-import com.mincho.herb.domain.post.dto.SearchConditionDTO;
+import com.mincho.herb.domain.post.dto.*;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.page.PageInfoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PostRepository {
@@ -33,4 +31,6 @@ public interface PostRepository {
 
     // 게시글 통계
     PostStatisticsDTO findPostStatics();
+
+    List<DailyPostStatisticsDTO> findDailyPostStatistics(LocalDate startDate, LocalDate endDate);
 }

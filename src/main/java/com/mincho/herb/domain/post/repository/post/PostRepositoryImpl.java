@@ -1,9 +1,6 @@
 package com.mincho.herb.domain.post.repository.post;
 
-import com.mincho.herb.domain.post.dto.PostCountDTO;
-import com.mincho.herb.domain.post.dto.PostDTO;
-import com.mincho.herb.domain.post.dto.PostStatisticsDTO;
-import com.mincho.herb.domain.post.dto.SearchConditionDTO;
+import com.mincho.herb.domain.post.dto.*;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.entity.QPostEntity;
 import com.mincho.herb.domain.post.entity.QPostLikeEntity;
@@ -17,6 +14,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -226,5 +224,23 @@ public class PostRepositoryImpl implements PostRepository{
                 .previousMonthCount(previousMonthCount)
                 .growthRate(growthRate)
                 .build();
+    }
+
+    // 일별 포스트 통계
+    @Override
+    public List<DailyPostStatisticsDTO> findDailyPostStatistics(LocalDate startDate, LocalDate endDate) {
+        QPostEntity post = QPostEntity.postEntity;
+
+        StringTemplate date = Expressions.stringTemplate("TO_CHAR({0}, 'YYYY-MM-DD')", post.createdAt);
+        return jpaQueryFactory
+                .select(Projections.constructor(DailyPostStatisticsDTO.class,
+                        date,
+                        post.id.count().as("postCount")
+                ))
+                .from(post)
+                .where(post.createdAt.between(startDate.atStartOfDay(), endDate.atTime(23, 59, 59)))
+                .groupBy(date)
+                .orderBy(date.asc())
+                .fetch();
     }
 }

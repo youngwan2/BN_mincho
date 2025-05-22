@@ -4,6 +4,8 @@ import com.mincho.herb.domain.herb.dto.*;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbEntity;
 import com.mincho.herb.domain.herb.entity.QHerbViewsEntity;
+import com.mincho.herb.domain.post.dto.DailyPostStatisticsDTO;
+import com.mincho.herb.domain.post.entity.QPostEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.page.PageInfoDTO;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -11,6 +13,8 @@ import com.mincho.herb.global.util.MathUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -235,5 +239,25 @@ public class HerbRepositoryImpl implements HerbRepository {
                 .previousMonthCount(previousCount)
                 .growthRate(growthRate)
                 .build();
+    }
+
+
+    // 일별 약초 등록 통계
+    @Override
+    public List<DailyHerbStatisticsDTO> findDailyHerbStatistics(LocalDate startDate, LocalDate endDate) {
+        QHerbEntity herb = QHerbEntity.herbEntity;
+
+        StringTemplate date = Expressions.stringTemplate("TO_CHAR({0}, 'YYYY-MM-DD')", herb.createdAt);
+
+        return jpaQueryFactory
+                .select(Projections.constructor(DailyHerbStatisticsDTO.class,
+                        date,
+                        herb.id.count().as("herbCount")
+                ))
+                .from(herb)
+                .where(herb.createdAt.between(startDate.atStartOfDay(), endDate.atTime(23, 59, 59)))
+                .groupBy(date)
+                .orderBy(date.asc())
+                .fetch();
     }
 }

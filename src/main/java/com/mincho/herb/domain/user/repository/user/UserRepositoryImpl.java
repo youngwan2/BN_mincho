@@ -1,18 +1,28 @@
 package com.mincho.herb.domain.user.repository.user;
 
 import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.dto.DailyUserStatisticsDTO;
 import com.mincho.herb.domain.user.dto.UserStatisticsDTO;
 import com.mincho.herb.domain.user.entity.QUserEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.DateTemplate;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
+import static com.querydsl.jpa.JPAExpressions.*;
+
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.mincho.herb.global.util.MathUtil.getGrowthRate;
 
@@ -110,5 +120,31 @@ public class UserRepositoryImpl implements UserRepository{
                 previousMonthCount,
                 growthRate
         );
+    }
+
+    /**
+     * 일별 가입자 수 통계 조회
+     * @param startDate 시작일
+     * @param endDate 종료일
+     * @return DailyUserStatisticsDTO
+     */
+    @Override
+    public List<DailyUserStatisticsDTO> findDailyRegisterStatistics(LocalDate startDate, LocalDate endDate) {
+        QUserEntity user = QUserEntity.userEntity;
+
+//        LocalDate startOfThisWeek = startDate.with(DayOfWeek.MONDAY); // 이번주 월
+
+        StringTemplate date = Expressions.stringTemplate("TO_CHAR({0}, 'YYYY-MM-DD')", user.createdAt);
+        return jpaQueryFactory
+                .select(Projections.constructor(
+                        DailyUserStatisticsDTO.class,
+                        date,
+                        user.count()
+                ))
+                .from(user)
+                .where(user.createdAt.between(startDate.atStartOfDay(), endDate.atTime(23, 59, 59)))
+                .groupBy(date)
+                .orderBy(date.asc())
+                .fetch();
     }
 }

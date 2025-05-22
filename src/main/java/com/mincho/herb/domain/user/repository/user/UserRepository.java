@@ -1,8 +1,12 @@
 package com.mincho.herb.domain.user.repository.user;
 
 import com.mincho.herb.domain.user.domain.User;
+import com.mincho.herb.domain.user.dto.DailyUserStatisticsDTO;
 import com.mincho.herb.domain.user.dto.UserStatisticsDTO;
 import com.mincho.herb.domain.user.entity.UserEntity;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface UserRepository {
     User save(User user);
@@ -19,4 +23,5 @@ public interface UserRepository {
 
     UserStatisticsDTO findUserStatics();
 
+    List<DailyUserStatisticsDTO> findDailyRegisterStatistics(LocalDate startDate, LocalDate endDate);
 }
