@@ -1,8 +1,8 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.domain.Profile;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
@@ -46,32 +46,32 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         log.info("providerId:{}, email:{}, name:{}", providerId, email, name); // 여기까지 문제 없음
 
-        MemberEntity memberEntity = memberRepository.findByEmailOrNull(email);
+        UserEntity userEntity = memberRepository.findByEmailOrNull(email);
         
         // 유저 정보 저장
-        if (memberEntity == null) {
-            memberEntity = MemberEntity.builder()
+        if (userEntity == null) {
+            userEntity = UserEntity.builder()
                             .profile(ProfileEntity.toEntity(
                                     Profile.builder()
                                     .nickname(name)
                                     .build(),
-                                    memberEntity
+                                    userEntity
                             ))
                             .providerId(providerId)
                             .email(email)
                             .provider(customOAuth2UserInfo.getProvider())
                             .role("ROLE_USER")
                             .build();
-           Member member = memberRepository.save(memberEntity.toModel());
+           User user = memberRepository.save(userEntity.toModel());
 
            // 프로필 저장
             ProfileEntity profileEntity = new ProfileEntity();
-            profileEntity.setMember(MemberEntity.toEntity(member));
+            profileEntity.setUser(UserEntity.toEntity(user));
             profileEntity.setNickname(name);
 
             profileRepository.saveProfile(profileEntity);
         }
 
-        return new CustomUserDetails(memberEntity.toModel(), oAuth2User.getAttributes());
+        return new CustomUserDetails(userEntity.toModel(), oAuth2User.getAttributes());
     }
 }

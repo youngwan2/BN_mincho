@@ -3,7 +3,7 @@ package com.mincho.herb.domain.comment.repository;
 
 import com.mincho.herb.domain.comment.dto.CommentDTO;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -32,10 +32,10 @@ public interface CommentRepository {
     List<CommentDTO> findByPostIdAndMemberId(Long postId, Long memberId);
 
     // 부모 댓글로 댓글 엔티티 조회
-    List<CommentDTO> findByParentCommentIdAndMemberId(Long parentCommentId, Long memberId);
+    List<CommentDTO> findByParentCommentIdAndUserId(Long parentCommentId, Long userId);
 
     // 유저가 작성한 모든 댓글 가져오기
-    List<CommentEntity> findAllByMember(MemberEntity member);
+    List<CommentEntity> findAllByUser(UserEntity member);
 
 
 }

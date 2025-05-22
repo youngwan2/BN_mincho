@@ -3,7 +3,7 @@ package com.mincho.herb.domain.user.api;
 
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
@@ -49,8 +49,8 @@ public class UserController {
             return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
         }
         log.info("userinfo {}", registerDTO);
-        Member savedMember = userService.register(registerDTO);
-        profileService.insertProfile(savedMember);
+        User savedUser = userService.register(registerDTO);
+        profileService.insertProfile(savedUser);
 
 
         log.info("state:{}","회원가입 성공!");

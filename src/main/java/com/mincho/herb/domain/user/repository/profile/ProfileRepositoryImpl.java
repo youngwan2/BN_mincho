@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.user.repository.profile;
 
 import com.mincho.herb.domain.user.domain.Profile;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -25,13 +25,13 @@ public class ProfileRepositoryImpl implements ProfileRepository {
 
     // 프로필 수정
     @Override
-    public void updateProfile(Profile profile, MemberEntity user) {
+    public void updateProfile(Profile profile, UserEntity user) {
         profileJpaRepository.updateProfile(profile.getNickname(), profile.getIntroduction(), profile.getAvatarUrl(), user.getId());
     }
 
     // 사용자 정보로 프로필 조회
     @Override
-    public ProfileEntity findProfileByUser(MemberEntity member) {
+    public ProfileEntity findProfileByUser(UserEntity member) {
         Long userId = member.getId();
 
         log.info("profile-userId: {}",userId);
@@ -45,7 +45,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     }
 
     @Override
-    public void deleteByMember(MemberEntity member) {
-        profileJpaRepository.deleteByMember(member);
+    public void deleteByUser(UserEntity user) {
+        profileJpaRepository.deleteByUser(user);
     }
 }

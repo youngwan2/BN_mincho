@@ -2,7 +2,7 @@ package com.mincho.herb.domain.post.repository.post;
 
 import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,12 +41,12 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
                 """)
         Optional<Object[][]> findByPostId(@Param("postId") Long postId);
 
-        @Query("SELECT p.member.id FROM PostEntity p WHERE p.id = :postId AND p.member.email = :email")
+        @Query("SELECT p.user.id FROM PostEntity p WHERE p.id = :postId AND p.user.email = :email")
         Optional<Long> findAuthorIdByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
 
         // 이메일과 게시글 ID 에 따른 유저ID 조회
-        @Query("SELECT p.member FROM PostEntity p WHERE p.id = :postId AND p.member.email = :email")
-        Optional<MemberEntity> findAuthorByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
+        @Query("SELECT p.user FROM PostEntity p WHERE p.id = :postId AND p.user.email = :email")
+        Optional<UserEntity> findAuthorByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
 
         // 카테고리별 포스트 개수 조회
         @Query("SELECT COUNT(p) FROM PostEntity p WHERE p.category.id = :categoryId")
@@ -60,18 +60,18 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
 
         /** 마이페이지 */
         // 사용자가 작성한 게시글의 수
-        Long countByMemberId(Long memberId);
+        Long countByUserId(Long userId);
 
         // 사용자가 작성한 게시글 목록
         @Query("""
                    SELECT p
                    FROM PostEntity p
-                   WHERE p.member.id =:memberId
+                   WHERE p.user.id =:userId
                 """)
-        Page<PostEntity> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+        Page<PostEntity> findByUserId(@Param("userId") Long userId, Pageable pageable);
 
 
-        @Query("SELECT p FROM PostEntity p WHERE p.member = :member")
-        List<PostEntity> findAllByMember(MemberEntity member);
+        @Query("SELECT p FROM PostEntity p WHERE p.user = :user")
+        List<PostEntity> findAllByUser(UserEntity user);
 
 }

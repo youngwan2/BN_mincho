@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.like.domain;
 
 import com.mincho.herb.domain.herb.domain.Herb;
-import com.mincho.herb.domain.user.domain.Member;
+import com.mincho.herb.domain.user.domain.User;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,5 +10,5 @@ import lombok.Data;
 public class HerbLike {
     private Long id;
     private Herb herb;
-    private Member member;
+    private User user;
 }

@@ -9,7 +9,7 @@ import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
 import com.mincho.herb.domain.herb.application.herb.HerbQueryService;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.aop.userActivity.UserActivityAction;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -44,12 +44,12 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다.");
         }
 
-        MemberEntity memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userService.getUserByEmail(email);
 
         HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
         
 
-       HerbBookmarkEntity herbBookmarkEntity = herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbEntity.getId());
+       HerbBookmarkEntity herbBookmarkEntity = herbBookmarkRepository.findByUserIdAndHerbId(userEntity.getId(), herbEntity.getId());
 
        if(herbBookmarkEntity != null){
            throw new CustomHttpException(HttpErrorCode.CONFLICT, "이미 추가된 약초입니다.");
@@ -60,7 +60,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
         }
 
         herbBookmarkRepository.save(HerbBookmarkEntity.builder()
-                .member(memberEntity)
+                .user(userEntity)
                 .herb(herbEntity)
                 .url(url)
                 .build());
@@ -87,9 +87,9 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
             return false;
         }
 
-        MemberEntity memberEntity = memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userEntity = userService.getUserByEmail(email);
 
-        return herbBookmarkRepository.findByMemberIdAndHerbId(memberEntity.getId(), herbId) != null;
+        return herbBookmarkRepository.findByUserIdAndHerbId(userEntity.getId(), herbId) != null;
 
     }
 
@@ -104,14 +104,14 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다.");
         }
-        MemberEntity memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userService.getUserByEmail(email);
 
-        if(memberEntity == null){
+        if(userEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
 
-        Long totalCount = herbBookmarkRepository.countByMemberId(memberEntity.getId()); // 전체 북마크 개수
-        List<HerbBookmark> bookmarks = herbBookmarkRepository.findByMemberId(memberEntity.getId(), pageable)
+        Long totalCount = herbBookmarkRepository.countByUserId(userEntity.getId()); // 전체 북마크 개수
+        List<HerbBookmark> bookmarks = herbBookmarkRepository.findByUserId(userEntity.getId(), pageable)
                         .stream().map((bookmarkEntity)->{
                             
                             return HerbBookmark.builder()
@@ -138,11 +138,11 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     public void removeHerbBookmark(Long herbId) {
 
         String email = commonUtils.userCheck();
-        MemberEntity memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userService.getUserByEmail(email);
 
-        if(memberEntity == null){
+        if(userEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"유저 정보를 찾을 수 없습니다.");
         }
-        herbBookmarkRepository.deleteMemberIdAndHerbBookmarkId(memberEntity.getId(), herbId);
+        herbBookmarkRepository.deleteUserIdAndHerbBookmarkId(userEntity.getId(), herbId);
     }
 }

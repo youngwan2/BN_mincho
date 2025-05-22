@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.notice.entity;
 
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,7 +41,7 @@ public class NoticeEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
-    private MemberEntity admin;
+    private UserEntity admin;
 
 
 }

@@ -11,7 +11,7 @@ import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postCategory.PostCategoryRepository;
 import com.mincho.herb.domain.post.repository.postViews.PostViewsRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.page.PageInfoDTO;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -63,8 +63,8 @@ public class PostServiceImpl implements PostService{
     public DetailPostResponseDTO getDetailPostById(Long id) {
         String email = commonUtils.userCheck();
 
-        MemberEntity memberEntity = userService.getUserByEmailOrNull(email);
-        Long userId = memberEntity == null ? 0L : memberEntity.getId();
+        UserEntity userEntity = userService.getUserByEmailOrNull(email);
+        Long userId = userEntity == null ? 0L : userEntity.getId();
 
 
         PostViewsEntity postViewsEntity = postViewsRepository.findByPostId(id);
@@ -101,12 +101,12 @@ public class PostServiceImpl implements PostService{
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "게시글을 찾을 수 없습니다.");
         }
         Author author = Author.builder()
-                .nickname(postEntity.getMember().getProfile().getNickname())
-                .profileImage(postEntity.getMember().getProfile().getAvatarUrl())
+                .nickname(postEntity.getUser().getProfile().getNickname())
+                .profileImage(postEntity.getUser().getProfile().getAvatarUrl())
                 .build();
 
 
-        log.debug("userId:{}, {}", userId, postEntity.getMember().getId());
+        log.debug("userId:{}, {}", userId, postEntity.getUser().getId());
 
         return DetailPostResponseDTO.builder()
                 .id(postEntity.getId())
@@ -114,7 +114,7 @@ public class PostServiceImpl implements PostService{
                 .contents(postEntity.getContents())
                 .author(author)
                 .category(postEntity.getCategory().getCategory())
-                .isMine(postEntity.getMember().getId().equals(userId))
+                .isMine(postEntity.getUser().getId().equals(userId))
                 .likeCount(likeCount)
                 .viewCount(prevPostViewCount+1)
                 .createdAt(postEntity.getCreatedAt())
@@ -133,7 +133,7 @@ public class PostServiceImpl implements PostService{
     @Transactional
     public void addPost(PostRequestDTO postRequestDTO, String email) {
         // 유저 조회
-        MemberEntity memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userService.getUserByEmail(email);
 
         // 바꾼 카테고리
         PostCategoryEntity changedCategoryEntity = postCategoryRepository.findByCategory(postRequestDTO.getCategory());
@@ -147,7 +147,7 @@ public class PostServiceImpl implements PostService{
                         .title(postRequestDTO.getTitle())
                         .contents(postRequestDTO.getContents())
                         .build();
-        PostEntity unsavedPostEntity =  PostEntity.toEntity(post, memberEntity, changedCategoryEntity);
+        PostEntity unsavedPostEntity =  PostEntity.toEntity(post, userEntity, changedCategoryEntity);
         PostEntity savedPostEntity = postRepository.save(unsavedPostEntity);
 
         // 포스트 조회수 초기 상태 설정
@@ -164,7 +164,7 @@ public class PostServiceImpl implements PostService{
     @Override
     @Transactional
     public void update(PostRequestDTO postRequestDTO, Long id, String email) {
-        MemberEntity memberEntity = postRepository.findAuthorByPostIdAndEmail(id, email);
+        UserEntity userEntity = postRepository.findAuthorByPostIdAndEmail(id, email);
 
         PostEntity oldPostEntity = postRepository.findById(id);
         String oldContent = oldPostEntity.getContents(); // 수정 전 콘텐츠
@@ -174,7 +174,7 @@ public class PostServiceImpl implements PostService{
         PostEntity unsavedPostEntity = PostEntity.builder()
                       .id(id)
                       .category(updatedPostCategoryEntity)
-                      .member(memberEntity)
+                      .user(userEntity)
                       .title(postRequestDTO.getTitle())
                       .contents(postRequestDTO.getContents())
                       .build();
@@ -213,10 +213,10 @@ public class PostServiceImpl implements PostService{
 
         Pageable pageable = PageRequest.of(page, size);
 
-        MemberEntity memberEntity = userService.getUserByEmail(email);
+        UserEntity userEntity = userService.getUserByEmail(email);
 
         // 게시글 목록
-        List<PostEntity> postEntities= postRepository.findByMemberId(memberEntity.getId(), pageable).toList();
+        List<PostEntity> postEntities= postRepository.findByUserId(userEntity.getId(), pageable).toList();
         return postEntities.stream().map((postEntity)->{
             return MypagePostsDTO.builder()
                     .id(postEntity.getId())

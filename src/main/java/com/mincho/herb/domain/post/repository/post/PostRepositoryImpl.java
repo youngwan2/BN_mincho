@@ -2,15 +2,17 @@ package com.mincho.herb.domain.post.repository.post;
 
 import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.domain.post.dto.PostDTO;
+import com.mincho.herb.domain.post.dto.PostStatisticsDTO;
 import com.mincho.herb.domain.post.dto.SearchConditionDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.entity.QPostEntity;
 import com.mincho.herb.domain.post.entity.QPostLikeEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
-import com.mincho.herb.domain.user.entity.QMemberEntity;
+import com.mincho.herb.domain.user.entity.QUserEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.page.PageInfoDTO;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.util.MathUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -22,6 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -51,7 +55,7 @@ public class PostRepositoryImpl implements PostRepository{
     public List<PostDTO> findAllByConditions(SearchConditionDTO searchConditionDTO, PageInfoDTO pageInfoDTO) {
         QPostEntity postEntity = QPostEntity.postEntity;
         QPostLikeEntity postLikeEntity = QPostLikeEntity.postLikeEntity;
-        QMemberEntity memberEntity = QMemberEntity.memberEntity;
+        QUserEntity userEntity = QUserEntity.userEntity;
 
         log.info("검색 조건: {}", searchConditionDTO);
 
@@ -80,14 +84,14 @@ public class PostRepositoryImpl implements PostRepository{
                     builder.and(postEntity.contents.containsIgnoreCase(query.trim()));
                     break;
                 case "author": // 저자 기준 검색
-                    builder.and(postEntity.member.profile.nickname.containsIgnoreCase(query.trim()));
+                    builder.and(postEntity.user.profile.nickname.containsIgnoreCase(query.trim()));
                     break;
                 case "all": // 전체 대상 검색
                 default:
                     builder.and(
                             postEntity.title.containsIgnoreCase(query.trim())
                                     .or(postEntity.contents.containsIgnoreCase(query.trim()))
-                                    .or(postEntity.member.profile.nickname.containsIgnoreCase(query.trim()))
+                                    .or(postEntity.user.profile.nickname.containsIgnoreCase(query.trim()))
                     );
                     break;
             }
@@ -103,7 +107,7 @@ public class PostRepositoryImpl implements PostRepository{
                         postEntity.id,
                         postEntity.title,
                         postEntity.category.category,
-                        postEntity.member.profile.nickname,
+                        postEntity.user.profile.nickname,
                         Expressions.numberTemplate(Long.class, "coalesce({0}, 0)", postLikeEntity.count()).as("likeCount"),
                         postEntity.createdAt
                 ))
@@ -111,7 +115,7 @@ public class PostRepositoryImpl implements PostRepository{
                 .leftJoin(postLikeEntity).on(postLikeEntity.post.id.eq(postEntity.id))
                 .fetchJoin()
                 .where(builder)
-                .groupBy(postEntity.id, postEntity.category, postEntity.member.profile.nickname)
+                .groupBy(postEntity.id, postEntity.category, postEntity.user.profile.nickname)
                 .orderBy(orderSpecifier)
                 .offset(offset)
                 .limit(limit)
@@ -126,7 +130,7 @@ public class PostRepositoryImpl implements PostRepository{
 
 
     @Override
-    public MemberEntity findAuthorByPostIdAndEmail(Long postId, String email) {
+    public UserEntity findAuthorByPostIdAndEmail(Long postId, String email) {
         return postJpaRepository.findAuthorByPostIdAndEmail(postId, email)
                 .orElseThrow(()-> new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 있는 유저가 아닙니다."));
     }
@@ -156,21 +160,71 @@ public class PostRepositoryImpl implements PostRepository{
     }
 
     @Override
-    public List<PostEntity> findAllByMember(MemberEntity member) {
+    public List<PostEntity> findAllByUser(UserEntity user) {
 
-        return postJpaRepository.findAllByMember(member);
+        return postJpaRepository.findAllByUser(user);
     }
 
-    /** 마이페이지 */
     // 사용자 별 게시글 수
     @Override
-    public Long countByMemberId(Long memberId) {
-        return  postJpaRepository.countByMemberId(memberId);
+    public Long countByUserId(Long userId) {
+        return  postJpaRepository.countByUserId(userId);
     }
 
     // 사용자별 게시글 목록
     @Override
-    public Page<PostEntity> findByMemberId(Long memberId, Pageable pageable) {
-        return postJpaRepository.findByMemberId(memberId, pageable);
+    public Page<PostEntity> findByUserId(Long userId, Pageable pageable) {
+        return postJpaRepository.findByUserId(userId, pageable);
+    }
+
+    // 포스트 통계
+    @Override
+    public PostStatisticsDTO findPostStatics() {
+
+        QPostEntity post = QPostEntity.postEntity;
+
+        LocalDate now = LocalDate.now();
+
+        // 현재 달의 첫 번째 날
+        LocalDate firstDayOfCurrentMonth = now.withDayOfMonth(1);
+
+        // 이전 달의 첫 번째 날
+        LocalDate firstDayOfPreviousMonth = firstDayOfCurrentMonth.minusMonths(1);
+
+        // 현재 달의 첫 번째 날의 시작 00:00:00
+        LocalDateTime startOfCurrentMonth =  firstDayOfCurrentMonth.atStartOfDay();
+
+        // 이전 달의 첫 번째 날의 시작 00:00:00
+        LocalDateTime startOfPreviousMonth = firstDayOfPreviousMonth.atStartOfDay();
+
+        // 현재 달의 시작 00:00:00 에서 00:00:01 을 뺀 값 -> 전월 말일 23:59:59.999999999
+        LocalDateTime endOfPreviousMonth = startOfCurrentMonth.minusNanos(1);
+
+        // 전체 포스트 개수
+        Long totalCount = jpaQueryFactory.select(post.count()).from(post).fetchOne();
+
+        // 이번 달의 포스트 개수
+        Long currentMonthCount = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.createdAt.goe(startOfCurrentMonth))
+                .fetchOne();
+
+        // 저번 달의 포스트 개수
+        Long previousMonthCount = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.createdAt.between(startOfPreviousMonth, endOfPreviousMonth))
+                .fetchOne();
+
+        // 증감율 계산
+        double growthRate = MathUtil.getGrowthRate(previousMonthCount, currentMonthCount);
+
+        return PostStatisticsDTO.builder()
+                .totalCount(totalCount)
+                .currentMonthCount(currentMonthCount)
+                .previousMonthCount(previousMonthCount)
+                .growthRate(growthRate)
+                .build();
     }
 }

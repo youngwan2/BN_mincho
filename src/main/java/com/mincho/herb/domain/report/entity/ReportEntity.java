@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.report.entity;
 
 import com.mincho.herb.domain.report.domain.Report;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +22,7 @@ public class ReportEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id")
-    private MemberEntity reporter; // 신고자
+    private UserEntity reporter; // 신고자
 
     private String reasonSummary;
 
@@ -36,7 +36,7 @@ public class ReportEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "handler_id")
-    private MemberEntity handler; // 처리자(운영자)
+    private UserEntity handler; // 처리자(운영자)
 
     private String handleTitle;
     private String handleMemo;
@@ -60,7 +60,7 @@ public class ReportEntity extends BaseEntity {
     }
 
     // 엔티티로
-    public static ReportEntity toEntity(Report report, MemberEntity reporter, MemberEntity handler) {
+    public static ReportEntity toEntity(Report report, UserEntity reporter, UserEntity handler) {
         return ReportEntity.builder()
                 .id(report.getId())
                 .targetId(report.getTargetId())

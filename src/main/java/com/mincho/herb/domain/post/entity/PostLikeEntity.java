@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.entity;
 
 import com.mincho.herb.domain.post.domain.PostLike;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,18 +21,18 @@ public class PostLikeEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private PostEntity post;
 
-    public static PostLikeEntity toEntity(Long id, MemberEntity memberEntity, PostEntity postEntity){
+    public static PostLikeEntity toEntity(Long id, UserEntity userEntity, PostEntity postEntity){
         PostLikeEntity postLikeEntity = new PostLikeEntity();
         postLikeEntity.id = id;
         postLikeEntity.post = postEntity;
-        postLikeEntity.member = memberEntity;
+        postLikeEntity.user = userEntity;
         return postLikeEntity;
     }
 
@@ -40,7 +40,7 @@ public class PostLikeEntity {
         return  PostLike.builder()
                 .id(this.id)
                 .postId(this.post.getId())
-                .userId(this.member.getId())
+                .userId(this.user.getId())
                 .build();
     }
 }

@@ -1,4 +1,64 @@
 package com.mincho.herb.domain.dashboard.application;
 
-public class DashboardServiceImpl {
+import com.mincho.herb.domain.dashboard.dto.DashboardResponseDTO;
+import com.mincho.herb.domain.herb.dto.HerbStatisticsDTO;
+import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
+import com.mincho.herb.domain.post.dto.PostStatisticsDTO;
+import com.mincho.herb.domain.post.repository.post.PostRepository;
+import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
+import com.mincho.herb.domain.report.dto.ReportStatisticsDTO;
+import com.mincho.herb.domain.report.repository.ReportRepository;
+import com.mincho.herb.domain.user.dto.UserStatisticsDTO;
+import com.mincho.herb.domain.user.repository.user.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class DashboardServiceImpl implements DashboardService{
+
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final QnaRepository qnaRepository;
+    private final ReportRepository reportRepository;
+    private final HerbRepository herbRepository;
+
+    // 대시보드 통계 요약
+    @Override
+    public DashboardResponseDTO getDashboardSummary() {
+
+        return DashboardResponseDTO.builder()
+                .userStatistics(getUserStatistics())
+                .postStatistics(getPostStatistics())
+                .herbStatistics(getHerbStatistics())
+                .reportStatistics(getReportStatistics())
+                .build();
+    }
+
+    // 유저 통계
+    private UserStatisticsDTO getUserStatistics(){
+        return userRepository.findUserStatics();
+
+    }
+
+    // 게시글 통계
+    private PostStatisticsDTO getPostStatistics(){
+        return postRepository.findPostStatics();
+    }
+
+    // QnA 통계
+
+    // 약초 통계
+    private HerbStatisticsDTO getHerbStatistics(){
+        return herbRepository.findHerbStatics();
+    }
+
+    // 신고 통계
+    private ReportStatisticsDTO getReportStatistics(){
+        return reportRepository.findReportStatics();
+    }
+
 }

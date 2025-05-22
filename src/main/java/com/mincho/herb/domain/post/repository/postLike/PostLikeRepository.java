@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.repository.postLike;
 
 import com.mincho.herb.domain.post.entity.PostLikeEntity;
-import com.mincho.herb.domain.user.entity.MemberEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 
 public interface PostLikeRepository {
 
@@ -12,5 +12,5 @@ public interface PostLikeRepository {
 
     void deleteByUserIdAndPostId(Long userId, Long postId);
 
-    void deleteByMember(MemberEntity member);
+    void deleteByUser(UserEntity user);
 }
