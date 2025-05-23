@@ -34,20 +34,22 @@ public class UserEntity extends BaseEntity {
 
     private LocalDateTime lastLoginAt; // 마지막 로그인 시간
 
-
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private UserStatusEnum status = UserStatusEnum.ACTIVE; // 계정 활성화 여부
 
 
     // 엔티티로
-    public static UserEntity toEntity(User UserDomain){
+    public static UserEntity toEntity(User userDomain){
         UserEntity userEntity = new UserEntity();
-        userEntity.id = UserDomain.getId();
-        userEntity.email = UserDomain.getEmail();
-        userEntity.password = UserDomain.getPassword();
-        userEntity.providerId = UserDomain.getProviderId();
-        userEntity.provider  =UserDomain.getProvider();
-        userEntity.role = UserDomain.getRole();
-        userEntity.lastLoginAt = UserDomain.getLastLoginAt();
-
+        userEntity.id = userDomain.getId();
+        userEntity.email = userDomain.getEmail();
+        userEntity.password = userDomain.getPassword();
+        userEntity.providerId = userDomain.getProviderId();
+        userEntity.provider  =userDomain.getProvider();
+        userEntity.role = userDomain.getRole();
+        userEntity.lastLoginAt = userDomain.getLastLoginAt();
+        userEntity.status = userDomain.getStatus();
 
         return userEntity;
     }
@@ -63,6 +65,7 @@ public class UserEntity extends BaseEntity {
                 .role(this.role)
                 .lastLoginAt(this.lastLoginAt)
                 .createdAt(this.getCreatedAt())
+                .status(this.status)
                 .build();
     }
 
