@@ -2,7 +2,7 @@ package com.mincho.herb.domain.qna.entity;
 
 import com.mincho.herb.domain.qna.domain.Qna;
 import com.mincho.herb.domain.user.entity.UserEntity;
-import com.mincho.herb.global.base.BaseEntity;
+import com.mincho.herb.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -16,4 +16,5 @@ public class HerbDTO {
     private String hbdcNm; // 한방명
     private String imgUrl1; // 추가 이미지 URL 1
     private Long viewCount;
+
 }

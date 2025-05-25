@@ -7,8 +7,9 @@ import com.mincho.herb.domain.report.dto.ReportsResponseDTO;
 import com.mincho.herb.domain.report.entity.QReportEntity;
 import com.mincho.herb.domain.report.entity.ReportEntity;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
-import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.util.MathUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -66,7 +67,7 @@ public class ReportRepositoryImpl implements ReportRepository {
 
         // 신고 대상 필터링(ex. 댓글, 게시글, 유저 등)
         if (condition.getTargetType() != null) {
-            builder.and(report.targetType.eq(condition.getTargetType()));
+            builder.and(report.targetType.eq(ReportHandleTargetTypeEnum.valueOf(condition.getTargetType())));
         }
 
         // 조회 쿼리
@@ -95,7 +96,7 @@ public class ReportRepositoryImpl implements ReportRepository {
                 .map(r -> ReportDTO.builder()
                         .id(r.getId())
                         .targetId(r.getTargetId())
-                        .targetType(r.getTargetType())
+                        .targetType(r.getTargetType().name())
                         .reporter(r.getReporter() != null ? r.getReporter().getEmail() : null)
                         .status(r.getStatus().name())
                         .reasonSummary(r.getReasonSummary())

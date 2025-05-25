@@ -27,7 +27,7 @@ public class CreateReportRequestDTO {
 
     /**
      * 신고 대상의 타입입니다.
-     * 예: "POST", "COMMENT"
+     * 예: "COMMUNITY_POST", "POST_COMMENT"
      *
      * <p>비어 있을 수 없습니다.</p>
      */

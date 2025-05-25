@@ -2,8 +2,8 @@ package com.mincho.herb.domain.bookmark.repository;
 
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;

@@ -1,7 +1,10 @@
 package com.mincho.herb.domain.qna.api;
 
 import com.mincho.herb.domain.qna.application.qna.QnaService;
-import com.mincho.herb.domain.qna.dto.*;
+import com.mincho.herb.domain.qna.dto.QnaDTO;
+import com.mincho.herb.domain.qna.dto.QnaRequestDTO;
+import com.mincho.herb.domain.qna.dto.QnaResponseDTO;
+import com.mincho.herb.domain.qna.dto.QnaSearchConditionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;

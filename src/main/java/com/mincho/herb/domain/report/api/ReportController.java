@@ -58,7 +58,7 @@ public class ReportController {
      *
      * @param startDate   검색 시작 날짜 (yyyy-MM-dd)
      * @param endDate     검색 종료 날짜 (yyyy-MM-dd)
-     * @param targetType  대상 타입 (예: "POST", "COMMENT")
+     * @param targetType  대상 타입 (예: "COMMUNITY_POST", "POST_COMMENT")
      * @param reporter    신고자 닉네임
      * @param status      신고 상태 (예: "PENDING", "RESOLVED")
      * @param pageable    페이징 정보

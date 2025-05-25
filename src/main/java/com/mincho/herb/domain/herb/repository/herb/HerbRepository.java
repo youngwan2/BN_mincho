@@ -1,30 +1,27 @@
 package com.mincho.herb.domain.herb.repository.herb;
 
-import com.mincho.herb.domain.herb.dto.*;
+import com.mincho.herb.domain.herb.dto.HerbDTO;
+import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
+import com.mincho.herb.domain.herb.dto.HerbSort;
+import com.mincho.herb.domain.herb.dto.PopularityHerbsDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
-import com.mincho.herb.global.page.PageInfoDTO;
+import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface HerbRepository {
-    HerbEntity save(HerbEntity herbEntity);
-    void saveAll(List<HerbEntity> herbs);
     HerbEntity findByCntntsSj(String herbName);
     HerbEntity findById(Long id);
-    void deleteById(Long id);
     List<HerbEntity> findRandom(Long id1, Long id2, Long id3);
     List<HerbEntity> findAll();
     List<Long> findHerbIds();
+    List<String> findHerbImagesByHerbId(Long herbId);
     List<HerbEntity> findByMonth(String month); // 이 달의 개화 약초
-    List<HerbDTO> findByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort, PageInfoDTO pageInfoDTO);
+    List<HerbDTO> findByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort, Pageable pageable);
     Long countByFiltering(HerbFilteringRequestDTO herbFilteringRequestDTO); // 필터링된 약초 개수
     List<PopularityHerbsDTO> findAllByOrderByViewCountDesc();
 
-    HerbEntity removeHerbImagesByHerbId(Long herbId);
 
-    HerbStatisticsDTO findHerbStatics();
 
-    // 일별 포스트 통계
-    List<DailyHerbStatisticsDTO> findDailyHerbStatistics(LocalDate startDate, LocalDate endDate);
+
 }

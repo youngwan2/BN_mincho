@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.herb.api;
 
 
-import com.mincho.herb.domain.herb.application.herb.HerbQueryService;
+import com.mincho.herb.domain.herb.application.herb.HerbUserQueryService;
 import com.mincho.herb.domain.herb.application.herbRatings.HerbRatingsService;
 import com.mincho.herb.domain.herb.domain.HerbRatings;
 import com.mincho.herb.domain.herb.dto.HerbRatingsRequestDTO;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class HerbRatingsController {
 
     private final HerbRatingsService herbRatingsService;
-    private final HerbQueryService herbQueryService;
+    private final HerbUserQueryService herbUserQueryService;
     private final CommonUtils commonUtils;
 
     @GetMapping()
@@ -37,7 +37,7 @@ public class HerbRatingsController {
             return new ErrorResponse().getResponse(400, "잘못된 요청입니다. herbName은 필수입니다..", HttpErrorType.BAD_REQUEST);
         }
 
-        List<HerbRatings> herbRatings = herbRatingsService.getHerbRatings(herbQueryService.getHerbByHerbName(herbName));
+        List<HerbRatings> herbRatings = herbRatingsService.getHerbRatings(herbUserQueryService.getHerbByHerbName(herbName));
 
         return new SuccessResponse<>().getResponse(200, "조회에 성공하였습니다.", HttpSuccessType.OK, herbRatings);
     }

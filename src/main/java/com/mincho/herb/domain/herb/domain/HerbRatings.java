@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.herb.domain;
 
 
-import com.mincho.herb.global.base.BaseEntity;
+import com.mincho.herb.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 

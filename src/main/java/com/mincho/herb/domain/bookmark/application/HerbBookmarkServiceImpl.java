@@ -6,13 +6,13 @@ import com.mincho.herb.domain.bookmark.dto.HerbBookmarkLogResponseDTO;
 import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
 import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
-import com.mincho.herb.domain.herb.application.herb.HerbQueryService;
+import com.mincho.herb.domain.herb.application.herb.HerbUserQueryService;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.aop.userActivity.UserActivityAction;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +29,7 @@ import java.util.List;
 public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     private final HerbBookmarkRepository herbBookmarkRepository;
     private final UserService userService;
-    private final HerbQueryService herbQueryService;
+    private final HerbUserQueryService herbUserQueryService;
     private final CommonUtils commonUtils;
 
 
@@ -46,7 +46,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
         UserEntity userEntity = userService.getUserByEmail(email);
 
-        HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
+        HerbEntity herbEntity = herbUserQueryService.getHerbById(herbId);
         
 
        HerbBookmarkEntity herbBookmarkEntity = herbBookmarkRepository.findByUserIdAndHerbId(userEntity.getId(), herbEntity.getId());

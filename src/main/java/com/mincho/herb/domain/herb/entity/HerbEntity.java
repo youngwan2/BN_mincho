@@ -1,9 +1,12 @@
 package com.mincho.herb.domain.herb.entity;
 
 import com.mincho.herb.domain.herb.domain.Herb;
-import com.mincho.herb.global.base.BaseEntity;
+import com.mincho.herb.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -31,20 +34,31 @@ public class HerbEntity extends BaseEntity {
 
     @Column(length = 5000)
     private String prvateTherpy; // 민간요법
-
     private String useeRegn; // 이용 부위
-
     private Long adminId;
 
     @Column(length = 1500)
     private String growthForm; // 생장형태
-
     private String flowering; // 개화기
-
     private String habitat; // 분포 및 환경
-
     private String harvest; // 수확·건조
 
+    @Builder.Default
+    @OneToMany(mappedBy = "herb", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HerbTagEntity> herbTags = new ArrayList<>();
+
+    
+    // 이미지 목록 반환
+    public List<String> getHerbImages(){
+        List<String> images = new ArrayList<>();
+        if (imgUrl1 != null) images.add(imgUrl1);
+        if (imgUrl2 != null) images.add(imgUrl2);
+        if (imgUrl3 != null) images.add(imgUrl3);
+        if (imgUrl4 != null) images.add(imgUrl4);
+        if (imgUrl5 != null) images.add(imgUrl5);
+        if (imgUrl6 != null) images.add(imgUrl6);
+        return images;
+    }
 
     // 엔티티로
     public static HerbEntity toEntity(Herb herb) {

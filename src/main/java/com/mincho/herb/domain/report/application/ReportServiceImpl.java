@@ -3,12 +3,13 @@ package com.mincho.herb.domain.report.application;
 import com.mincho.herb.domain.report.dto.*;
 import com.mincho.herb.domain.report.entity.ReportEntity;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
+import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
 import com.mincho.herb.domain.report.repository.ReportRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.io.EmailService;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.util.CommonUtils;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,7 @@ public class ReportServiceImpl implements ReportService {
 
         return reportRepository.save(ReportEntity.builder()
                 .targetId(requestDTO.getTargetId())
-                .targetType(requestDTO.getTargetType())
+                .targetType(ReportHandleTargetTypeEnum.valueOf(requestDTO.getTargetType()))
                 .status(ReportHandleStatusEnum.PENDING)
                 .reasonSummary(requestDTO.getReasonSummary())
                 .reason(requestDTO.getReason())
@@ -86,7 +87,7 @@ public class ReportServiceImpl implements ReportService {
                 .id(reportEntity.getId())
                 .reporter(reportEntity.getReporter().getEmail())
                 .targetId(reportEntity.getTargetId())
-                .targetType(reportEntity.getTargetType())
+                .targetType(reportEntity.getTargetType().name())
                 .reasonSummary(reportEntity.getReasonSummary())
                 .reason(reportEntity.getReason())
                 .handleTitle(reportEntity.getHandleTitle())

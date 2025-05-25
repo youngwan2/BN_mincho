@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-public interface HerbManageService {
+public interface HerbAdminService {
 
     void createHerb(HerbCreateRequestDTO herbCreateRequestDTO, List<MultipartFile> imageFiles);
     void removeHerb(Long id);

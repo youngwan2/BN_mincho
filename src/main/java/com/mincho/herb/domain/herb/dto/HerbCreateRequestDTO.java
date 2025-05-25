@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -33,4 +35,6 @@ public class HerbCreateRequestDTO {
     private String habitat;   // 분포 및 환경(재배환경)
     private String harvest;   // 수확·건조
 
+    private List<String> effects; // 효능
+    private List<String> sideEffects; // 부작용
 }

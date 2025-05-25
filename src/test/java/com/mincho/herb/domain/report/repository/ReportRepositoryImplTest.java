@@ -5,6 +5,7 @@ import com.mincho.herb.domain.report.dto.ReportStatisticsDTO;
 import com.mincho.herb.domain.report.dto.ReportsResponseDTO;
 import com.mincho.herb.domain.report.entity.ReportEntity;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
+import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -65,7 +66,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity = new ReportEntity();
         reportEntity.setTargetId(1L);
-        reportEntity.setTargetType("POST");
+        reportEntity.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
         reportEntity.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity.setReason("Test reason");
         reportEntity.setCreatedAt(LocalDateTime.now());
@@ -86,7 +87,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity = new ReportEntity();
         reportEntity.setTargetId(1L);
-        reportEntity.setTargetType("POST");
+        reportEntity.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
         reportEntity.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity.setReason("Test reason");
         reportEntity.setCreatedAt(LocalDateTime.now());
@@ -121,7 +122,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity1 = new ReportEntity();
         reportEntity1.setTargetId(1L);
-        reportEntity1.setTargetType("POST");
+        reportEntity1.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
         reportEntity1.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity1.setReason("Reason 1");
         reportEntity1.setCreatedAt(LocalDateTime.now().minusDays(1));
@@ -129,7 +130,7 @@ class ReportRepositoryImplTest {
 
         ReportEntity reportEntity2 = new ReportEntity();
         reportEntity2.setTargetId(2L);
-        reportEntity2.setTargetType("COMMENT");
+        reportEntity2.setTargetType(ReportHandleTargetTypeEnum.POST_COMMENT); // 게시글 댓글 신고
         reportEntity2.setStatus(ReportHandleStatusEnum.RESOLVED);
         reportEntity2.setReason("Reason 2");
         reportEntity2.setCreatedAt(LocalDateTime.now());
@@ -155,7 +156,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity1 = new ReportEntity();
         reportEntity1.setTargetId(1L);
-        reportEntity1.setTargetType("POST");
+        reportEntity1.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
         reportEntity1.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity1.setReason("Reason 1");
         reportEntity1.setCreatedAt(LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay()); // 이번주 월요일
@@ -163,7 +164,7 @@ class ReportRepositoryImplTest {
 
         ReportEntity reportEntity2 = new ReportEntity();
         reportEntity2.setTargetId(2L);
-        reportEntity2.setTargetType("COMMENT");
+        reportEntity2.setTargetType(ReportHandleTargetTypeEnum.POST_COMMENT); // 댓글 신고
         reportEntity2.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity2.setReason("Reason 2");
         reportEntity2.setCreatedAt(LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay().minusWeeks(1)); // 저번주 월요일

@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.like.application;
 
-import com.mincho.herb.domain.herb.application.herb.HerbQueryService;
+import com.mincho.herb.domain.herb.application.herb.HerbUserQueryService;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.like.dto.LikeHerbResponseDTO;
 import com.mincho.herb.domain.like.entity.HerbLikeEntity;
@@ -8,8 +8,8 @@ import com.mincho.herb.domain.like.repository.HerbLikeRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.aop.userActivity.UserActivityAction;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class HerbLikeServiceImpl implements HerbLikeService{
     private final HerbLikeRepository herbLikeRepository;
-    private final HerbQueryService herbQueryService;
+    private final HerbUserQueryService herbUserQueryService;
     private final UserService userService;
     private final CommonUtils commonUtils;
 
@@ -43,7 +43,7 @@ public class HerbLikeServiceImpl implements HerbLikeService{
         }
 
         UserEntity userEntity = userService.getUserByEmail(email);
-        HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
+        HerbEntity herbEntity = herbUserQueryService.getHerbById(herbId);
 
         HerbLikeEntity herbLikeEntity = new HerbLikeEntity();
         herbLikeEntity.setHerb(herbEntity);
@@ -68,7 +68,7 @@ public class HerbLikeServiceImpl implements HerbLikeService{
 
 
         UserEntity userEntity = userService.getUserByEmail(email);
-        HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
+        HerbEntity herbEntity = herbUserQueryService.getHerbById(herbId);
 
         herbLikeRepository.deleteByMemberIdAndHerbId(userEntity.getId(), herbEntity.getId());
 
@@ -87,7 +87,7 @@ public class HerbLikeServiceImpl implements HerbLikeService{
         if(email == null){
             return false;
         }
-        HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
+        HerbEntity herbEntity = herbUserQueryService.getHerbById(herbId);
         UserEntity userEntity = userService.getUserByEmail(email);
         log.info("user:{}", userEntity.getEmail());
         return herbLikeRepository.existsByMemberIdAndHerbId(userEntity.getId(), herbEntity.getId());
