@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/community/posts")
 public class PostViewsController {
 
     private final PostViewsService postViewsService;
 
     // 포스트 조회수 증가
-    @PatchMapping("/community/posts/{id}/view-count")
+    @PatchMapping("/{id}/view-count")
     public ResponseEntity<?> updatePostViewCount(
             @PathVariable() Long id
     ){

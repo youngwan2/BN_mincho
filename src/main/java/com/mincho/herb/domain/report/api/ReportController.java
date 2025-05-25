@@ -3,6 +3,7 @@ package com.mincho.herb.domain.report.api;
 import com.mincho.herb.domain.report.application.ReportService;
 import com.mincho.herb.domain.report.dto.*;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
+import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,15 +53,13 @@ public class ReportController {
     }
 
 
-
-
     /**
      * 신고 검색 API
      *
      * @param startDate   검색 시작 날짜 (yyyy-MM-dd)
      * @param endDate     검색 종료 날짜 (yyyy-MM-dd)
-     * @param targetType  대상 타입 (예: "COMMUNITY_POST", "POST_COMMENT")
-     * @param reporter    신고자 닉네임
+     * @param targetType  대상 타입 (예: "POST", "POST_COMMENT")
+     * @param keyword     검색 키워드 (신고자, 제목 등)
      * @param status      신고 상태 (예: "PENDING", "RESOLVED")
      * @param pageable    페이징 정보
      * @return 조건에 맞는 신고 목록 페이지
@@ -69,19 +69,19 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String targetType,
-            @RequestParam(required = false) String reporter,
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status,
+            @ModelAttribute ReportSortDTO reportSortDTO,
             Pageable pageable
     ) {
 
-        ReportSearchConditionDTO searchConditionDTO = ReportSearchConditionDTO.builder()
-                .targetType(targetType)
-                .status(ReportHandleStatusEnum.valueOf(status))
+        ReportFilteringConditionDTO filteringConditionDTO = ReportFilteringConditionDTO.builder()
                 .startDate(startDate != null ? startDate.atStartOfDay() : null)
                 .endDate(endDate != null ? endDate.atTime(23, 59, 59) : null)
-                .reporter(reporter)
+                .targetType(ReportHandleTargetTypeEnum.valueOf(targetType))
+                .status(status != null ? ReportHandleStatusEnum.valueOf(status) : null)
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).body(reportService.getAllReports(searchConditionDTO, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(reportService.getAllReports(keyword,filteringConditionDTO, reportSortDTO, pageable));
     }
 }
 

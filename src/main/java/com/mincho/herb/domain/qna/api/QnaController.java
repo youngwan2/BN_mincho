@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/qna")
+@RequestMapping("/api/v1/community/qna")
 @RequiredArgsConstructor
 public class QnaController {
 

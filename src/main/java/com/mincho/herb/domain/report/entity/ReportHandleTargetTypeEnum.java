@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public enum ReportHandleTargetTypeEnum {
     USER("사용자"),
-    COMMUNITY_POST("게시물"),
+    POST("게시물"),
     POST_COMMENT("댓글"),
     QNA("질문"),
     QNA_REPLY("답변"),

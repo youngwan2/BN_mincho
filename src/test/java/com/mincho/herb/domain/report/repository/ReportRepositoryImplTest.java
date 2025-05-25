@@ -1,8 +1,6 @@
 package com.mincho.herb.domain.report.repository;
 
-import com.mincho.herb.domain.report.dto.ReportSearchConditionDTO;
-import com.mincho.herb.domain.report.dto.ReportStatisticsDTO;
-import com.mincho.herb.domain.report.dto.ReportsResponseDTO;
+import com.mincho.herb.domain.report.dto.*;
 import com.mincho.herb.domain.report.entity.ReportEntity;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
 import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
@@ -66,7 +64,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity = new ReportEntity();
         reportEntity.setTargetId(1L);
-        reportEntity.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
+        reportEntity.setTargetType(ReportHandleTargetTypeEnum.POST); // 게시글 신고
         reportEntity.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity.setReason("Test reason");
         reportEntity.setCreatedAt(LocalDateTime.now());
@@ -87,7 +85,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity = new ReportEntity();
         reportEntity.setTargetId(1L);
-        reportEntity.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
+        reportEntity.setTargetType(ReportHandleTargetTypeEnum.POST); // 게시글 신고
         reportEntity.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity.setReason("Test reason");
         reportEntity.setCreatedAt(LocalDateTime.now());
@@ -122,7 +120,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity1 = new ReportEntity();
         reportEntity1.setTargetId(1L);
-        reportEntity1.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
+        reportEntity1.setTargetType(ReportHandleTargetTypeEnum.POST); // 게시글 신고
         reportEntity1.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity1.setReason("Reason 1");
         reportEntity1.setCreatedAt(LocalDateTime.now().minusDays(1));
@@ -136,12 +134,16 @@ class ReportRepositoryImplTest {
         reportEntity2.setCreatedAt(LocalDateTime.now());
         reportJpaRepository.save(reportEntity2);
 
-        ReportSearchConditionDTO condition = new ReportSearchConditionDTO();
+        ReportFilteringConditionDTO condition = new ReportFilteringConditionDTO();
         condition.setStatus(ReportHandleStatusEnum.PENDING);
         Pageable pageable = PageRequest.of(0, 10);
 
+        ReportSortDTO reportSortDTO = new ReportSortDTO();
+        reportSortDTO.setSort("createdAt");
+        reportSortDTO.setOrder("desc");
+
         // when
-        ReportsResponseDTO response = reportRepository.searchReports(condition, pageable);
+        ReportsResponseDTO response = reportRepository.searchReports("keyword", condition, reportSortDTO , pageable);
 
         // then
         assertThat(response.getReports()).hasSize(1);
@@ -156,7 +158,7 @@ class ReportRepositoryImplTest {
         // given
         ReportEntity reportEntity1 = new ReportEntity();
         reportEntity1.setTargetId(1L);
-        reportEntity1.setTargetType(ReportHandleTargetTypeEnum.COMMUNITY_POST); // 게시글 신고
+        reportEntity1.setTargetType(ReportHandleTargetTypeEnum.POST); // 게시글 신고
         reportEntity1.setStatus(ReportHandleStatusEnum.PENDING);
         reportEntity1.setReason("Reason 1");
         reportEntity1.setCreatedAt(LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay()); // 이번주 월요일

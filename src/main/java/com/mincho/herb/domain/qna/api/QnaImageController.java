@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/qna")
+@RequestMapping("/api/v1/community/qna")
 public class QnaImageController {
 
     private final QnaImageService qnaImageService;

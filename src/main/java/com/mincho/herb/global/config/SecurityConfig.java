@@ -75,7 +75,7 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("https://www.minchoherb.com", "http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "COMMUNITY_POST", "PATCH", "PUT","DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT","DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // 허용할 헤더
         configuration.setAllowCredentials(true); // 서버 쿠키를 클라이언트에 설정할 수 있도록 허용
         configuration.addExposedHeader("Authorization"); // 클라이언트에 노출할 헤더 지정

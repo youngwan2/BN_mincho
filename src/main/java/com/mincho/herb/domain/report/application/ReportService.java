@@ -15,7 +15,7 @@ public interface ReportService {
     void handleReport(Long reportId, HandleReportRequestDTO requestDTO) throws MessagingException;
 
     // 전체 신고 리스트 조회 (필터링, 페이징 추가)
-    ReportsResponseDTO getAllReports(ReportSearchConditionDTO searchConditionDTO, Pageable pageable);
+    ReportsResponseDTO getAllReports(String keyword, ReportFilteringConditionDTO filteringConditionDTO, ReportSortDTO reportSortDTO, Pageable pageable);
 
     // 신고 처리 이메일 알림
     void sendReportHandleEmail(HandleReportRequestDTO requestDTO,ReportDTO reportDTO, String username) throws MessagingException;

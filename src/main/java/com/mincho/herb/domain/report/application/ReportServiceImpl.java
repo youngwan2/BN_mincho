@@ -4,6 +4,7 @@ import com.mincho.herb.domain.report.dto.*;
 import com.mincho.herb.domain.report.entity.ReportEntity;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
 import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
+import com.mincho.herb.domain.report.entity.ReportResonSummaryEnum;
 import com.mincho.herb.domain.report.repository.ReportRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
@@ -56,9 +57,11 @@ public class ReportServiceImpl implements ReportService {
 
         return reportRepository.save(ReportEntity.builder()
                 .targetId(requestDTO.getTargetId())
+                .targetContentTitle(requestDTO.getTargetContentTitle())
+                .targetContentUrl(requestDTO.getTargetContentUrl())
                 .targetType(ReportHandleTargetTypeEnum.valueOf(requestDTO.getTargetType()))
                 .status(ReportHandleStatusEnum.PENDING)
-                .reasonSummary(requestDTO.getReasonSummary())
+                .reasonSummary(ReportResonSummaryEnum.valueOf(requestDTO.getReasonSummary()))
                 .reason(requestDTO.getReason())
                 .reporter(userEntity)
                 .build());
@@ -141,14 +144,16 @@ public class ReportServiceImpl implements ReportService {
      *
      * <p>관리자 권한이 있어야 접근할 수 있습니다.</p>
      *
-     * @param reportSearchConditionDTO 신고 검색 조건 DTO
-     * @param pageable 페이징 정보
+     * @param keyword               검색어(키워드)
+     * @param filteringConditionDTO 필터링 조건
+     * @param reportSortDTO         정렬 조건
+     * @param pageable              페이징 정보
      * @return {@link ReportsResponseDTO} 신고 목록 및 페이징 정보
      * @throws CustomHttpException 로그인하지 않았거나 관리자 권한이 없는 경우 {@code HttpErrorCode.UNAUTHORIZED_REQUEST}, {@code HttpErrorCode.FORBIDDEN_ACCESS} 발생
      */
     @Override
     @Transactional(readOnly = true)
-    public ReportsResponseDTO getAllReports(ReportSearchConditionDTO reportSearchConditionDTO, Pageable pageable) {
+    public ReportsResponseDTO getAllReports(String keyword, ReportFilteringConditionDTO filteringConditionDTO, ReportSortDTO reportSortDTO, Pageable pageable) {
         String email = commonUtils.userCheck();
         String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator().next().getAuthority();
         if(email == null){
@@ -158,7 +163,7 @@ public class ReportServiceImpl implements ReportService {
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"관리자만 접근할 수 있습니다.");
         }
 
-        return reportRepository.searchReports(reportSearchConditionDTO, pageable);
+        return reportRepository.searchReports(keyword, filteringConditionDTO, reportSortDTO,pageable);
     }
 
     /**

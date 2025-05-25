@@ -19,6 +19,9 @@ public class ReportEntity extends BaseEntity {
 
     private Long targetId;
 
+    private String targetContentTitle; // 신고 대상의 제목
+    private String targetContentUrl; // 신고 대상의 URL
+
     @Enumerated(EnumType.STRING)
     private ReportHandleTargetTypeEnum targetType;
 
@@ -26,7 +29,8 @@ public class ReportEntity extends BaseEntity {
     @JoinColumn(name = "reporter_id")
     private UserEntity reporter; // 신고자
 
-    private String reasonSummary;
+    @Enumerated(EnumType.STRING)
+    private ReportResonSummaryEnum reasonSummary;
 
     @Column(length = 500)
     private String reason;
@@ -51,8 +55,8 @@ public class ReportEntity extends BaseEntity {
                 .targetId(targetId)
                 .targetType(targetType)
                 .reporterId(reporter.getId())
-                .reason(reasonSummary)
                 .reason(reason)
+                .reasonSummary(reasonSummary)
                 .status(status)
                 .handledAt(handledAt)
                 .handlerId(handler != null ? handler.getId() : null)
