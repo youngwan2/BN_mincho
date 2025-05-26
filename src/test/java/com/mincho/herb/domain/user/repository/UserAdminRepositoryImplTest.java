@@ -7,6 +7,7 @@ import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.entity.UserStatusEnum;
 import com.mincho.herb.domain.user.repository.profile.ProfileJpaRepository;
+
 import com.mincho.herb.domain.user.repository.user.UserAdminRepositoryImpl;
 import com.mincho.herb.domain.user.repository.user.UserJpaRepository;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -14,8 +15,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 /**
  * UserAdminRepositoryImpl에 대한 단위 테스트 클래스입니다.
@@ -59,9 +63,11 @@ public class UserAdminRepositoryImplTest {
     /**
      * 테스트 실행 전, 테스트에 필요한 유저와 프로필 데이터를 사전 등록합니다.
      */
+
     @BeforeEach
     void setUp() {
         userAdminRepository = new UserAdminRepositoryImpl(userJpaRepository, new JPAQueryFactory(entityManager));
+
 
         // 유저 1 (활성 상태)
         UserEntity user1 = new UserEntity();
@@ -109,9 +115,11 @@ public class UserAdminRepositoryImplTest {
         SortInfoDTO sortInfoDTO = SortInfoDTO.builder()
                 .sort("createdAt")
                 .order("asc")
+
                 .build();
 
         Pageable pageable = PageRequest.of(0, 10);
+
 
         AdminUserResponseDTO response = userAdminRepository.getUserInfo(condition, sortInfoDTO, pageable);
 
@@ -132,9 +140,11 @@ public class UserAdminRepositoryImplTest {
         SortInfoDTO sortInfoDTO = SortInfoDTO.builder()
                 .sort("createdAt")
                 .order("asc")
+
                 .build();
 
         Pageable pageable = PageRequest.of(0, 10);
+
 
         assertThrows(CustomHttpException.class, () ->
                 userAdminRepository.getUserInfo(condition, sortInfoDTO, pageable)
@@ -155,6 +165,7 @@ public class UserAdminRepositoryImplTest {
         assertThat(updatedUser.getStatus()).isEqualTo(UserStatusEnum.INACTIVE);
     }
 
+
     /**
      * 유저 상태를 DELETED로 변경하고, DB에서 해당 상태로 저장되었는지 검증합니다.
      */
@@ -164,6 +175,7 @@ public class UserAdminRepositoryImplTest {
         user.setStatus(UserStatusEnum.DELETED);
 
         userAdminRepository.deleteUser(user);
+
 
         UserEntity deletedUser = userJpaRepository.findById(user.getId()).orElseThrow();
         assertThat(deletedUser.getStatus()).isEqualTo(UserStatusEnum.DELETED);

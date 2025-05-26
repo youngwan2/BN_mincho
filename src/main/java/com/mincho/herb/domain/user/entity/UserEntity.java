@@ -51,6 +51,7 @@ public class UserEntity {
     private LocalDateTime updatedAt;
 
 
+
     // 엔티티로
     public static UserEntity toEntity(User userDomain){
         UserEntity userEntity = new UserEntity();
@@ -77,6 +78,7 @@ public class UserEntity {
                 .role(this.role)
                 .lastLoginAt(this.lastLoginAt)
                 .createdAt(this.createdAt)
+
                 .status(this.status)
                 .build();
     }

@@ -83,7 +83,9 @@ class NotificationServiceImplTest {
         int size = 10;
         String email = "user@example.com";
 
+
         when(userService.getUserByEmail(email)).thenReturn(new UserEntity(1L, null, null, null, null, null, null, null, null, null, null));
+
         when(notificationRepository.findAllByUserId(anyLong(), any(Pageable.class))).thenReturn(List.of());
         when(notificationRepository.countByUserId(anyLong())).thenReturn(0L);
 
@@ -152,6 +154,7 @@ class NotificationServiceImplTest {
 
 
         UserEntity user = new UserEntity(1L, null, null, null, null, null, null, null, null, null ,null);
+
 
         when(userService.getUserByEmail(mockEmail)).thenReturn(user);
         when(notificationRepository.existsByUserIdAndIsReadFalse(anyLong())).thenReturn(false);

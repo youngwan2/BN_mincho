@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "유저 관리", description = "관리자 유저 관리 API")
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin")
@@ -25,6 +26,7 @@ public class UserAdminController {
 
     /** 유저 목록 조회 */
     @Operation(summary = "유저 목록 조회", description = "관리자 유저 목록 조회 API")
+
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getUserList(
@@ -55,6 +57,7 @@ public class UserAdminController {
 
     /** 유저 상태 변경 */
     @Operation(summary = "유저 상태 변경", description = "관리자 유저 상태 변경 API")
+
     @PatchMapping("/users/{uuid}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUserStatus(
@@ -64,8 +67,10 @@ public class UserAdminController {
         return ResponseEntity.ok().build();
     }
 
+
     /** 유저 권한 변경 */
     @Operation(summary = "유저 권한 변경", description = "관리자 유저 권한 변경 API")
+
     @PatchMapping("/users/{uuid}/role")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUserRole(
@@ -77,6 +82,7 @@ public class UserAdminController {
 
     /** 유저 삭제(탈퇴) */
     @Operation(summary = "유저 삭제(탈퇴)", description = "관리자 유저 삭제(탈퇴) API")
+
     @DeleteMapping("/users/{uuid}/entire")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(
