@@ -11,7 +11,7 @@ import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.io.EmailService;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +33,7 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final UserService userService;
     private final EmailService emailService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     /**
      * 새로운 신고를 생성합니다.
@@ -47,7 +47,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional
     public ReportEntity createReport(CreateReportRequestDTO requestDTO){
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
 
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용해주세요.");
@@ -79,7 +79,7 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public ReportDTO getReport(Long id) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용해주세요.");
         }
@@ -114,7 +114,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional
     public void handleReport(Long reportId, HandleReportRequestDTO requestDTO) throws MessagingException {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용해주세요.");
         }
@@ -154,7 +154,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional(readOnly = true)
     public ReportsResponseDTO getAllReports(String keyword, ReportFilteringConditionDTO filteringConditionDTO, ReportSortDTO reportSortDTO, Pageable pageable) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator().next().getAuthority();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용해주세요.");

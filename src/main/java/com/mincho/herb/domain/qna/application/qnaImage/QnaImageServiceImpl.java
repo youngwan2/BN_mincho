@@ -6,7 +6,7 @@ import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.qna.repository.qnaImage.QnaImageRepository;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import com.mincho.herb.infra.auth.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class QnaImageServiceImpl implements  QnaImageService {
     private final S3Service s3Service;
     private final QnaImageRepository qnaImageRepository;
     private final QnaRepository qnaRepository;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
     private static final int MAX_IMAGE_COUNT = 3;
     private static final long MAX_FILE_SIZE = 1024 * 1024; // 1MB
     private static final List<String> ALLOWED_EXTENSIONS = List.of(
@@ -149,7 +149,7 @@ public class QnaImageServiceImpl implements  QnaImageService {
      * @throws CustomHttpException 로그인되어 있지 않은 경우 예외 발생
      */
     private String throwAuthExceptionOrReturnEmail(){
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용 가능합니다.");
         }

@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.herb.dto;
 
-import com.mincho.herb.global.entity.TagTypeEnum;
+import com.mincho.herb.domain.tag.entity.TagTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

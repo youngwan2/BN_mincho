@@ -6,7 +6,7 @@ import com.mincho.herb.global.response.error.ErrorResponse;
 import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostLikeController {
 
     private final PostLikeService postLikeService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     // 좋아요 추가
     @PostMapping("/{id}/likes")
     public ResponseEntity<?> addPostLike(@PathVariable("id") Long id){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        if(!commonUtils.emailValidation(email)){
+        if(!authUtils.emailValidation(email)){
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
         boolean state = postLikeService.addPostLike(id, email);

@@ -6,18 +6,14 @@ import com.mincho.herb.domain.herb.entity.HerbTagEntity;
 import com.mincho.herb.domain.herb.entity.HerbViewsEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbAdminRepositoryImpl;
 import com.mincho.herb.domain.herb.repository.herb.HerbJpaRepository;
-import com.mincho.herb.domain.herb.repository.herb.HerbRepositoryImpl;
-import com.mincho.herb.global.entity.TagEntity;
-import com.mincho.herb.global.entity.TagTypeEnum;
+import com.mincho.herb.domain.tag.entity.TagEntity;
+import com.mincho.herb.domain.tag.entity.TagTypeEnum;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 

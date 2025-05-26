@@ -1,4 +1,4 @@
-package com.mincho.herb.global.entity;
+package com.mincho.herb.domain.tag.entity;
 
 import lombok.Getter;
 

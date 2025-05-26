@@ -10,7 +10,7 @@ import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class AnswerServiceImpl implements AnswerService {
     private final AnswerRepository answerRepository;
     private final AnswerImageService answerImageService;
     private final UserService userService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     // 답변 등록
     @Override
@@ -126,7 +126,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     // 유저 체크(성공 시 유저 이메일 반환)
     private String throwAuthExceptionOrReturnEmail(){
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용 가능합니다.");
         }

@@ -15,7 +15,7 @@ import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.page.PageInfoDTO;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import com.mincho.herb.infra.auth.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class PostServiceImpl implements PostService{
     private final PostViewsRepository postViewsRepository;
     private final UserService userService;
     private final S3Service s3Service;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
 
     // 조건 별 게시글 조회
@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService{
     // 포스트 상세 조회
     @Override
     public DetailPostResponseDTO getDetailPostById(Long id) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
 
         UserEntity userEntity = userService.getUserByEmailOrNull(email);
         Long userId = userEntity == null ? 0L : userEntity.getId();
@@ -209,7 +209,7 @@ public class PostServiceImpl implements PostService{
     // 유저가 작성한 게시글 목록
     @Override
     public List<MypagePostsDTO> getUserPosts(int page, int size) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
 
         Pageable pageable = PageRequest.of(page, size);
 

@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.herb.entity;
 
-import com.mincho.herb.global.entity.TagEntity;
+import com.mincho.herb.domain.tag.entity.TagEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

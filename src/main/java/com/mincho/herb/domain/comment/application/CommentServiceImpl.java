@@ -10,7 +10,7 @@ import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +31,7 @@ public class CommentServiceImpl implements CommentService{
     private final PostService postService;
     private final UserService userService;
     private final NotificationService notificationService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     // 댓글 추가
     @Override
@@ -123,7 +123,7 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public CommentResponseDTO getCommentsByPostId(Long postId) {
         // 부모 댓글과 자식 댓글을 모두 가져오는 페치 조인 쿼리 실행
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         UserEntity member = userService.getUserByEmailOrNull(email);
         Long memberId;
 
@@ -181,7 +181,7 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public List<MypageCommentsDTO> getMypageComments(int page, int size, String sort) {
 
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         UserEntity member = userService.getUserByEmail(email);
 
         Sort sortby = Sort.by(sort.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, "id"); // 최신순 정렬

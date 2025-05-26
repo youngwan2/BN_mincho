@@ -9,7 +9,7 @@ import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import com.mincho.herb.global.util.MapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class HerbAdminServiceImpl implements HerbAdminService {
     private final UserService userService;
     private final MapperUtils mapperUtils;
     private final HerbImageService herbImageService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
 
     // TODO: 이미지의 경우 HerbImageEntity 를 따로 만들어서 관리하는게 좋지만 빠른 구현을 위해 유지
@@ -43,7 +43,7 @@ public class HerbAdminServiceImpl implements HerbAdminService {
        if(roles.equalsIgnoreCase("ROLE_ADMIN")){
            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자만 접근할 수 있습니다.");
        }
-       String email = commonUtils.userCheck();
+       String email = authUtils.userCheck();
        if(email == null){
            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
        }
@@ -113,7 +113,7 @@ public class HerbAdminServiceImpl implements HerbAdminService {
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자만 접근할 수 있습니다.");
         }
 
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
         }

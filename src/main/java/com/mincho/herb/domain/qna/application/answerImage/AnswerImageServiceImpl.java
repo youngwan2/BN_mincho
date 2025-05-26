@@ -7,7 +7,7 @@ import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.answerImage.AnswerImageRepository;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import com.mincho.herb.infra.auth.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
     private final S3Service s3Service;
     private final AnswerRepository answerRepository;
     private final AnswerImageRepository answerImageRepository;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
     private static final int MAX_IMAGE_COUNT = 3;
     private static final long MAX_FILE_SIZE = 1024 * 1024; // 1MB
     private static final List<String> ALLOWED_EXTENSIONS = List.of(
@@ -120,7 +120,7 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
 
     // 유저 체크(성공 시 유저 이메일 반환)
     private String throwAuthExceptionOrReturnEmail(){
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용 가능합니다.");
         }
