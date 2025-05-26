@@ -6,14 +6,14 @@ import com.mincho.herb.domain.bookmark.dto.HerbBookmarkLogResponseDTO;
 import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
 import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
-import com.mincho.herb.domain.herb.application.herb.HerbQueryService;
+import com.mincho.herb.domain.herb.application.herb.HerbUserQueryService;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.aop.userActivity.UserActivityAction;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,8 +29,8 @@ import java.util.List;
 public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     private final HerbBookmarkRepository herbBookmarkRepository;
     private final UserService userService;
-    private final HerbQueryService herbQueryService;
-    private final CommonUtils commonUtils;
+    private final HerbUserQueryService herbUserQueryService;
+    private final AuthUtils authUtils;
 
 
     // 관심약초 추가
@@ -38,7 +38,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     @UserActivityAction(action = "herb_bookmark")
 
     public HerbBookmarkLogResponseDTO addHerbBookmark(String url, Long herbId) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
 
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다.");
@@ -46,7 +46,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
         UserEntity userEntity = userService.getUserByEmail(email);
 
-        HerbEntity herbEntity = herbQueryService.getHerbById(herbId);
+        HerbEntity herbEntity = herbUserQueryService.getHerbById(herbId);
         
 
        HerbBookmarkEntity herbBookmarkEntity = herbBookmarkRepository.findByUserIdAndHerbId(userEntity.getId(), herbEntity.getId());
@@ -81,7 +81,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     // 관심약초 등록 유무
     @Override
     public Boolean isBookmarked(Long herbId) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
 
         if(email == null){
             return false;
@@ -100,7 +100,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "해당 요청에 대한 권한이 없습니다.");
         }
@@ -137,7 +137,7 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
     @Transactional
     public void removeHerbBookmark(Long herbId) {
 
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         UserEntity userEntity = userService.getUserByEmail(email);
 
         if(userEntity == null){

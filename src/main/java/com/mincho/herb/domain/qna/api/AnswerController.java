@@ -2,6 +2,9 @@ package com.mincho.herb.domain.qna.api;
 
 import com.mincho.herb.domain.qna.application.answer.AnswerService;
 import com.mincho.herb.domain.qna.dto.AnswerRequestDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,48 +16,48 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/community")
+@Tag(name = "QnA Answer", description = "QnA 답변 관련 API")
 public class AnswerController {
     private final AnswerService answerService;
 
-
-    // 답변 생성
     @PostMapping("qna/{qnaId}/answers")
+    @Operation(summary = "답변 생성", description = "QnA에 답변을 생성합니다.")
     public ResponseEntity<Void> create(
+            @Parameter(description = "QnA ID", required = true) @PathVariable Long qnaId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "답변 생성 요청 DTO", required = true)
             @Valid @RequestPart(value = "answer") AnswerRequestDTO requestDTO,
-            @RequestPart(value = "image", required = false) List<MultipartFile> images,
-            @PathVariable Long qnaId
-    ){
+            @Parameter(description = "답변 이미지 파일 목록", required = false) @RequestPart(value = "image", required = false) List<MultipartFile> images
+    ) {
         answerService.create(qnaId, requestDTO, images);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
-    // 답변 수정
     @PatchMapping("qna/{qnaId}/answers/{answerId}")
+    @Operation(summary = "답변 수정", description = "QnA 답변을 수정합니다.")
     public ResponseEntity<Void> update(
-            @Valid @RequestBody AnswerRequestDTO requestDTO,
-            @PathVariable Long answerId
-    ){
+            @Parameter(description = "답변 ID", required = true) @PathVariable Long answerId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "답변 수정 요청 DTO", required = true)
+            @Valid @RequestBody AnswerRequestDTO requestDTO
+    ) {
         answerService.update(answerId, requestDTO);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    // 답변 삭제
     @DeleteMapping("qna/{qnaId}/answers/{answerId}")
+    @Operation(summary = "답변 삭제", description = "QnA 답변을 삭제합니다.")
     public ResponseEntity<Void> delete(
-            @PathVariable Long answerId
-    ){
-
+            @Parameter(description = "답변 ID", required = true) @PathVariable Long answerId
+    ) {
         answerService.delete(answerId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    // 답변 채택
     @PatchMapping("qna/{qnaId}/answers/{answerId}/adopt")
+    @Operation(summary = "답변 채택", description = "QnA 답변을 채택 처리합니다.")
     public ResponseEntity<Void> adopt(
-            @PathVariable Long answerId
-    ){
+            @Parameter(description = "답변 ID", required = true) @PathVariable Long answerId
+    ) {
         answerService.adopt(answerId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

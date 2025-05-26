@@ -10,7 +10,7 @@ import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +55,7 @@ public class AnswerServiceImplTest {
     private UserService userService;
 
     @Mock
-    private CommonUtils commonUtils;
+    private AuthUtils authUtils;
 
     private UserEntity member;
     private QnaEntity qna;
@@ -79,7 +79,7 @@ public class AnswerServiceImplTest {
     @Test
     void create_Success() {
         // given
-        when(commonUtils.userCheck()).thenReturn("test@example.com");
+        when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail(eq("test@example.com"))).thenReturn(member);
         when(qnaRepository.findById(1L)).thenReturn(qna);
         when(answerRepository.existsByQnaIdAndWriterId(1L, 1L)).thenReturn(false);
@@ -101,7 +101,7 @@ public class AnswerServiceImplTest {
     void create_WhenMyQna_ThrowException() {
         // given
         qna.setWriter(member); // 본인 질문
-        when(commonUtils.userCheck()).thenReturn("test@example.com");
+        when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(member);
         when(qnaRepository.findById(1L)).thenReturn(qna);
 
@@ -118,7 +118,7 @@ public class AnswerServiceImplTest {
     void update_Success() {
         // given
         AnswerEntity answer = AnswerEntity.builder().id(1L).writer(member).build();
-        when(commonUtils.userCheck()).thenReturn("test@example.com");
+        when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(member);
         when(answerRepository.findById(1L)).thenReturn(answer);
 
@@ -137,7 +137,7 @@ public class AnswerServiceImplTest {
     void delete_Success() {
         // given
         AnswerEntity answer = AnswerEntity.builder().id(1L).writer(member).build();
-        when(commonUtils.userCheck()).thenReturn("test@example.com");
+        when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(member);
         when(answerRepository.findById(1L)).thenReturn(answer);
 
@@ -158,7 +158,7 @@ public class AnswerServiceImplTest {
         QnaEntity qna = QnaEntity.builder().id(10L).writer(member).build();
         AnswerEntity answer = AnswerEntity.builder().id(1L).qna(qna).isAdopted(false).build();
 
-        when(commonUtils.userCheck()).thenReturn("test@example.com");
+        when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(member);
         when(answerRepository.findById(1L)).thenReturn(answer);
         when(qnaRepository.findById(1L)).thenReturn(qna);

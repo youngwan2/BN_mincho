@@ -2,9 +2,9 @@ package com.mincho.herb.domain.user.application.email;
 
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.mincho.herb.global.util.AuthUtils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final UserRepository userRepository;
     private final JavaMailSender javaMailSender;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
     private final String senderEmail;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -52,19 +52,19 @@ public class EmailServiceImpl implements EmailService {
      * @param userRepository 사용자 정보를 조회하기 위한 레포지토리
      * @param redisTemplate  Redis 캐시 처리용 템플릿
      * @param javaMailSender 이메일 발송을 위한 JavaMailSender
-     * @param commonUtils    공통 유틸리티 클래스
+     * @param authUtils    공통 유틸리티 클래스
      * @param senderEmail    발신자 이메일 주소 (환경변수에서 주입)
      */
     public EmailServiceImpl(
             UserRepository userRepository,
             RedisTemplate<String, Object> redisTemplate,
             JavaMailSender javaMailSender,
-            CommonUtils commonUtils,
+            AuthUtils authUtils,
             @Value("${spring.main.sender.email}") String senderEmail) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.javaMailSender = javaMailSender;
-        this.commonUtils = commonUtils;
+        this.authUtils = authUtils;
         this.senderEmail = senderEmail;
     }
 
@@ -124,7 +124,7 @@ public class EmailServiceImpl implements EmailService {
         boolean isValidMx = this.validateMx(toMail.split("@")[1]);
 
         if (isValidMx) {
-            String authCode = commonUtils.createAuthCode(5);
+            String authCode = authUtils.createAuthCode(5);
             MimeMessage message = createMail(toMail, authCode);
             javaMailSender.send(message);
 
@@ -152,7 +152,7 @@ public class EmailServiceImpl implements EmailService {
                 throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "소셜 로그인 계정은 비밀번호 재설정을 이용할 수 없습니다.");
             }
 
-            String authCode = commonUtils.createAuthCode(5);
+            String authCode = authUtils.createAuthCode(5);
             MimeMessage message = createMail(toMail, authCode);
             javaMailSender.send(message);
 
@@ -171,7 +171,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public String sendResetPassword(String toMail) throws MessagingException {
-        String authCode = commonUtils.createAuthCode(12);
+        String authCode = authUtils.createAuthCode(12);
         MimeMessage message = createMailForResetPassword(toMail, authCode);
         javaMailSender.send(message);
         return authCode;

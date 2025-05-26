@@ -1,5 +1,7 @@
 package com.mincho.herb.domain.report.dto;
 
+import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
+import com.mincho.herb.domain.report.entity.ReportResonSummaryEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,11 +21,13 @@ import java.time.LocalDateTime;
 @Builder
 public class ReportDTO {
     private Long id;
-    private Long targetId;
-    private String targetType;
+    private Long targetId; // 신고 대상의 ID
+    private String targetContentTitle; // 신고 대상의 제목
+    private String targetContentUrl; // 신고 대상의 URL
+    private String targetType; // 신고 대상의 타입 (예: 사용자, 게시물 등)
     private String reporter;
     private String status;
-    private String reasonSummary;
+    private ReportResonSummaryEnum reasonSummary;
     private String reason;
     private String handleTitle;
     private String handleMemo;

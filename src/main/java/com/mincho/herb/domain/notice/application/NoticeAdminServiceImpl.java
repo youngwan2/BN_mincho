@@ -8,9 +8,9 @@ import com.mincho.herb.domain.notice.entity.NoticeEntity;
 import com.mincho.herb.domain.notice.repository.NoticeRepository;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
 
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     /**
      * 게시글을 생성합니다.
@@ -143,7 +143,7 @@ public class NoticeAdminServiceImpl implements NoticeAdminService {
 
     /** 해당 사용자가 관리자 권한이 있는지 확인합니다. */
     private UserEntity adminCheckAndReturnAdmin(){
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if (email == null) {
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
         }

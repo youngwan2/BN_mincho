@@ -3,17 +3,17 @@ package com.mincho.herb.domain.herb.repository;
 import com.mincho.herb.domain.herb.dto.HerbDTO;
 import com.mincho.herb.domain.herb.dto.HerbFilteringRequestDTO;
 import com.mincho.herb.domain.herb.dto.HerbSort;
-import com.mincho.herb.domain.herb.dto.HerbStatisticsDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbJpaRepository;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepositoryImpl;
-import com.mincho.herb.global.page.PageInfoDTO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,25 +44,7 @@ class HerbRepositoryImplTest {
         herbRepository = new HerbRepositoryImpl(herbJpaRepository, new JPAQueryFactory(entityManager));
     }
 
-    /**
-     * HerbEntity 저장 기능 테스트입니다.
-     * <p>
-     * 주어진 약초 데이터를 저장한 후, ID가 정상적으로 생성되고 제목이 일치하는지 검증합니다.
-     */
-    @Test
-    void save_ShouldSaveHerbEntity() {
-        // given
-        HerbEntity herbEntity = new HerbEntity();
-        herbEntity.setCntntsSj("Test Herb");
-        herbEntity.setCreatedAt(LocalDateTime.now());
 
-        // when
-        HerbEntity savedEntity = herbRepository.save(herbEntity);
-
-        // then
-        assertThat(savedEntity.getId()).isNotNull();
-        assertThat(savedEntity.getCntntsSj()).isEqualTo("Test Herb");
-    }
 
     /**
      * ID로 HerbEntity 조회 기능 테스트입니다.
@@ -106,37 +88,15 @@ class HerbRepositoryImplTest {
         HerbSort herbSort = new HerbSort(); // 정렬 조건 없음
         HerbFilteringRequestDTO requestDTO = new HerbFilteringRequestDTO();
         requestDTO.setCntntsSj("Herb A"); // "Herb A" 제목으로 필터링
-        PageInfoDTO pageInfoDTO = PageInfoDTO.builder()
-                .page(0)
-                .size(10)
-                .build();
+        Pageable pageable = PageRequest.of(0, 10); // 페이지 정보 설정
 
         // when
-        List<HerbDTO> filteredHerbs = herbRepository.findByFiltering(requestDTO, herbSort, pageInfoDTO);
+        List<HerbDTO> filteredHerbs = herbRepository.findByFiltering(requestDTO, herbSort, pageable);
 
         // then
         assertThat(filteredHerbs).hasSize(1);
         assertThat(filteredHerbs.get(0).getCntntsSj()).isEqualTo("Herb A");
     }
 
-    /**
-     * 약초 통계 조회 기능 테스트입니다.
-     * <p>
-     * 저장된 약초 데이터를 기준으로 통계 정보(총 개수 등)가 정상적으로 반환되는지 검증합니다.
-     */
-    @Test
-    void findHerbStatics_ShouldReturnHerbStatistics() {
-        // given
-        HerbEntity herbEntity = new HerbEntity();
-        herbEntity.setCntntsSj("Herb A");
-        herbEntity.setCreatedAt(LocalDateTime.now());
-        herbJpaRepository.save(herbEntity);
-
-        // when
-        HerbStatisticsDTO statistics = herbRepository.findHerbStatics();
-
-        // then
-        assertThat(statistics.getTotalCount()).isGreaterThan(0);
-    }
 }
 

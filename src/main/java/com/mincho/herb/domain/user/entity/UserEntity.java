@@ -1,20 +1,25 @@
 package com.mincho.herb.domain.user.entity;
 
 import com.mincho.herb.domain.user.domain.User;
-import com.mincho.herb.global.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "Member")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserEntity extends BaseEntity {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +42,14 @@ public class UserEntity extends BaseEntity {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private UserStatusEnum status = UserStatusEnum.ACTIVE; // 계정 활성화 여부
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
 
 
     // 엔티티로
@@ -64,7 +77,8 @@ public class UserEntity extends BaseEntity {
                 .providerId(this.providerId)
                 .role(this.role)
                 .lastLoginAt(this.lastLoginAt)
-                .createdAt(this.getCreatedAt())
+                .createdAt(this.createdAt)
+
                 .status(this.status)
                 .build();
     }

@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.user.repository.profile;
 
-import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

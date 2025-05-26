@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HerbSort {
-    private String sort;
-    private String orderBy;
+    private String sort; // 정렬 기준
+    private String order; // 정렬 방식(asc, desc)
 }

@@ -6,7 +6,10 @@ import com.mincho.herb.global.response.error.ErrorResponse;
 import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/community/posts")
+@Tag(name = "Post Like", description = "게시글 좋아요 관련 API")
 public class PostLikeController {
 
     private final PostLikeService postLikeService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     // 좋아요 추가
     @PostMapping("/{id}/likes")
-    public ResponseEntity<?> addPostLike(@PathVariable("id") Long id){
+    @Operation(summary = "게시글 좋아요 추가/토글", description = "게시글에 좋아요를 추가하거나 토글합니다.")
+    public ResponseEntity<?> addPostLike(
+            @Parameter(description = "게시글 ID", required = true) @PathVariable("id") Long id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        if(!commonUtils.emailValidation(email)){
+        if(!authUtils.emailValidation(email)){
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
         }
         boolean state = postLikeService.addPostLike(id, email);

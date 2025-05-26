@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.qna.repository.answerImage;
+
 import com.mincho.herb.domain.qna.entity.AnswerImageEntity;
-import com.mincho.herb.domain.qna.entity.QnaImageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

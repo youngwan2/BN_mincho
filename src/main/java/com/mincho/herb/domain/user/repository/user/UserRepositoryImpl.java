@@ -5,21 +5,16 @@ import com.mincho.herb.domain.user.dto.DailyUserStatisticsDTO;
 import com.mincho.herb.domain.user.dto.UserStatisticsDTO;
 import com.mincho.herb.domain.user.entity.QUserEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
-import static com.querydsl.jpa.JPAExpressions.*;
-
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -27,12 +27,31 @@ public class CreateReportRequestDTO {
 
     /**
      * 신고 대상의 타입입니다.
-     * 예: "POST", "COMMENT"
+     * 예: "POST", "POST_COMMENT"
      *
      * <p>비어 있을 수 없습니다.</p>
      */
     @NotEmpty(message = "신고 대상(게시글, 댓글 등)은 필수입니다.")
     private String targetType;
+
+    /**
+     * 신고 대상의 제목입니다.
+     * 예: 게시글 제목, 댓글 내용 등
+     *
+     * <p>비어 있을 수 없습니다.</p>
+     */
+    @NotEmpty(message = "신고 대상 제목은 필수입니다.")
+    private String targetContentTitle;
+
+    /**
+     * 신고 대상의 URL입니다.
+     * 예: 게시글 URL, 댓글 URL 등
+     *
+     * <p>비어 있을 수 없습니다.</p>
+     */
+    @NotEmpty(message = "신고 대상 URL은 필수입니다.")
+    private String targetContentUrl;
+
 
     /**
      * 신고 사유 요약입니다.

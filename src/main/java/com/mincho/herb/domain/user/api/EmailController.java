@@ -17,7 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "이메일", description = "이메일 인증 관련 API")
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/users")
@@ -27,7 +30,8 @@ public class EmailController {
     private final UserService userService;
 
 
-    // 인증번호 발송
+    /** 인증번호 발송 */
+    @Operation(summary = "인증번호 발송", description = "이메일로 인증번호 발송 API (type: register|reset)")
     @PostMapping("/send-verification-code")
     public ResponseEntity<?> sendVerificationCode(
             @Valid @RequestBody EmailRequestDTO emailRequestDTO,
@@ -53,7 +57,8 @@ public class EmailController {
         return new SuccessResponse<>().getResponse(200, "해당 이메일로 인증번호를 발송하였습니다. 확인 후 인증번호를 입력해주세요.", HttpSuccessType.OK);
     }
 
-    // 인증번호 검증
+    /** 인증번호 검증 */
+    @Operation(summary = "인증번호 검증", description = "이메일 인증번호 검증 API (type: register|reset)")
     @PostMapping("/send-verification")
     public ResponseEntity<Map<String, String>> emailVerification(
             @Valid @RequestBody VerificationRequestDTO verificationRequestDTO,
@@ -88,5 +93,4 @@ public class EmailController {
         return new ErrorResponse().getResponse(409, "인증 실패하였습니다.", HttpErrorType.CONFLICT);
     }
 }
-
 

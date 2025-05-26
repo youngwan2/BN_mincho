@@ -3,7 +3,7 @@ package com.mincho.herb.domain.bookmark.entity;
 import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
-import com.mincho.herb.global.base.BaseEntity;
+import com.mincho.herb.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

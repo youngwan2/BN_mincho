@@ -3,6 +3,7 @@ package com.mincho.herb.domain.herb.entity;
 import com.mincho.herb.domain.herb.domain.HerbViews;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "herbViews" )

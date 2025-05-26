@@ -3,7 +3,7 @@ package com.mincho.herb.domain.dashboard.application;
 import com.mincho.herb.domain.dashboard.dto.DashboardResponseDTO;
 import com.mincho.herb.domain.herb.dto.DailyHerbStatisticsDTO;
 import com.mincho.herb.domain.herb.dto.HerbStatisticsDTO;
-import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
+import com.mincho.herb.domain.herb.repository.herb.HerbAdminRepository;
 import com.mincho.herb.domain.post.dto.DailyPostStatisticsDTO;
 import com.mincho.herb.domain.post.dto.PostStatisticsDTO;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
@@ -30,7 +30,7 @@ public class DashboardServiceImpl implements DashboardService{
     private final PostRepository postRepository;
     private final QnaRepository qnaRepository;
     private final ReportRepository reportRepository;
-    private final HerbRepository herbRepository;
+    private final HerbAdminRepository herbAdminRepository;
 
     // 대시보드 통계 요약
     @Override
@@ -54,7 +54,7 @@ public class DashboardServiceImpl implements DashboardService{
     // 약초 통계(일별)
     @Override
     public List<DailyHerbStatisticsDTO> getDailyHerbStatics(LocalDate startDate, LocalDate endDate) {
-        return herbRepository.findDailyHerbStatistics(startDate, endDate);
+        return herbAdminRepository.findDailyHerbStatistics(startDate, endDate);
     }
 
     // 유저 통계(월별)
@@ -78,7 +78,7 @@ public class DashboardServiceImpl implements DashboardService{
 
     // 약초 통계
     private HerbStatisticsDTO getHerbStatistics(){
-        return herbRepository.findHerbStatics();
+        return herbAdminRepository.findHerbStatics();
     }
 
     // 신고 통계

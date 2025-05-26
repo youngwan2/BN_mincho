@@ -1,15 +1,15 @@
 package com.mincho.herb.domain.user.application.profile;
 
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.domain.Profile;
+import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
-import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.infra.auth.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

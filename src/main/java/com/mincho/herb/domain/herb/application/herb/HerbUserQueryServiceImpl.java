@@ -7,10 +7,10 @@ import com.mincho.herb.domain.herb.entity.HerbViewsEntity;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.herb.repository.herbViews.HerbViewsRepository;
 import com.mincho.herb.global.aop.userActivity.UserActivityAction;
-import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.page.PageInfoDTO;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class HerbQueryServiceImpl implements HerbQueryService{
+public class HerbUserQueryServiceImpl implements HerbUserQueryService {
 
     private final HerbRepository herbRepository;
     private final HerbViewsRepository herbViewsRepository;
@@ -47,9 +47,9 @@ public class HerbQueryServiceImpl implements HerbQueryService{
 
     // 약초 목록 조회(페이징)
     @Override
-    public List<HerbDTO> getHerbs(PageInfoDTO pageInfoDTO, HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort) {
+    public List<HerbDTO> getHerbs(Pageable pageable, HerbFilteringRequestDTO herbFilteringRequestDTO, HerbSort herbSort) {
 
-        List<HerbDTO> herbs = herbRepository.findByFiltering(herbFilteringRequestDTO, herbSort, pageInfoDTO);
+        List<HerbDTO> herbs = herbRepository.findByFiltering(herbFilteringRequestDTO, herbSort, pageable);
         if(herbs.isEmpty()){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND,"조회 데이터가 없습니다.");
         }

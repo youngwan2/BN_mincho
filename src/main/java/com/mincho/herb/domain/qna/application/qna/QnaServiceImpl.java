@@ -11,9 +11,9 @@ import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class QnaServiceImpl implements QnaService {
     private final AnswerRepository answerRepository;
     private final UserService userService;
     private final QnaImageService qnaImageService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     // 질문 생성
     @Override
@@ -104,7 +104,7 @@ public class QnaServiceImpl implements QnaService {
     @Override
     @Transactional(readOnly = true)
     public QnaDTO getById(Long id) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         return qnaRepository.findById(id, email);
     }
 
@@ -113,14 +113,14 @@ public class QnaServiceImpl implements QnaService {
     @Override
     @Transactional(readOnly = true)
     public QnaResponseDTO getAllBySearchCondition(QnaSearchConditionDTO conditionDTO, Pageable pageable) {
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         return qnaRepository.findAll(conditionDTO,pageable, email);
     }
 
 
     // 유저 체크(성공 시 유저 이메일 반환)
     private String throwAuthExceptionOrReturnEmail(){
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST,"로그인 후 이용 가능합니다.");
         }

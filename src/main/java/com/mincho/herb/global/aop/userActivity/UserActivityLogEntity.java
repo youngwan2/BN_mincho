@@ -1,6 +1,6 @@
 package com.mincho.herb.global.aop.userActivity;
 
-import com.mincho.herb.global.base.BaseCreatedAtEntity;
+import com.mincho.herb.global.entity.BaseCreatedAtEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

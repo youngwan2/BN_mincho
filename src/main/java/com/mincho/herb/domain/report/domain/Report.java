@@ -1,6 +1,8 @@
 package com.mincho.herb.domain.report.domain;
 
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
+import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
+import com.mincho.herb.domain.report.entity.ReportResonSummaryEnum;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,9 +15,9 @@ import java.time.LocalDateTime;
 public class Report {
     private Long id;
     private Long targetId;
-    private String targetType;
+    private ReportHandleTargetTypeEnum targetType;
     private Long reporterId;
-    private String reasonSummary;
+    private ReportResonSummaryEnum reasonSummary;
     private String reason;
     private ReportHandleStatusEnum status; // PENDING, RESOLVED, CANCELLED
     private LocalDateTime handledAt;

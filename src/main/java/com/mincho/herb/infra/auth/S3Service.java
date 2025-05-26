@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -97,6 +98,29 @@ public class S3Service {
                 .signatureDuration(Duration.ofMinutes(duration))
                 .putObjectRequest(objectRequest)
         ).url().toString();
+    }
+
+    /**
+     * S3에 파일을 업로드하기 위한 presigned URL을 생성합니다.
+     *
+     * @param key         S3 객체 키
+     * @param contentType 파일 MIME 타입
+     * @param duration    URL 유효 시간(분)
+     * @return presigned URL
+     */
+    public String generatePresignedUrl(String key, String contentType, int duration) {
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentType(contentType)
+                .build();
+
+        PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(p -> p
+                .signatureDuration(Duration.ofMinutes(duration))
+                .putObjectRequest(putObjectRequest)
+        );
+
+        return presignedRequest.url().toString();
     }
 
     /**

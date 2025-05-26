@@ -6,7 +6,7 @@ import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.user.dto.StatisticsResponseDTO;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,13 +20,13 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final HerbBookmarkRepository herbBookmarkRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
     // 사용자 콘텐츠 통계
     @Override
     public StatisticsResponseDTO getStat() {
 
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
 
         UserEntity userEntity = userRepository.findByEmail(email);
 

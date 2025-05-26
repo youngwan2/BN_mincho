@@ -16,6 +16,6 @@ public class ReportSearchConditionDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private ReportHandleStatusEnum status;
-    private String reporter;
+    private String keyword;
     private String targetType;
 }

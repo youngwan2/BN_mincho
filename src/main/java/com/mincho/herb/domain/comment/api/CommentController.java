@@ -5,52 +5,47 @@ import com.mincho.herb.domain.comment.dto.CommentCreateRequestDTO;
 import com.mincho.herb.domain.comment.dto.CommentResponseDTO;
 import com.mincho.herb.domain.comment.dto.CommentUpdateRequestDTO;
 import com.mincho.herb.domain.comment.dto.MypageCommentsDTO;
-import com.mincho.herb.global.response.error.ErrorResponse;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
-import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
-import jakarta.annotation.Nullable;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
+@Tag(name = "Comment", description = "댓글 관련 API")
 public class CommentController {
-    private final CommonUtils commonUtils;
+
     private final CommentService commentService;
 
     // 댓글 추가
     @PostMapping("/community/posts/{postId}/comments/{commentId}")
-    public ResponseEntity<?> addComment(@PathVariable @NotNull(message ="postId 는 필수입니다.") Long postId,
-                                        @PathVariable @Nullable Long commentId,
-                                        @Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO,
-                                        BindingResult result){
-        if(result.hasErrors()){
-            return new ErrorResponse().getResponse(400, commonUtils.extractErrorMessage(result), HttpErrorType.BAD_REQUEST);
-        }
+    @Operation(summary = "댓글 추가", description = "게시글에 댓글을 추가합니다.")
+    public ResponseEntity<?> addComment(
+            @Parameter(description = "게시글 ID", required = true) @PathVariable Long postId,
+            @Parameter(description = "부모 댓글 ID(대댓글)", required = false) @PathVariable(required = false) Long commentId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "댓글 생성 요청 DTO", required = true)
+            @Valid @RequestBody CommentCreateRequestDTO commentCreateRequestDTO) {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        if (!email.contains("@")) {
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 없습니다.");
         }
 
-        // 경로 파라미터에서 읽은 포스트와 코멘트 id 를 설정
-        commentCreateRequestDTO.setParentCommentId(commentId);
         commentCreateRequestDTO.setPostId(postId);
+        commentCreateRequestDTO.setParentCommentId(commentId);
 
         commentService.addComment(commentCreateRequestDTO, email);
         return new SuccessResponse<>().getResponse(201, "성공적으로 댓글이 추가되었습니다.", HttpSuccessType.CREATED);
@@ -58,52 +53,54 @@ public class CommentController {
 
     // 댓글 조회
     @GetMapping("/community/posts/{postId}/comments")
-    public ResponseEntity<?> getComments(@PathVariable Long postId){
+    @Operation(summary = "댓글 조회", description = "게시글의 댓글 목록을 조회합니다.")
+    public ResponseEntity<?> getComments(
+            @Parameter(description = "게시글 ID", required = true) @PathVariable Long postId) {
         log.info("postId: {}", postId);
         CommentResponseDTO comment = commentService.getCommentsByPostId(postId);
-        return new SuccessResponse<>().getResponse(200, "성공적으로 댓글을 조회하였습니다.", HttpSuccessType.OK, comment );
+        return new SuccessResponse<>().getResponse(200, "성공적으로 댓글을 조회하였습니다.", HttpSuccessType.OK, comment);
     }
 
     // 댓글 수정
     @PatchMapping("/community/comments/{commentId}")
+    @Operation(summary = "댓글 수정", description = "댓글을 수정합니다.")
     public ResponseEntity<?> patchComment(
-            @PathVariable @Nullable Long commentId,
-            @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO
-            ){
+            @Parameter(description = "댓글 ID", required = true) @PathVariable Long commentId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "댓글 수정 요청 DTO", required = true)
+            @Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        if (!email.contains("@")) {
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 없습니다.");
         }
 
-            commentUpdateRequestDTO.setId(commentId);
-            commentService.updateComment(commentUpdateRequestDTO);
+        commentUpdateRequestDTO.setId(commentId);
+        commentService.updateComment(commentUpdateRequestDTO);
 
         return new SuccessResponse<>().getResponse(200, "성공적으로 처리되었습니다.", HttpSuccessType.OK);
     }
 
     // 댓글 삭제
     @DeleteMapping("/community/comments/{commentId}")
+    @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
     public ResponseEntity<?> deleteComment(
-            @PathVariable @Nullable Long commentId
-    ){
+            @Parameter(description = "댓글 ID", required = true) @PathVariable Long commentId) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!email.contains("@")){
-            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS,"요청 권한이 없습니다.");
+        if (!email.contains("@")) {
+            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "요청 권한이 없습니다.");
         }
 
         commentService.deleteComment(commentId);
-
         return ResponseEntity.noContent().build();
     }
 
-    /** 마이페이지 */
-    // 유저별 댓글 조회
+    // 마이페이지 - 유저별 댓글 조회
     @GetMapping("/users/me/comments")
+    @Operation(summary = "마이페이지 댓글 조회", description = "마이페이지에서 사용자의 댓글 목록을 조회합니다.")
     public ResponseEntity<List<MypageCommentsDTO>> getMypageComments(
-            @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam(required = false, defaultValue = "desc") String sort
-    ){
-        return ResponseEntity.ok(commentService.getMypageComments(page,size,sort ));
+            @Parameter(description = "페이지 번호", required = true) @RequestParam int page,
+            @Parameter(description = "페이지 크기", required = true) @RequestParam int size,
+            @Parameter(description = "정렬 방식", required = false) @RequestParam(required = false, defaultValue = "desc") String sort) {
+        return ResponseEntity.ok(commentService.getMypageComments(page, size, sort));
     }
 }

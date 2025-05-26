@@ -4,11 +4,12 @@ import com.mincho.herb.domain.herb.domain.Herb;
 import com.mincho.herb.domain.herb.dto.HerbCreateRequestDTO;
 import com.mincho.herb.domain.herb.dto.HerbUpdateRequestDTO;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
+import com.mincho.herb.domain.herb.repository.herb.HerbAdminRepository;
 import com.mincho.herb.domain.herb.repository.herb.HerbRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
-import com.mincho.herb.global.util.CommonUtils;
+import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.mincho.herb.global.util.AuthUtils;
 import com.mincho.herb.global.util.MapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +24,13 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class HerbManageServiceImpl implements HerbManageService{
+public class HerbAdminServiceImpl implements HerbAdminService {
+    private final HerbAdminRepository herbAdminRepository;
     private final HerbRepository herbRepository;
     private final UserService userService;
     private final MapperUtils mapperUtils;
     private final HerbImageService herbImageService;
-    private final CommonUtils commonUtils;
+    private final AuthUtils authUtils;
 
 
     // TODO: 이미지의 경우 HerbImageEntity 를 따로 만들어서 관리하는게 좋지만 빠른 구현을 위해 유지
@@ -41,7 +43,7 @@ public class HerbManageServiceImpl implements HerbManageService{
        if(roles.equalsIgnoreCase("ROLE_ADMIN")){
            throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자만 접근할 수 있습니다.");
        }
-       String email = commonUtils.userCheck();
+       String email = authUtils.userCheck();
        if(email == null){
            throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
        }
@@ -59,7 +61,7 @@ public class HerbManageServiceImpl implements HerbManageService{
                 .adminId(adminId)
                 .build();
 
-        HerbEntity herbEntity= herbRepository.save(unsavedHerbEntity);
+        HerbEntity herbEntity= herbAdminRepository.save(unsavedHerbEntity);
 
         // 업로드할 이미지가 있으면 동적 업로드 처리
         if(!imageFiles.isEmpty()){
@@ -91,12 +93,14 @@ public class HerbManageServiceImpl implements HerbManageService{
         }
 
         HerbEntity herbEntity = herbRepository.findById(id);
+
         if(herbEntity == null){
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 약초 정보는 존재하지 않습니다.");
 
         }
+        herbImageService.deleteHerbImages(herbImageService.findHerbImageUrlsByHerbId(id)); // 모든 이미지를 S3에서 제거
 
-        herbRepository.deleteById(id);
+        herbAdminRepository.deleteById(id);
     }
 
     // 약초 수정
@@ -109,12 +113,12 @@ public class HerbManageServiceImpl implements HerbManageService{
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "관리자만 접근할 수 있습니다.");
         }
 
-        String email = commonUtils.userCheck();
+        String email = authUtils.userCheck();
         if(email == null){
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "로그인 후 이용 가능합니다.");
         }
 
-        HerbEntity oldHerbEntity = herbRepository.removeHerbImagesByHerbId(herbId); // 전체 이미지 null 초기화 및 herbEntity 조회
+        HerbEntity oldHerbEntity = herbAdminRepository.removeHerbImagesByHerbId(herbId); // 전체 이미지 null 초기화 및 herbEntity 조회
 
         Long adminId = userService.getUserByEmail(email).getId();
         oldHerbEntity.setCntntsSj(herbUpdateRequestDTO.getCntntsSj());       // 약초명
@@ -146,7 +150,7 @@ public class HerbManageServiceImpl implements HerbManageService{
             }
         }
 
-        herbRepository.save(oldHerbEntity);
+        herbAdminRepository.save(oldHerbEntity);
     }
 
     // 값 초기화
@@ -157,7 +161,7 @@ public class HerbManageServiceImpl implements HerbManageService{
             herb.setAdminId(-999L);
             return HerbEntity.toEntity(herb);
         }).toList();
-        herbRepository.saveAll(herbsEntity);
+        herbAdminRepository.saveAll(herbsEntity);
 
     }
 }

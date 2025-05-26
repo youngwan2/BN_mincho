@@ -1,4 +1,4 @@
-package com.mincho.herb.global.base;
+package com.mincho.herb.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
