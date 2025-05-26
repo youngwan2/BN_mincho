@@ -7,6 +7,9 @@ import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
 import com.mincho.herb.infra.auth.S3Service;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -25,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @Slf4j
+@Tag(name = "Post", description = "커뮤니티 게시글 관련 API")
 public class PostController {
 
     private final PostService postService;
@@ -32,14 +36,15 @@ public class PostController {
 
     /** 게시글 목록 조회 */
     @GetMapping("/community/posts")
+    @Operation(summary = "게시글 목록 조회", description = "카테고리 및 조건에 따라 게시글 목록을 조회합니다.")
     public ResponseEntity<?> getPostsByCategory(
-            @RequestParam("category") @NotBlank(message = "category는 필수입니다.") String category,
-            @RequestParam(value = "queryType", defaultValue = "content") String queryType,
-            @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "sort", defaultValue = "desc") @NotBlank(message = "sort는 필수입니다.") String sort,
-            @RequestParam(value = "order", defaultValue = "post_id") @NotBlank(message = "order는 필수입니다.") String order,
-            @RequestParam("page") @Min(value = 0, message = "page는 0 이상이어야 합니다.") int page,
-            @RequestParam("size") @Min(value = 5, message = "size는 최소 5 이상이어야 합니다.") int size
+            @Parameter(description = "카테고리", required = true) @RequestParam("category") @NotBlank(message = "category는 필수입니다.") String category,
+            @Parameter(description = "검색 타입", required = false) @RequestParam(value = "queryType", defaultValue = "content") String queryType,
+            @Parameter(description = "검색어", required = false) @RequestParam(value = "query", required = false) String query,
+            @Parameter(description = "정렬 방식", required = false) @RequestParam(value = "sort", defaultValue = "desc") @NotBlank(message = "sort는 필수입니다.") String sort,
+            @Parameter(description = "정렬 기준", required = false) @RequestParam(value = "order", defaultValue = "post_id") @NotBlank(message = "order는 필수입니다.") String order,
+            @Parameter(description = "페이지 번호", required = true) @RequestParam("page") @Min(value = 0, message = "page는 0 이상이어야 합니다.") int page,
+            @Parameter(description = "페이지 크기", required = true) @RequestParam("size") @Min(value = 5, message = "size는 최소 5 이상이어야 합니다.") int size
     ) {
 
         SearchConditionDTO searchCondition = SearchConditionDTO.builder()
@@ -56,7 +61,10 @@ public class PostController {
 
     /** 게시글 등록 */
     @PostMapping("/community/posts")
-    public ResponseEntity<Map<String, String>> addPost(@Valid @RequestBody PostRequestDTO postRequestDTO) {
+    @Operation(summary = "게시글 등록", description = "새로운 게시글을 등록합니다.")
+    public ResponseEntity<Map<String, String>> addPost(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "게시글 등록 요청 DTO", required = true)
+            @Valid @RequestBody PostRequestDTO postRequestDTO) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!email.contains("@")) {
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
@@ -68,14 +76,18 @@ public class PostController {
 
     /** 게시글 상세 조회 */
     @GetMapping("/community/posts/{id}")
-    public ResponseEntity<?> getDetailPost(@PathVariable Long id) {
+    @Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 정보를 조회합니다.")
+    public ResponseEntity<?> getDetailPost(
+            @Parameter(description = "게시글 ID", required = true) @PathVariable Long id) {
         DetailPostResponseDTO detailPost = postService.getDetailPostById(id);
         return new SuccessResponse<>().getResponse(200, "정상적으로 조회되었습니다.", HttpSuccessType.OK, detailPost);
     }
 
     /** 게시글 삭제 */
     @DeleteMapping("/community/posts/{id}")
-    public ResponseEntity<Map<String, String>> removePost(@PathVariable Long id) {
+    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
+    public ResponseEntity<Map<String, String>> removePost(
+            @Parameter(description = "게시글 ID", required = true) @PathVariable Long id) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!email.contains("@")) {
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
@@ -87,8 +99,10 @@ public class PostController {
 
     /** 게시글 수정 */
     @PatchMapping("/community/posts/{id}")
+    @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
     public ResponseEntity<Map<String, String>> updatePost(
-            @PathVariable Long id,
+            @Parameter(description = "게시글 ID", required = true) @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "게시글 수정 요청 DTO", required = true)
             @Valid @RequestBody PostRequestDTO postRequestDTO
     ) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -102,7 +116,9 @@ public class PostController {
 
     /** 이미지 업로드용 프리사인드 URL */
     @PostMapping("/community/posts/images/presigned-url")
-    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
+    @Operation(summary = "이미지 업로드 presigned URL 생성", description = "S3에 이미지 업로드를 위한 presigned URL을 생성합니다.")
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @Parameter(description = "업로드할 이미지 파일", required = true) @RequestParam("file") MultipartFile file) {
         String url = s3Service.generatePresignedUrl(file, 5);
         Map<String, String> urlMap = new HashMap<>();
         urlMap.put("url", url);
@@ -111,9 +127,10 @@ public class PostController {
 
     /** 마이페이지 - 사용자 게시글 조회 */
     @GetMapping("/users/me/posts")
+    @Operation(summary = "마이페이지 게시글 조회", description = "마이페이지에서 사용자의 게시글 목록을 조회합니다.")
     public ResponseEntity<List<MypagePostsDTO>> getMypagePosts(
-            @RequestParam("page") @Min(0) int page,
-            @RequestParam("size") @Min(1) int size
+            @Parameter(description = "페이지 번호", required = true) @RequestParam("page") @Min(0) int page,
+            @Parameter(description = "페이지 크기", required = true) @RequestParam("size") @Min(1) int size
     ) {
         List<MypagePostsDTO> posts = postService.getUserPosts(page, size);
         return ResponseEntity.ok(posts);

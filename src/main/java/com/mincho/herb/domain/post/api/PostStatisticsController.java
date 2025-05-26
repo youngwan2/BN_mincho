@@ -4,6 +4,8 @@ import com.mincho.herb.domain.post.application.postStatistics.PostStatisticsServ
 import com.mincho.herb.domain.post.dto.PostCountDTO;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +19,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/community/statistics/posts")
+@Tag(name = "Post Statistics", description = "게시글 통계 API")
 public class PostStatisticsController {
 
     private final PostStatisticsService postStatisticsService;
 
-    // 게시글 통계
     @GetMapping()
+    @Operation(summary = "게시글 통계 조회", description = "게시글 통계 정보를 조회합니다.")
     public ResponseEntity<?> getPostStatistics(){
 
         List<PostCountDTO> postCountDTOs = postStatisticsService.getPostStatistics();

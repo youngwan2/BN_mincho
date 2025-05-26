@@ -30,7 +30,9 @@ public class BannerController {
 
     @PostMapping
     @Operation(summary = "배너 생성", description = "새로운 배너를 생성합니다.")
-    public ResponseEntity<BannerResponseDTO> createBanner(@Valid @RequestBody BannerCreateRequestDTO request) {
+    public ResponseEntity<BannerResponseDTO> createBanner(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "배너 생성 요청 DTO", required = true)
+            @Valid @RequestBody BannerCreateRequestDTO request) {
         log.info("배너 생성 요청: {}", request.getTitle());
         BannerResponseDTO response = bannerService.createBanner(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -39,7 +41,8 @@ public class BannerController {
     @PutMapping("/{id}")
     @Operation(summary = "배너 수정", description = "기존 배너를 수정합니다.")
     public ResponseEntity<BannerResponseDTO> updateBanner(
-            @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 ID", required = true) @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "배너 수정 요청 DTO", required = true)
             @Valid @RequestBody BannerUpdateRequestDTO request) {
         log.info("배너 수정 요청: ID {}", id);
         BannerResponseDTO response = bannerService.updateBanner(id, request);
@@ -48,7 +51,8 @@ public class BannerController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "배너 삭제", description = "배너를 삭제합니다.")
-    public ResponseEntity<Void> deleteBanner(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteBanner(
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 ID", required = true) @PathVariable Long id) {
         log.info("배너 삭제 요청: ID {}", id);
         bannerService.deleteBanner(id);
         return ResponseEntity.noContent().build();
@@ -56,7 +60,8 @@ public class BannerController {
 
     @GetMapping("/{id}")
     @Operation(summary = "배너 조회", description = "특정 배너를 조회합니다.")
-    public ResponseEntity<BannerResponseDTO> getBanner(@PathVariable Long id) {
+    public ResponseEntity<BannerResponseDTO> getBanner(
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 ID", required = true) @PathVariable Long id) {
         BannerResponseDTO response = bannerService.getBanner(id);
         return ResponseEntity.ok(response);
     }
@@ -65,15 +70,15 @@ public class BannerController {
     @GetMapping()
     @Operation(summary = "배너 목록 조회", description = "조건에 따라 배너를 검색합니다.")
     public ResponseEntity<BannerListResponseDTO> getBanners(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) BannerStatusEnum status,
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 제목") @RequestParam(required = false) String title,
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 카테고리") @RequestParam(required = false) String category,
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 상태") @RequestParam(required = false) BannerStatusEnum status,
+            @io.swagger.v3.oas.annotations.Parameter(description = "시작일") @RequestParam(required = false) LocalDateTime startDate,
+            @io.swagger.v3.oas.annotations.Parameter(description = "종료일") @RequestParam(required = false) LocalDateTime endDate,
+            @io.swagger.v3.oas.annotations.Parameter(description = "페이지 번호") @RequestParam(defaultValue = "0") int page,
+            @io.swagger.v3.oas.annotations.Parameter(description = "페이지 크기") @RequestParam(defaultValue = "10") int size,
+            @io.swagger.v3.oas.annotations.Parameter(description = "정렬 기준") @RequestParam(defaultValue = "createdAt") String sortBy,
+            @io.swagger.v3.oas.annotations.Parameter(description = "정렬 방향") @RequestParam(defaultValue = "desc") String sortDir) {
 
         BannerSearchCriteriaDTO criteria = BannerSearchCriteriaDTO.builder()
                 .title(title)
@@ -111,7 +116,8 @@ public class BannerController {
 
     @GetMapping("/active/{category}")
     @Operation(summary = "카테고리별 활성 배너 조회", description = "특정 카테고리의 활성화된 배너를 조회합니다.")
-    public ResponseEntity<List<BannerResponseDTO>> getActiveBannersByCategory(@PathVariable String category) {
+    public ResponseEntity<List<BannerResponseDTO>> getActiveBannersByCategory(
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 카테고리", required = true) @PathVariable String category) {
         List<BannerResponseDTO> response = bannerService.getActiveBannersByCategory(category);
         return ResponseEntity.ok(response);
     }
@@ -119,7 +125,8 @@ public class BannerController {
     @PatchMapping("/{id}/status")
     @Operation(summary = "배너 상태 변경", description = "배너의 상태를 변경합니다.")
     public ResponseEntity<BannerResponseDTO> changeBannerStatus(
-            @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 ID", required = true) @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "배너 상태 변경 요청 DTO", required = true)
             @Valid @RequestBody BannerStatusChangeRequestDTO request) {
         log.info("배너 상태 변경 요청: ID {}, 상태 {}", id, request.getStatus());
         BannerResponseDTO response = bannerService.changeBannerStatus(id, request.getStatus());
@@ -129,7 +136,8 @@ public class BannerController {
     @PatchMapping("/{id}/order")
     @Operation(summary = "배너 순서 변경", description = "배너의 표시 순서를 변경합니다.")
     public ResponseEntity<Void> updateBannerOrder(
-            @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 ID", required = true) @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "배너 순서 변경 요청 DTO", required = true)
             @Valid @RequestBody BannerOrderUpdateRequestDTO request) {
         log.info("배너 순서 변경 요청: ID {}, 순서 {}", id, request.getSortOrder());
         bannerService.updateBannerOrder(id, request.getSortOrder());
@@ -138,14 +146,16 @@ public class BannerController {
 
     @PostMapping("/{id}/click")
     @Operation(summary = "배너 클릭 처리", description = "배너 클릭 이벤트를 처리합니다.")
-    public ResponseEntity<Void> handleBannerClick(@PathVariable Long id) {
+    public ResponseEntity<Void> handleBannerClick(
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 ID", required = true) @PathVariable Long id) {
         bannerService.handleBannerClick(id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/view")
     @Operation(summary = "배너 노출 처리", description = "배너 노출 이벤트를 처리합니다.")
-    public ResponseEntity<Void> handleBannerView(@PathVariable Long id) {
+    public ResponseEntity<Void> handleBannerView(
+            @io.swagger.v3.oas.annotations.Parameter(description = "배너 ID", required = true) @PathVariable Long id) {
         bannerService.handleBannerView(id);
         return ResponseEntity.ok().build();
     }
@@ -153,7 +163,7 @@ public class BannerController {
     @GetMapping("/expiring")
     @Operation(summary = "만료 예정 배너 조회", description = "지정된 일수 내에 만료되는 배너를 조회합니다.")
     public ResponseEntity<List<BannerResponseDTO>> getBannersExpiringWithinDays(
-            @RequestParam(defaultValue = "7") int days) {
+            @io.swagger.v3.oas.annotations.Parameter(description = "만료까지 남은 일수", required = false) @RequestParam(defaultValue = "7") int days) {
         List<BannerResponseDTO> response = bannerService.getBannersExpiringWithinDays(days);
         return ResponseEntity.ok(response);
     }

@@ -11,6 +11,8 @@ import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
 import com.mincho.herb.global.util.CookieUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -27,6 +29,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
+@Tag(name = "User", description = "유저 관련 API")
 public class UserController {
 
     private final CookieUtils cookieUtils;
@@ -34,6 +37,7 @@ public class UserController {
     private final ProfileService profileService;
 
     /** 회원가입 */
+    @Operation(summary = "회원가입", description = "신규 유저 회원가입 API")
     @Transactional
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@Valid @RequestBody RegisterRequestDTO registerDTO) {
@@ -46,6 +50,7 @@ public class UserController {
     }
 
     /** 중복 확인 */
+    @Operation(summary = "이메일 중복 확인", description = "회원가입 시 이메일 중복 체크 API")
     @PostMapping("/register/duplicate-check")
     public ResponseEntity<Map<String, String>> checkDuplicate(@Valid @RequestBody DuplicateCheckDTO dto) {
         boolean isDuplicate = userService.dueCheck(dto);
@@ -56,6 +61,7 @@ public class UserController {
     }
 
     /** 로그인 */
+    @Operation(summary = "로그인", description = "유저 로그인 API")
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginDTO, HttpServletResponse response) {
         Map<String, String> tokenMap = userService.login(loginDTO);
@@ -69,6 +75,7 @@ public class UserController {
     }
 
     /** 회원 탈퇴 */
+    @Operation(summary = "회원 탈퇴", description = "유저 회원 탈퇴 API")
     @DeleteMapping("/me/entire")
     public ResponseEntity<Map<String, String>> deleteUser(HttpServletResponse response) {
         String email = getCurrentEmail();
@@ -80,6 +87,7 @@ public class UserController {
     }
 
     /** 비밀번호 수정 */
+    @Operation(summary = "비밀번호 수정", description = "유저 비밀번호 수정 API")
     @PatchMapping("/me/password")
     public ResponseEntity<Map<String, String>> updatePassword(@Valid @RequestBody UpdatePasswordRequestDTO dto) {
         String email = getCurrentEmail();
@@ -94,6 +102,7 @@ public class UserController {
     }
 
     /** 로그아웃 */
+    @Operation(summary = "로그아웃", description = "유저 로그아웃 API")
     @DeleteMapping("/me/logout")
     public ResponseEntity<Map<String, String>> logout(HttpServletResponse response) {
         response.addCookie(cookieUtils.createCookie("refresh", null, 0));
@@ -101,6 +110,7 @@ public class UserController {
     }
 
     /** 로그인 상태 확인 */
+    @Operation(summary = "로그인 상태 확인", description = "유저 로그인 상태 확인 API")
     @GetMapping("/login-status")
     public ResponseEntity<Boolean> isLogin() {
         return ResponseEntity.ok(userService.isLogin());

@@ -8,6 +8,9 @@ import com.mincho.herb.global.response.error.ErrorResponse;
 import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/herbs/ratings")
+@Tag(name = "Herb Ratings", description = "허브 평점 관련 API")
 public class HerbRatingsController {
 
     private final HerbRatingsService herbRatingsService;
@@ -31,7 +35,10 @@ public class HerbRatingsController {
 
     // 평점 조회
     @GetMapping
-    public ResponseEntity<?> getRatings(@RequestParam("herbName") @NotBlank(message = "herbName은 필수입니다.") String herbName) {
+    @Operation(summary = "허브 평점 조회", description = "특정 허브의 평점을 조회합니다.")
+    public ResponseEntity<?> getRatings(
+            @Parameter(description = "허브 이름", required = true) @RequestParam("herbName") @NotBlank(message = "herbName은 필수입니다.") String herbName
+    ) {
         List<HerbRatings> herbRatings = herbRatingsService.getHerbRatings(
                 herbUserQueryService.getHerbByHerbName(herbName)
         );
@@ -40,8 +47,10 @@ public class HerbRatingsController {
 
     // 평점 등록
     @PostMapping
+    @Operation(summary = "허브 평점 등록", description = "특정 허브에 평점을 등록합니다.")
     public ResponseEntity<Map<String, String>> addScore(
-            @RequestParam("herbName") @NotBlank(message = "herbName은 필수입니다.") String herbName,
+            @Parameter(description = "허브 이름", required = true) @RequestParam("herbName") @NotBlank(message = "herbName은 필수입니다.") String herbName,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "허브 평점 요청 DTO", required = true)
             @Valid @RequestBody HerbRatingsRequestDTO herbRatingsRequestDTO
     ) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
