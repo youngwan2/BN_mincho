@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.user.application.user;
 
-import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
+import com.mincho.herb.domain.bookmark.repository.herbBookmark.HerbBookmarkRepository;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.like.repository.HerbLikeRepository;

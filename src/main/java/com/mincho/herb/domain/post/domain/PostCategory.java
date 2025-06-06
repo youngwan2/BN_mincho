@@ -1,5 +1,6 @@
 package com.mincho.herb.domain.post.domain;
 
+import com.mincho.herb.domain.post.entity.PostCategoryTypeEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,12 +8,7 @@ import lombok.Data;
 @Data
 public class PostCategory {
     private Long id;
-    private String category;
-
-    public PostCategory withCategory(String category){
-        return PostCategory.builder()
-                .id(this.id)
-                .category(category)
-                .build();
-    }
+    private PostCategoryTypeEnum type;
+    private String name;
+    private String description;
 }

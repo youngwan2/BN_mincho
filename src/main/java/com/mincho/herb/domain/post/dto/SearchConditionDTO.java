@@ -15,5 +15,5 @@ public class SearchConditionDTO {
     private String queryType;
     private String sort;
     private String order;
-    private String category;
+    private Long categoryId;
 }

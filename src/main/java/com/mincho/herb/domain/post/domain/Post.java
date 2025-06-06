@@ -11,26 +11,10 @@ public class Post {
     private Long id;
     private String title;
     private String contents;
-    private String category;
+    private PostCategory category;
+    private Boolean isDeleted;
     private User user;
+    private Boolean pined;
 
-    public Post withChangePostContents( String contents){
-        return  Post.builder()
-                .contents(contents)
-                .title(this.title)
-                .build();
-    }
-    public Post withChangePostTitle(String title){
-        return  Post.builder()
-                .contents(this.contents)
-                .title(title)
-                .build();
-    }
 
-    public Post withPost(String title, String contents){
-        return  Post.builder()
-                .contents(contents)
-                .title(title)
-                .build();
-    }
 }

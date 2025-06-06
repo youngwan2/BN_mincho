@@ -26,6 +26,9 @@ public class PostEntity extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String contents;
 
+    @Builder.Default
+    private Boolean isDeleted = false;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private UserEntity user;
@@ -39,13 +42,18 @@ public class PostEntity extends BaseEntity {
     @Column(name = "tag")
     private List<String> tags;
 
+    @Builder.Default
+    private Boolean pined = false;
+
     public static PostEntity toEntity(Post post, UserEntity userEntity, PostCategoryEntity postCategoryEntity){
         PostEntity postEntity = new PostEntity();
         postEntity.id= post.getId();
         postEntity.title = post.getTitle();
         postEntity.contents = post.getContents();
+        postEntity.isDeleted = post.getIsDeleted();
         postEntity.user = userEntity;
         postEntity.category = postCategoryEntity;
+        postEntity.pined = post.getPined();
 
         return postEntity;
     }
@@ -55,8 +63,13 @@ public class PostEntity extends BaseEntity {
                 .id(this.id)
                 .title(this.title)
                 .contents(this.contents)
-                .category(this.category.getCategory())
+                .category(this.category.toModel())
+                .isDeleted(this.isDeleted)
                 .user(this.user.toModel())
+                .pined(this.pined)
                 .build();
+    }
+
+    public void changeIsDeleted(boolean b) {
     }
 }

@@ -1,15 +1,14 @@
 package com.mincho.herb.domain.tag.api;
 
 import com.mincho.herb.domain.tag.application.TagService;
-import com.mincho.herb.domain.tag.dto.TagRequestDTO;
 import com.mincho.herb.domain.tag.dto.TagDTO;
+import com.mincho.herb.domain.tag.dto.TagRequestDTO;
 import com.mincho.herb.domain.tag.entity.TagTypeEnum;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;

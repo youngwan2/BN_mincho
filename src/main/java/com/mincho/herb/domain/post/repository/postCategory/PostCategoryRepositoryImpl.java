@@ -1,8 +1,11 @@
 package com.mincho.herb.domain.post.repository.postCategory;
 
 import com.mincho.herb.domain.post.entity.PostCategoryEntity;
+import com.mincho.herb.domain.post.entity.PostCategoryTypeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,8 +18,23 @@ public class PostCategoryRepositoryImpl implements PostCategoryRepository{
     }
 
     @Override
-    public PostCategoryEntity findByCategory(String category) {
-        return postCategoryJpaRepository.findByCategory(category);
+    public PostCategoryEntity findByName(String name) {
+        return postCategoryJpaRepository.findByName(name);
+    }
+
+    @Override
+    public PostCategoryEntity findByType(String type) {
+        return postCategoryJpaRepository.findByType(PostCategoryTypeEnum.valueOf(type));
+    }
+
+    @Override
+    public List<PostCategoryEntity> findAll() {
+        List<PostCategoryEntity> postCategoryEntities = postCategoryJpaRepository.findAll();
+        if(postCategoryEntities.isEmpty()){
+            return List.of();
+        }
+
+        return postCategoryEntities ;
     }
 
     @Override
@@ -25,7 +43,7 @@ public class PostCategoryRepositoryImpl implements PostCategoryRepository{
     }
 
     @Override
-    public boolean existsCategory(String category) {
-        return postCategoryJpaRepository.existsByCategory(category);
+    public boolean existsName(String name) {
+        return postCategoryJpaRepository.existsByName(name);
     }
 }

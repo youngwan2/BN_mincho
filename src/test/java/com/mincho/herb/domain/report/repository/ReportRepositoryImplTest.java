@@ -48,6 +48,7 @@ class ReportRepositoryImplTest {
 
     private ReportRepositoryImpl reportRepository;
 
+
     /**
      * 테스트 실행 전 JPAQueryFactory를 초기화하고 ReportRepositoryImpl 인스턴스를 구성합니다.
      */
@@ -148,36 +149,5 @@ class ReportRepositoryImplTest {
         // then
         assertThat(response.getReports()).hasSize(1);
         assertThat(response.getReports().get(0).getReason()).isEqualTo("Reason 1");
-    }
-
-    /**
-     * 통계 기능이 정상적으로 이번 주, 저번 주, 전체 신고 수를 반환하는지 검증합니다.
-     */
-    @Test
-    void findReportStatics_ShouldReturnReportStatisticsDTO() {
-        // given
-        ReportEntity reportEntity1 = new ReportEntity();
-        reportEntity1.setTargetId(1L);
-        reportEntity1.setTargetType(ReportHandleTargetTypeEnum.POST); // 게시글 신고
-        reportEntity1.setStatus(ReportHandleStatusEnum.PENDING);
-        reportEntity1.setReason("Reason 1");
-        reportEntity1.setCreatedAt(LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay()); // 이번주 월요일
-        reportJpaRepository.save(reportEntity1);
-
-        ReportEntity reportEntity2 = new ReportEntity();
-        reportEntity2.setTargetId(2L);
-        reportEntity2.setTargetType(ReportHandleTargetTypeEnum.POST_COMMENT); // 댓글 신고
-        reportEntity2.setStatus(ReportHandleStatusEnum.PENDING);
-        reportEntity2.setReason("Reason 2");
-        reportEntity2.setCreatedAt(LocalDate.now().with(DayOfWeek.MONDAY).atStartOfDay().minusWeeks(1)); // 저번주 월요일
-        reportJpaRepository.save(reportEntity2);
-
-        // when
-        ReportStatisticsDTO statistics = reportRepository.findReportStatics();
-
-        // then
-        assertThat(statistics.getTotalCount()).isEqualTo(2);
-//        assertThat(statistics.getThisWeekCount()).isEqualTo(1);
-//         assertThat(statistics.getPrevWeekCount()).isEqualTo(1);
     }
 }

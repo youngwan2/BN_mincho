@@ -30,7 +30,7 @@ public class ReportEntity extends BaseEntity {
     private UserEntity reporter; // 신고자
 
     @Enumerated(EnumType.STRING)
-    private ReportResonSummaryEnum reasonSummary;
+    private ReportReasonSummaryEnum reasonSummary;
 
     @Column(length = 500)
     private String reason;

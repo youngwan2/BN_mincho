@@ -1,7 +1,7 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,24 +137,38 @@ public class S3Service {
         s3Client.deleteObject(request);
     }
 
-    // 이미지 목록에서 안 쓰는 이미지를 S3에서 제거
+    /**
+     * 이전 컨텐츠와 새 컨텐츠를 비교하여 더 이상 사용되지 않는 이미지를 S3에서 제거합니다.
+     * 이전 컨텐츠에는 있지만 새 컨텐츠에는 없는 이미지를 찾아 삭제합니다.
+     *
+     * @param oldContent 이전 HTML 컨텐츠
+     * @param newContent 업데이트된 HTML 컨텐츠
+     */
     public void deleteRemovedOldImages(String oldContent, String newContent) {
-        List<String> oldImages = extractImageUrls(oldContent);
-        List<String> newImages = extractImageUrls(newContent);
-        oldImages.removeAll(newImages);
+        List<String> oldImages = extractImageUrls(oldContent); // 이전 이미지
+        List<String> newImages = extractImageUrls(newContent); // 새 이미지
+        oldImages.removeAll(newImages); // 새 이미지에 없는 이전 이미지만 남김
 
+        // 남은 이전 이미지들을 S3에서 삭제
         for (String url : oldImages) {
             deleteKey(extractKeyFromUrl(url));
         }
     }
 
-    // content 에서 읽어온 모든 이미지 삭제
+    /**
+     * HTML 컨텐츠 내 모든 이미지 URL을 추출하고, 해당 이미지들을 S3에서 삭제합니다.
+     * 주어진 컨텐츠에 포함된 모든 이미지 URL을 찾아 S3에서 삭제합니다.
+     *
+     * @param content HTML 형식의 문자열
+     */
     public void deleteAllImagesInContent(String content) {
         extractImageUrls(content).forEach(url -> {
             String s3Key = extractKeyFromUrl(url);
             deleteKey(s3Key);
         });
     }
+
+
 
 
 

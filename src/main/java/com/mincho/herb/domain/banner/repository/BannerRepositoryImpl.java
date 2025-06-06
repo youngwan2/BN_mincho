@@ -189,8 +189,8 @@ public class BannerRepositoryImpl implements BannerRepository {
     @Override
     public List<BannerEntity> findBannersExpiringWithinDays(int days) {
         QBannerEntity banner = QBannerEntity.bannerEntity;
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime endTime = now.plusDays(days);
+        LocalDateTime now = LocalDateTime.now(); // 현재 시간
+        LocalDateTime endTime = now.plusDays(days); // 만료 예정일 계산
 
         return jpaQueryFactory.selectFrom(banner)
                 .where(banner.status.eq(BannerStatusEnum.ACTIVE)
@@ -199,7 +199,7 @@ public class BannerRepositoryImpl implements BannerRepository {
     }
 
     /**
-     * 현재 시간이 종료일보다 지난 활성 배너들을 만료 상태(EXPIRED)로 일괄 업데이트
+     * 현재 시간(now)이 종료일보다 지난 활성 배너들을 만료 상태(EXPIRED)로 일괄 업데이트
      */
     @Override
     public void updateExpiredBanners() {

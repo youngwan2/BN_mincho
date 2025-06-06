@@ -19,4 +19,5 @@ public class AdminUserListDTO {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime lastLoginAt;
+    private String isSocial;
 }

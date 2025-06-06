@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,10 +64,9 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
     @Transactional
     public void imageUpload(List<MultipartFile> images, Long answerId) {
 
-        if(images == null) {return;}
+        if(images == null || images.isEmpty()) {return;}
 
-
-        throwValidImageException(images);
+        throwValidImageException(images); // 이미지 유효성 검사
 
         AnswerEntity answerEntity = answerRepository.findById(answerId);
 
@@ -74,33 +74,35 @@ public class AnswerImageServiceImpl implements  AnswerImageService {
         images.forEach(image -> {
             answerImageRepository.save(
                     AnswerImageEntity.builder()
-                            .imageUrl(s3Service.upload(image, "qna/" + answerEntity.getId()))
+                            .imageUrl(s3Service.upload(image, "answer/" + answerEntity.getId()))
                             .answer(answerEntity)
                             .build()
             );
         });
     }
 
-    // 이미지 수정
+    // 이미지 수정 - imageUrls를 삭제할 이미지 목록으로 처리
     @Override
     @Transactional
-    public void imageUpdate(List<String> newImageUrls, Long id) {
+    public void imageUpdate(List<String> imageUrlsToDelete, Long answerId) {
         throwAuthExceptionOrReturnEmail(); // 예외 처리
 
-        List<String> prevImageUrls = answerImageRepository.findAllImageUrlsByAnswerId(id); // 이전 이미지
-
-        // ex [ 1, 2, 3, 4] - [3, 4] = [1, 2] -> prevImageUrls 에는 제거해야 할 이미지만 남는다.
-        prevImageUrls.removeAll(newImageUrls);
-
-        // 빈 게 아니라면 DB, S3 버킷에 반영
-        if (!prevImageUrls.isEmpty()) {
-            answerImageRepository.deleteByImageUrlIn(prevImageUrls);
-
-            prevImageUrls.forEach(targetUrl-> {
-                String key = s3Service.extractKeyFromUrl(targetUrl);
-                s3Service.deleteKey(key);
-            });
+        // 전달받은 imageUrls가 null이거나 비어있으면 처리하지 않음
+        if (imageUrlsToDelete == null || imageUrlsToDelete.isEmpty()) {
+            return;
         }
+
+        log.info("삭제 요청된 이미지 URL 목록: {}", imageUrlsToDelete);
+
+        // DB와 S3에서 이미지 삭제
+        answerImageRepository.deleteByImageUrlIn(imageUrlsToDelete);
+
+        // S3에서 이미지 파일 삭제
+        imageUrlsToDelete.forEach(imageUrl -> {
+            String key = s3Service.extractKeyFromUrl(imageUrl);
+            log.info("S3에서 삭제할 이미지 키: {}", key);
+            s3Service.deleteKey(key);
+        });
     }
 
 

@@ -68,16 +68,18 @@ public class CommentServiceImpl implements CommentService{
 
         commentRepository.save(unsavedCommentEntity); // 댓글 저장
 
-        // 알림 처리
+        // 부모 댓글이 존재하는 경우, 해당 부모 댓글의 작성자에게 알림
         Long targetUserId = parentCommentEntity == null || parentCommentEntity.getDeleted() ? null : parentCommentEntity.getUser().getId();
 
         log.info("targetUserId:{}", targetUserId);
 
-        String path = "/community/"+postEntity.getId(); // 해당 댓글이 작성된 게시글 경로
+        String path = "/community/posts/"+postEntity.getId(); // 해당 댓글이 작성된 게시글 경로
 
+        // 대댓인 경우, 대딧의 부모 댓글 작성자에게 알림
         if(targetUserId !=null){
             notificationService.sendNotification( targetUserId, "comment", path , "당신의 댓글에 답글이 달렸습니다.");
-
+            
+            // 대댓이 아닌 경우, 게시글 작성자에게 알림
         } else {
             notificationService.sendNotification(postEntity.getUser().getId(),"post", path , "당신의 게시글에 댓글이 달렸습니다.");
         }

@@ -5,6 +5,7 @@ import com.mincho.herb.domain.user.domain.Profile;
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
+import com.mincho.herb.domain.user.dto.ProfileSummaryDTO;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
@@ -72,10 +73,16 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    // 유저 ID로 프로필 조회
+    @Override
+    public ProfileSummaryDTO getUserProfileById(Long userId) {
+        return profileRepository.findProfileByUserId(userId);
+    }
+
     // 프로필 생성
     @Override
     @Transactional
-    public Profile insertProfile(User user) {
+    public ProfileEntity insertProfile(User user) {
         Profile profile = Profile.builder()
                 .nickname(null)
                 .introduction(null)

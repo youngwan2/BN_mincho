@@ -18,22 +18,28 @@ public class PostCategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String category;
+
+    @Enumerated(EnumType.STRING)
+    private PostCategoryTypeEnum type;
+
+    private String name;
+    private String description;
 
     public static PostCategoryEntity toEntity(PostCategory postCategory){
         PostCategoryEntity postCategoryEntity = new PostCategoryEntity();
-
         postCategoryEntity.id = postCategory.getId();
-        postCategoryEntity.category = postCategory.getCategory();
-
+        postCategoryEntity.name = postCategory.getName();
+        postCategoryEntity.type = postCategory.getType();
+        postCategoryEntity.description = postCategory.getDescription();
         return postCategoryEntity;
-
     }
 
     public PostCategory toModel(){
         return PostCategory.builder()
                 .id(this.id)
-                .category(this.category)
+                .name(this.name)
+                .type(this.type)
+                .description(this.getDescription())
                 .build();
     }
 }

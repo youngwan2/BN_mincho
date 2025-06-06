@@ -15,7 +15,4 @@ public enum BannerStatusEnum {
             this.description = description;
         }
 
-        public String getDescription() {
-            return description;
-        }
 }

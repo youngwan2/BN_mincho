@@ -1,25 +1,24 @@
 package com.mincho.herb.domain.report.repository;
 
-import com.mincho.herb.domain.report.dto.*;
+import com.mincho.herb.domain.report.dto.ReportDTO;
+import com.mincho.herb.domain.report.dto.ReportFilteringConditionDTO;
+import com.mincho.herb.domain.report.dto.ReportSortDTO;
+import com.mincho.herb.domain.report.dto.ReportsResponseDTO;
 import com.mincho.herb.domain.report.entity.QReportEntity;
 import com.mincho.herb.domain.report.entity.ReportEntity;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
 import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
-import com.mincho.herb.global.util.MathUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -152,59 +151,6 @@ public class ReportRepositoryImpl implements ReportRepository {
         return ReportsResponseDTO.builder()
                 .reports(reports)
                 .totalCount(total)
-                .build();
-    }
-
-
-    // 신고 통계
-    @Override
-    public ReportStatisticsDTO findReportStatics() {
-
-        QReportEntity report = QReportEntity.reportEntity;
-
-        // 현재 날짜
-        LocalDate now = LocalDate.now();
-
-        // 이번 주 월요일
-        LocalDateTime startOfThisWeek = now.with(java.time.DayOfWeek.MONDAY).atStartOfDay();
-
-        // 이번 주 일요일
-        LocalDateTime endOfThisWeek = startOfThisWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
-
-        // 저번 주 월요일
-        LocalDateTime startOfPrevWeek = startOfThisWeek.minusWeeks(1);
-
-        // 저번 주 일요일
-        LocalDateTime endOfPrevWeek = startOfPrevWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
-
-        log.info("이번주: {}, 저번주: {}", startOfThisWeek, startOfPrevWeek);
-
-        // 이번 주 미처리 개수
-        Long thisWeekCount = queryFactory.select(report.count())
-                .from(report)
-                .where(report.createdAt.between(startOfThisWeek, endOfThisWeek).and(report.status.eq(ReportHandleStatusEnum.PENDING)))
-                .fetchOne();
-
-        // 저번 주 미처리 개수
-        Long prevWeekCount = queryFactory.select(report.count())
-                .from(report)
-                .where(report.createdAt.between(startOfPrevWeek, endOfPrevWeek).and(report.status.eq(ReportHandleStatusEnum.PENDING)))
-                .fetchOne();
-
-        // 미처리 신고 총 개수
-        Long totalCount = queryFactory.select(report.count())
-                .from(report)
-                .where(report.status.eq(ReportHandleStatusEnum.PENDING))
-                .fetchOne();
-
-        // 증감율 계산
-        double growthRate = MathUtil.getGrowthRate(thisWeekCount, prevWeekCount);
-
-        return ReportStatisticsDTO.builder()
-                .totalCount(totalCount)
-                .thisWeekCount(thisWeekCount)
-                .prevWeekCount(prevWeekCount)
-                .growthRate(growthRate)
                 .build();
     }
 }

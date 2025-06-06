@@ -59,6 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 } else {
                     // 액세스 토큰 재발급 요청
                     handleExpiredToken(request, response);
+                    return ; // 토큰이 만료되었으므로 필터 체인 진행을 중단
                 }
             }
             filterChain.doFilter(request, response);

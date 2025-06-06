@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,5 +27,12 @@ public class EmbeddingController {
         embeddingService.embedAllHerbsToPgVector();
 
         return ResponseEntity.created(null).build();
+    }
+
+
+    @GetMapping("/herbs-embedding")
+    @Operation(summary = "약초 임베딩 조회", description = "모든 약초의 임베딩 벡터를 조회합니다.")
+    public ResponseEntity<?> getAllHerbsEmbedding() {
+        return ResponseEntity.ok(embeddingService.getAllHerbsEmbedding());
     }
 }

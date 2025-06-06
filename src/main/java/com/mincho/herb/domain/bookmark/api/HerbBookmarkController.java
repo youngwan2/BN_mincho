@@ -1,15 +1,16 @@
 package com.mincho.herb.domain.bookmark.api;
 
 import com.mincho.herb.domain.bookmark.application.HerbBookmarkService;
-import com.mincho.herb.domain.bookmark.dto.HerbBookmarkCountResponse;
-import com.mincho.herb.domain.bookmark.dto.HerbBookmarkRequestDTO;
-import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
+import com.mincho.herb.domain.bookmark.dto.herbBookmark.HerbBookmarkCountResponse;
+import com.mincho.herb.domain.bookmark.dto.herbBookmark.HerbBookmarkRequestDTO;
+import com.mincho.herb.domain.bookmark.dto.herbBookmark.HerbBookmarkResponseDTO;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,6 +70,17 @@ public class HerbBookmarkController {
             @Parameter(description = "페이지 크기", required = true) @RequestParam int size) {
 
         HerbBookmarkResponseDTO herbBookmarkResponseDTO = herbBookmarkService.getBookmarks(page, size);
+        return ResponseEntity.ok(herbBookmarkResponseDTO);
+    }
+
+    // 관심약초 조회(사용자 ID 별)
+    @GetMapping("/users/{userId}/herbs/herb-bookmarks")
+    @Operation(summary = "사용자 ID로 관심 허브 조회", description = "특정 사용자의 관심 허브(북마크) 목록을 조회합니다.")
+    public ResponseEntity<HerbBookmarkResponseDTO> getBookmarksByUserId(
+            @Parameter(description = "사용자 ID", required = true) @PathVariable Long userId,
+            Pageable pageable) {
+
+        HerbBookmarkResponseDTO herbBookmarkResponseDTO = herbBookmarkService.getBookmarksByUserId(userId,pageable);
         return ResponseEntity.ok(herbBookmarkResponseDTO);
     }
 }

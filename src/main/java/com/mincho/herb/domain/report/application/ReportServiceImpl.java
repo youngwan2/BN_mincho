@@ -4,7 +4,7 @@ import com.mincho.herb.domain.report.dto.*;
 import com.mincho.herb.domain.report.entity.ReportEntity;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
 import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
-import com.mincho.herb.domain.report.entity.ReportResonSummaryEnum;
+import com.mincho.herb.domain.report.entity.ReportReasonSummaryEnum;
 import com.mincho.herb.domain.report.repository.ReportRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
@@ -61,7 +61,7 @@ public class ReportServiceImpl implements ReportService {
                 .targetContentUrl(requestDTO.getTargetContentUrl())
                 .targetType(ReportHandleTargetTypeEnum.valueOf(requestDTO.getTargetType()))
                 .status(ReportHandleStatusEnum.PENDING)
-                .reasonSummary(ReportResonSummaryEnum.valueOf(requestDTO.getReasonSummary()))
+                .reasonSummary(ReportReasonSummaryEnum.valueOf(requestDTO.getReasonSummary()))
                 .reason(requestDTO.getReason())
                 .reporter(userEntity)
                 .build());

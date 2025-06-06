@@ -9,4 +9,5 @@ import java.util.List;
 @Builder
 public class PostResponseDTO {
     private List<PostDTO> posts; // 게시글 목록
+    private Long totalCount; // 총 게시글 수
 }
