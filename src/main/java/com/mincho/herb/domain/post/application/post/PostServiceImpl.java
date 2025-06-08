@@ -53,21 +53,7 @@ public class PostServiceImpl implements PostService {
         String email = authUtils.userCheck();
 
         // 포스트 엔티티 목록
-        List<PostDTO> posts = postRepository.findAllByConditions(searchConditionDTO, pageInfoDTO, email);
-
-        // 포스트가 비어 있는 경우
-        if(posts.isEmpty()){
-            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 목록이 존재하지 않습니다.");
-        }
-
-        // 총 게시글 수 조회
-        Long totalCount = postRepository.countAllByConditions(searchConditionDTO);
-
-        // 포스트 + 개수
-        return PostResponseDTO.builder()
-                .posts(posts) // 게시글 목록
-                .totalCount(totalCount) // 총 게시글 수
-                .build();
+        return postRepository.findAllByConditions(searchConditionDTO, pageInfoDTO, email);
     }
 
     /**
@@ -146,6 +132,7 @@ public class PostServiceImpl implements PostService {
      * @return UserPostResponseDTO 유저 게시글 응답 DTO
      */
     @Override
+    @Transactional(readOnly = true)
     public UserPostResponseDTO getUserPostsByUserId(Long userId, Pageable pageable) {
         return postRepository.findAllByUserId(userId, pageable);
     }
@@ -175,6 +162,7 @@ public class PostServiceImpl implements PostService {
                         .title(postRequestDTO.getTitle())
                         .contents(postRequestDTO.getContents())
                         .isDeleted(false)
+                        .tags(postRequestDTO.getTags())
                         .build();
         PostEntity unsavedPostEntity =  PostEntity.toEntity(post, userEntity, changedCategoryEntity);
         PostEntity savedPostEntity = postRepository.save(unsavedPostEntity);
@@ -201,6 +189,7 @@ public class PostServiceImpl implements PostService {
 
         PostEntity oldPostEntity = postRepository.findById(id);
         String oldContent = oldPostEntity.getContents(); // 수정 전 콘텐츠
+        Boolean isDeleted = oldPostEntity.getIsDeleted(); // 기존 삭제 상태 유지
 
         PostCategoryEntity updatedPostCategoryEntity = postCategoryRepository.findByType(postRequestDTO.getCategoryType());
 
@@ -210,6 +199,9 @@ public class PostServiceImpl implements PostService {
                       .user(userEntity)
                       .title(postRequestDTO.getTitle())
                       .contents(postRequestDTO.getContents())
+                      .tags(postRequestDTO.getTags())
+                      .isDeleted(isDeleted) // 기존 삭제 상태 유지
+                      .pined(oldPostEntity.getPined()) // 기존 고정 상태 유지
                       .build();
 
         PostEntity newPostEntity = postRepository.save(unsavedPostEntity);
@@ -266,5 +258,16 @@ public class PostServiceImpl implements PostService {
                     .build();
         }).toList();
     }
-}
 
+    /**
+     * 인기 태그 목록을 조회합니다.
+     *
+     * @param limit 최대 태그 수
+     * @return 태그명과 사용 횟수 목록
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<TagCountDTO> getPopularTags(int limit) {
+        return postRepository.findTagsWithCount(limit);
+    }
+}

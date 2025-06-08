@@ -50,7 +50,7 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
 
         // 카테고리별 포스트 통계
         @Query("SELECT new com.mincho.herb.domain.post.dto.PostCategoryInfoDTO(c.id, c.name, c.type, c.description, COUNT(p)) " +
-                "FROM PostCategoryEntity c LEFT JOIN PostEntity p ON p.category = c " +
+                "FROM PostCategoryEntity c LEFT JOIN PostEntity p ON p.category = c AND p.isDeleted = false " +
                 "GROUP BY c.id, c.name, c.type, c.description ORDER BY c.id asc")
         List<PostCategoryInfoDTO> countPostsByCategory();
 

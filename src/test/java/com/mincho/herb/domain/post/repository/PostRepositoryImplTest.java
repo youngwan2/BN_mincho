@@ -33,7 +33,7 @@ class PostRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        postRepository = new PostRepositoryImpl(postJpaRepository, new JPAQueryFactory(entityManager));
+        postRepository = new PostRepositoryImpl(postJpaRepository, new JPAQueryFactory(entityManager), entityManager);
         postStatisticsRepository = new PostStatisticsRepositoryImpl(postJpaRepository, new JPAQueryFactory(entityManager));
     }
 

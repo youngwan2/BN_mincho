@@ -5,6 +5,7 @@ import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
 import java.util.List;
 
@@ -37,13 +38,23 @@ public class PostEntity extends BaseEntity {
     @JoinColumn(name = "category_id")
     private PostCategoryEntity category;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
     @Column(name = "tag")
-    private List<String> tags;
+    private List<String> tags = new java.util.ArrayList<>();
 
     @Builder.Default
     private Boolean pined = false;
+
+
+    public List<String> getTags(){
+        if(this.tags.isEmpty()){
+            return List.of();
+        } else {
+            return this.tags;
+        }
+    }
 
     public static PostEntity toEntity(Post post, UserEntity userEntity, PostCategoryEntity postCategoryEntity){
         PostEntity postEntity = new PostEntity();
@@ -53,6 +64,7 @@ public class PostEntity extends BaseEntity {
         postEntity.isDeleted = post.getIsDeleted();
         postEntity.user = userEntity;
         postEntity.category = postCategoryEntity;
+        postEntity.tags = post.getTags();
         postEntity.pined = post.getPined();
 
         return postEntity;
@@ -67,9 +79,11 @@ public class PostEntity extends BaseEntity {
                 .isDeleted(this.isDeleted)
                 .user(this.user.toModel())
                 .pined(this.pined)
+                .tags(this.tags)
                 .build();
     }
 
     public void changeIsDeleted(boolean b) {
+        this.isDeleted = b;
     }
 }

@@ -18,8 +18,9 @@ public class CommentRepositoryImpl implements CommentRepository{
     private final CommentJpaRepository commentJpaRepository;
 
     @Override
-    public void save(CommentEntity commentEntity) {
+    public CommentEntity save(CommentEntity commentEntity) {
         commentJpaRepository.save(commentEntity);
+        return commentEntity;
     }
 
     @Override

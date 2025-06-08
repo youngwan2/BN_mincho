@@ -19,4 +19,12 @@ public interface PostService {
 
     /** 마이페이지 */
     List<MypagePostsDTO> getUserPosts(int page, int size);
+
+    /**
+     * 인기 태그 목록을 조회합니다.
+     *
+     * @param limit 최대 태그 수
+     * @return 태그명과 사용 횟수 목록
+     */
+    List<TagCountDTO> getPopularTags(int limit);
 }

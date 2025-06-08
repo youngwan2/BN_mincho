@@ -17,6 +17,7 @@ public interface UserService {
     void deleteUser(String email); // 회원탈퇴
     void updatePassword( String email, String password);
     UserEntity getUserByEmail(String email);
+    UserEntity getUserById(Long id);
     UserEntity getUserByEmailOrNull(String email);
     void logoutAll(Long id);
 

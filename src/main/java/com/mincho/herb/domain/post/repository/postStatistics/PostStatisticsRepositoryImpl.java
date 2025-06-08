@@ -62,21 +62,26 @@ public class PostStatisticsRepositoryImpl implements PostStatisticsRepository {
         // 현재 달의 시작 00:00:00 에서 00:00:01 을 뺀 값 -> 전월 말일 23:59:59.999999999
         LocalDateTime endOfPreviousMonth = startOfCurrentMonth.minusNanos(1);
 
-        // 전체 포스트 개수
-        Long totalCount = jpaQueryFactory.select(post.count()).from(post).fetchOne();
+        // 전체 포스트 개수 (삭제되지 않은 게시글만)
+        Long totalCount = jpaQueryFactory.select(post.count())
+                .from(post)
+                .where(post.isDeleted.isFalse())
+                .fetchOne();
 
-        // 이번 달의 포스트 개수
+        // 이번 달의 포스트 개수 (삭제되지 않은 게시글만)
         Long currentMonthCount = jpaQueryFactory
                 .select(post.count())
                 .from(post)
-                .where(post.createdAt.goe(startOfCurrentMonth))
+                .where(post.createdAt.goe(startOfCurrentMonth)
+                        .and(post.isDeleted.isFalse()))
                 .fetchOne();
 
-        // 저번 달의 포스트 개수
+        // 저번 달의 포스트 개수 (삭제되지 않은 게시글만)
         Long previousMonthCount = jpaQueryFactory
                 .select(post.count())
                 .from(post)
-                .where(post.createdAt.between(startOfPreviousMonth, endOfPreviousMonth))
+                .where(post.createdAt.between(startOfPreviousMonth, endOfPreviousMonth)
+                        .and(post.isDeleted.isFalse()))
                 .fetchOne();
 
         // 증감율 계산
@@ -102,7 +107,8 @@ public class PostStatisticsRepositoryImpl implements PostStatisticsRepository {
                         post.id.count().as("postCount")
                 ))
                 .from(post)
-                .where(post.createdAt.between(startDate.atStartOfDay(), endDate.atTime(23, 59, 59)))
+                .where(post.createdAt.between(startDate.atStartOfDay(), endDate.atTime(23, 59, 59))
+                       .and(post.isDeleted.isFalse()))
                 .groupBy(date)
                 .orderBy(date.asc())
                 .fetch();

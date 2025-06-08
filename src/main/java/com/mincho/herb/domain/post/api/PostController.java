@@ -42,6 +42,7 @@ public class PostController {
             @Parameter(description = "카테고리", required = true) @RequestParam("categoryId") Long categoryId,
             @Parameter(description = "검색 타입", required = false) @RequestParam(value = "queryType", defaultValue = "content") String queryType,
             @Parameter(description = "검색어", required = false) @RequestParam(value = "query", required = false) String query,
+            @Parameter(description = "태그", required = false) @RequestParam(value = "tag", required = false) String tag,
             @Parameter(description = "정렬 기준", required = false) @RequestParam(value = "sort", defaultValue = "post_id") @NotBlank(message = "sort는 필수입니다.") String sort,
             @Parameter(description = "정렬 방향", required = false) @RequestParam(value = "order", defaultValue = "desc") @NotBlank(message = "order는 필수입니다.") String order,
             @Parameter(description = "페이지 번호", required = true) @RequestParam("page") @Min(value = 0, message = "page는 0 이상이어야 합니다.") int page,
@@ -52,6 +53,7 @@ public class PostController {
                 .categoryId(categoryId)
                 .queryType(queryType)
                 .query(query)
+                .tag(tag)
                 .sort(sort)
                 .order(order)
                 .build();
@@ -90,6 +92,9 @@ public class PostController {
     public ResponseEntity<Map<String, String>> addPost(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "게시글 등록 요청 DTO", required = true)
             @Valid @RequestBody PostRequestDTO postRequestDTO) {
+
+
+        log.info("PostRequestDTO: {}", postRequestDTO);
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!email.contains("@")) {
             return new ErrorResponse().getResponse(401, "인증된 유저가 아닙니다.", HttpErrorType.UNAUTHORIZED);
@@ -148,5 +153,15 @@ public class PostController {
     ) {
         List<MypagePostsDTO> posts = postService.getUserPosts(page, size);
         return ResponseEntity.ok(posts);
+    }
+
+    /** 인기 태그 목록 조회 */
+    @GetMapping("/community/tags/popular")
+    @Operation(summary = "인기 태그 목록 조회", description = "사용 빈도가 높은 태그 목록을 조회합니다.")
+    public ResponseEntity<List<TagCountDTO>> getPopularTags(
+            @Parameter(description = "최대 태그 수", required = false) @RequestParam(value = "limit", defaultValue = "10") int limit
+    ) {
+        List<TagCountDTO> popularTags = postService.getPopularTags(limit);
+        return ResponseEntity.ok(popularTags);
     }
 }

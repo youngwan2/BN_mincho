@@ -4,6 +4,8 @@ import com.mincho.herb.domain.user.domain.User;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Builder
 @Data
 public class Post {
@@ -15,6 +17,8 @@ public class Post {
     private Boolean isDeleted;
     private User user;
     private Boolean pined;
+
+    private List<String> tags;
 
 
 }

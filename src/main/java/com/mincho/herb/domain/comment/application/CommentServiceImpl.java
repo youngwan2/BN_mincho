@@ -2,6 +2,8 @@ package com.mincho.herb.domain.comment.application;
 
 import com.mincho.herb.domain.comment.dto.*;
 import com.mincho.herb.domain.comment.entity.CommentEntity;
+import com.mincho.herb.domain.comment.entity.CommentMentionEntity;
+import com.mincho.herb.domain.comment.repository.CommentMentionRepository;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
 import com.mincho.herb.domain.notification.application.NotificationService;
 import com.mincho.herb.domain.post.application.post.PostService;
@@ -19,7 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -28,6 +32,7 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService{
 
     private final CommentRepository commentRepository;
+    private final CommentMentionRepository commentMentionRepository;
     private final PostService postService;
     private final UserService userService;
     private final NotificationService notificationService;
@@ -40,7 +45,6 @@ public class CommentServiceImpl implements CommentService{
 
         UserEntity userEntity = userService.getUserByEmail(email);
         PostEntity postEntity = postService.getPostById(commentCreateRequestDTO.getPostId());
-
 
         CommentEntity parentCommentEntity = null;
         if(commentCreateRequestDTO.getParentCommentId() != null){
@@ -64,9 +68,13 @@ public class CommentServiceImpl implements CommentService{
                                                 .user(userEntity)
                                                 .post(postEntity)
                                                 .parentComment(parentCommentEntity)
+                                                .mentions(new ArrayList<>())
                                                 .build();
 
-        commentRepository.save(unsavedCommentEntity); // 댓글 저장
+        CommentEntity savedCommentEntity = commentRepository.save(unsavedCommentEntity); // 댓글 저장
+
+        // 멘션 처리
+        handleMentions(commentCreateRequestDTO, savedCommentEntity, postEntity);
 
         // 부모 댓글이 존재하는 경우, 해당 부모 댓글의 작성자에게 알림
         Long targetUserId = parentCommentEntity == null || parentCommentEntity.getDeleted() ? null : parentCommentEntity.getUser().getId();
@@ -75,13 +83,53 @@ public class CommentServiceImpl implements CommentService{
 
         String path = "/community/posts/"+postEntity.getId(); // 해당 댓글이 작성된 게시글 경로
 
-        // 대댓인 경우, 대딧의 부모 댓글 작성자에게 알림
-        if(targetUserId !=null){
-            notificationService.sendNotification( targetUserId, "comment", path , "당신의 댓글에 답글이 달렸습니다.");
-            
-            // 대댓이 아닌 경우, 게시글 작성자에게 알림
-        } else {
-            notificationService.sendNotification(postEntity.getUser().getId(),"post", path , "당신의 게시글에 댓글이 달렸습니다.");
+        // 대댓인 경우, 대댓의 부모 댓글 작성자에게 알림
+        if(targetUserId != null && !targetUserId.equals(userEntity.getId())) { // 자신의 댓글에는 알림을 보내지 않음
+            notificationService.sendNotification(targetUserId, "comment", path, "당신의 댓글에 답글이 달렸습니다.");
+        }
+        // 대댓이 아닌 경우, 게시글 작성자에게 알림 (멘션이 없는 경우에만)
+        else if (commentCreateRequestDTO.getMentionedUserIds() == null || commentCreateRequestDTO.getMentionedUserIds().isEmpty()) {
+            Long postOwnerId = postEntity.getUser().getId();
+            if (!postOwnerId.equals(userEntity.getId())) { // 자신의 게시글에는 알림을 보내지 않음
+                notificationService.sendNotification(postOwnerId, "post", path, "당신의 게시글에 댓글이 달렸습니다.");
+            }
+        }
+    }
+
+    // 멘션 처리 메서드
+    private void handleMentions(CommentCreateRequestDTO requestDTO, CommentEntity commentEntity, PostEntity postEntity) {
+        if (requestDTO.getMentionedUserIds() != null && !requestDTO.getMentionedUserIds().isEmpty()) {
+            String path = "/community/posts/" + postEntity.getId(); // 게시글 경로
+
+            for (Long userId : requestDTO.getMentionedUserIds()) {
+                try {
+                    UserEntity mentionedUser = userService.getUserById(userId);
+
+                    // 자신을 멘션한 경우는 무시
+                    if (mentionedUser.getId().equals(commentEntity.getUser().getId())) {
+                        continue;
+                    }
+
+                    // 멘션 엔티티 생성 및 저장
+                    CommentMentionEntity mention = CommentMentionEntity.builder()
+                            .comment(commentEntity)
+                            .mentionedUser(mentionedUser)
+                            .build();
+
+                    commentEntity.addMention(mention);
+                    commentMentionRepository.save(mention);
+
+                    // 멘션된 사용자에게 알림 전송
+                    notificationService.sendNotification(
+                            userId,
+                            "mention",
+                            path,
+                            commentEntity.getUser().getProfile().getNickname() + "님이 회원님을 언급했습니다."
+                    );
+                } catch (Exception e) {
+                    log.error("사용자 ID {}에 대한 멘션 처리 중 오류 발생: {}", userId, e.getMessage());
+                }
+            }
         }
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CommentRepository {
 
-    void save(CommentEntity commentEntity);
+    CommentEntity save(CommentEntity commentEntity);
     CommentEntity findById(Long parentCommentId);
     List<CommentEntity> findByPostId(Long postId);
     List<CommentEntity> findByParentComment(CommentEntity parentComment);
