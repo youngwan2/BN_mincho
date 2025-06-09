@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.post.application.postView;
 
-import com.mincho.herb.domain.post.domain.ViewCount;
+import com.mincho.herb.domain.post.entity.PostViewsEntity;
 import com.mincho.herb.domain.post.repository.postViews.PostViewsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,17 +16,17 @@ public class PostViewsServiceImpl implements PostViewsService{
     // 포스트 조회수 증가
     @Override
     @Transactional
-    public int updateViewCount(Long postId) {
-        Long oldPostView =postViewsRepository.findByPostId(postId).getViewCount();
+    public void updateViewCount(Long postId) {
+        PostViewsEntity oldPostView =postViewsRepository.findByPostId(postId);
+        oldPostView.increaseViewCount();
 
-        Long newPostView = ViewCount.builder().build().increase(oldPostView);
-
-        return  postViewsRepository.updatePostViewCount(newPostView, postId);
+        postViewsRepository.save(oldPostView);
     }
 
     // 포스트 조회수 조회
     @Override
-    public Long getPostView(Long postId) {
-        return 0L;
+    @Transactional(readOnly = true)
+    public Long getPostViewCount(Long postId) {
+        return postViewsRepository.findByPostId(postId).getViewCount();
     }
 }

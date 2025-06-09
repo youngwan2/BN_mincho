@@ -30,11 +30,11 @@ public class HerbUserQueryController {
     @GetMapping()
     @Operation(summary = "허브 목록 조회", description = "조건에 따라 허브 목록을 조회합니다.")
     public ResponseEntity<?> getHerbs(
-            @Parameter(description = "월") @RequestParam("month") String month,
-            @Parameter(description = "한방명") @RequestParam("bneNm") String bneNm,
-            @Parameter(description = "약초명") @RequestParam("cntntsSj") String cntntsSj,
-            @Parameter(description = "정렬 기준") @RequestParam("sort") String sort,
-            @Parameter(description = "정렬 방향") @RequestParam("order") String order,
+            @Parameter(description = "월") @RequestParam(value = "month", required = false) String month,
+            @Parameter(description = "한방명") @RequestParam(value = "bneNm", required = false) String bneNm,
+            @Parameter(description = "약초명") @RequestParam(value = "cntntsSj", required = false) String cntntsSj,
+            @Parameter(description = "정렬 기준") @RequestParam(value = "sort", required = false) String sort,
+            @Parameter(description = "정렬 방향") @RequestParam(value = "order", required = false) String order,
             Pageable pageable
     ){
 

@@ -13,7 +13,7 @@ public class ViewCount {
     private Long viewCount;
 
 
-    public Long increase(Long oldViewCount){
+    public static Long increase(Long oldViewCount){
         return oldViewCount+1;
     }
 }

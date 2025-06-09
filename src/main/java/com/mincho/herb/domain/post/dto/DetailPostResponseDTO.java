@@ -1,6 +1,5 @@
 package com.mincho.herb.domain.post.dto;
 
-
 import com.mincho.herb.domain.post.domain.Author;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,20 +7,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Data
 public class DetailPostResponseDTO {
     private Long id;
     private String title;
     private String contents;
-    private String category;
     private Author author;
+    private PostCategoryDTO category;
     private Boolean isMine;
     private Long likeCount;
-    private LocalDateTime createdAt;
     private Long viewCount;
-
+    private LocalDateTime createdAt;
+    private List<String> tags; // 게시글의 태그 목록
 }

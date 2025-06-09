@@ -1,8 +1,8 @@
 package com.mincho.herb.domain.user.application.statistics;
 
-import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
+import com.mincho.herb.domain.bookmark.repository.herbBookmark.HerbBookmarkRepository;
 import com.mincho.herb.domain.comment.repository.CommentRepository;
-import com.mincho.herb.domain.post.repository.post.PostRepository;
+import com.mincho.herb.domain.post.repository.postStatistics.PostStatisticsRepository;
 import com.mincho.herb.domain.user.dto.StatisticsResponseDTO;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
@@ -18,7 +18,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private final CommentRepository commentRepository;
     private final HerbBookmarkRepository herbBookmarkRepository;
-    private final PostRepository postRepository;
+    private final PostStatisticsRepository postStatisticsRepository;
     private final UserRepository userRepository;
     private final AuthUtils authUtils;
 
@@ -33,7 +33,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         log.info("조회 유저의 ID:{}", userEntity.getId());
         Long commentCount = commentRepository.countByMemberId(userEntity.getId());
         Long herbBookmarkCount = herbBookmarkRepository.countByUserId(userEntity.getId());
-        Long postCount = postRepository.countByUserId(userEntity.getId());
+        Long postCount = postStatisticsRepository.countByUserId(userEntity.getId());
 
         return StatisticsResponseDTO.builder()
                 .bookmarkCount(herbBookmarkCount)

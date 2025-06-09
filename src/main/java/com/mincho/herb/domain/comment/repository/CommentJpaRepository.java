@@ -74,7 +74,8 @@ public interface CommentJpaRepository extends JpaRepository<CommentEntity, Long>
     /**
      * 특정 게시글에 달린 최상위 댓글들을 조회하면서,
      * 각 댓글이 해당 유저가 작성한 것인지 여부를 포함한 DTO로 반환합니다.
-     * 삭제되지 않은 댓글만 조회하며, ID 기준 내림차순 정렬합니다.
+     * 삭제되지 않은 댓글만 조회하며, 생성일자 기준 오름차순 정렬합니다.
+     * (오래된 댓글이 위로, 최신 댓글이 아래로 정렬됩니다)
      *
      * @param postId   게시글 ID
      * @param userId 현재 로그인한 사용자 ID
@@ -92,12 +93,13 @@ public interface CommentJpaRepository extends JpaRepository<CommentEntity, Long>
             "c.updatedAt ) " +
             "FROM Comments c " +
             "WHERE c.post.id = :postId AND c.parentComment.id IS NULL AND c.deleted = false " +
-            "ORDER BY c.deleted ASC, c.id DESC")
+            "ORDER BY c.deleted ASC, c.createdAt ASC")
     List<CommentDTO> findByPostIdAndUserId(@Param("postId") Long postId, @Param("userId") Long userId);
 
     /**
      * 특정 부모 댓글에 대한 자식 댓글들을 조회하면서,
      * 각 댓글이 해당 유저가 작성한 것인지 여부를 포함한 DTO로 반환합니다.
+     * 생성일자 기준 오름차순 정렬합니다. (오래된 댓글이 위로, 최신 댓글이 아래로 정렬됩니다)
      *
      * @param parentCommentId 부모 댓글 ID
      * @param userId        현재 로그인한 사용자 ID
@@ -115,7 +117,7 @@ public interface CommentJpaRepository extends JpaRepository<CommentEntity, Long>
             "c.updatedAt ) " +
             "FROM Comments c " +
             "WHERE c.parentComment.id = :parentCommentId AND c.deleted = false " +
-            "ORDER BY c.deleted DESC, c.id DESC")
+            "ORDER BY c.deleted DESC, c.createdAt ASC")
     List<CommentDTO> findByParentCommentIdAndUserId(@Param("parentCommentId") Long parentCommentId, @Param("userId") Long userId);
 
     /**

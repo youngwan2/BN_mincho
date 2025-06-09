@@ -7,9 +7,11 @@ import com.mincho.herb.domain.herb.repository.herb.HerbAdminRepository;
 import com.mincho.herb.domain.post.dto.DailyPostStatisticsDTO;
 import com.mincho.herb.domain.post.dto.PostStatisticsDTO;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
-import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
+import com.mincho.herb.domain.post.repository.postStatistics.PostStatisticsRepository;
+import com.mincho.herb.domain.qna.repository.question.QuestionRepository;
 import com.mincho.herb.domain.report.dto.ReportStatisticsDTO;
 import com.mincho.herb.domain.report.repository.ReportRepository;
+import com.mincho.herb.domain.report.repository.ReportStatisticsRepository;
 import com.mincho.herb.domain.user.dto.DailyUserStatisticsDTO;
 import com.mincho.herb.domain.user.dto.UserStatisticsDTO;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
@@ -28,8 +30,10 @@ public class DashboardServiceImpl implements DashboardService{
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final QnaRepository qnaRepository;
+    private final PostStatisticsRepository postStatisticsRepository;
+    private final QuestionRepository questionRepository;
     private final ReportRepository reportRepository;
+    private final ReportStatisticsRepository reportStatisticsRepository;
     private final HerbAdminRepository herbAdminRepository;
 
     // 대시보드 통계 요약
@@ -48,7 +52,7 @@ public class DashboardServiceImpl implements DashboardService{
     // 게시글 통계(일별)
     @Override
     public List<DailyPostStatisticsDTO> getDailyPostStatics(LocalDate startDate, LocalDate endDate) {
-        return postRepository.findDailyPostStatistics(startDate, endDate);
+        return postStatisticsRepository.findDailyPostStatistics(startDate, endDate);
     }
 
     // 약초 통계(일별)
@@ -71,7 +75,7 @@ public class DashboardServiceImpl implements DashboardService{
 
     // 게시글 통계
     private PostStatisticsDTO getPostStatistics(){
-        return postRepository.findPostStatics();
+        return  postStatisticsRepository.findPostStatics();
     }
 
     // QnA 통계
@@ -83,7 +87,7 @@ public class DashboardServiceImpl implements DashboardService{
 
     // 신고 통계
     private ReportStatisticsDTO getReportStatistics(){
-        return reportRepository.findReportStatics();
+        return reportStatisticsRepository.findReportStatics();
     }
 
 }

@@ -3,9 +3,9 @@ package com.mincho.herb.domain.qna.application.answer;
 import com.mincho.herb.domain.qna.application.answerImage.AnswerImageService;
 import com.mincho.herb.domain.qna.dto.AnswerRequestDTO;
 import com.mincho.herb.domain.qna.entity.AnswerEntity;
-import com.mincho.herb.domain.qna.entity.QnaEntity;
+import com.mincho.herb.domain.qna.entity.QuestionEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
-import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
+import com.mincho.herb.domain.qna.repository.question.QuestionRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class AnswerServiceImpl implements AnswerService {
-    private final QnaRepository qnaRepository;
+    private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final AnswerImageService answerImageService;
     private final UserService userService;
@@ -35,7 +35,7 @@ public class AnswerServiceImpl implements AnswerService {
     @Transactional
     public void create(Long qnaId, AnswerRequestDTO requestDTO, List<MultipartFile> images) {
         String email =throwAuthExceptionOrReturnEmail();
-        QnaEntity qna = qnaRepository.findById(qnaId);
+        QuestionEntity qna = questionRepository.findById(qnaId);
         UserEntity writer = userService.getUserByEmail(email);
 
         // 질문자 본인의 질문이라면 답변 금지
@@ -108,15 +108,15 @@ public class AnswerServiceImpl implements AnswerService {
 
         UserEntity writer = userService.getUserByEmail(email);
         AnswerEntity answerEntity= answerRepository.findById(answerId);
-        QnaEntity qnaEntity= qnaRepository.findById(answerId);
+        QuestionEntity questionEntity = questionRepository.findById(answerId);
 
         // 요청 유저와 질문자가 동일한가?
-        if(!writer.equals(qnaEntity.getWriter())){
+        if(!writer.equals(questionEntity.getWriter())){
             throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "답변채택 권한이 없습니다.");
         }
 
         // 이미 채택된 답변이 있는가?
-        if(answerRepository.existsByQnaIdAndIdAndIsAdoptedTrue(qnaEntity.getId(), answerId)){
+        if(answerRepository.existsByQnaIdAndIdAndIsAdoptedTrue(questionEntity.getId(), answerId)){
             throw new CustomHttpException(HttpErrorCode.CONFLICT, "이미 채택된 답변이 있습니다.");
         }
 

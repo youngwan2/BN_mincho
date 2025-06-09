@@ -1,14 +1,14 @@
 # active 가 local 이라면 group의 local 로 설정 -> activate > on-profile 에 지정된 유형으로 설정 활성화
 spring:
-    profiles:
-        active: local
-        group:
-            local: local, common, secret
-            blue: blue, common, secret
-            green: green, common, secret
+  profiles:
+    active: local
+    group:
+      local: local, common, secret
+      blue: blue, common, secret
+      green: green, common, secret
 
 server:
-    env: blue
+  env: blue
 
 ---
 # 로컬
@@ -17,154 +17,158 @@ spring:
     activate:
       on-profile: local
   security:
-      oauth2:
-        client:
-          registration:
-            google:
-              redirect-uri: http://localhost:8080/login/oauth2/code/google
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
   frontend:
-     redirect-uri: http://localhost:5173
+    redirect-uri: http://localhost:5173
 
   jpa:
-     defer-datasource-initialization: true
-     hibernate:
-        ddl-auto: update
-        show-sql: true
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+      show-sql: true
 server:
-    port: 8080
-    serverAddress: localhost
-    serverName: local_server
+  port: 8080
+  serverAddress: localhost
+  serverName: local_server
 
+logging:
+    level:
+        org.springframework: DEBUG
+        org.hibernate.SQL: DEBUG
+        com.mincho.herb: DEBUG
 ---
 # blue
 spring:
-    config:
-        activate:
-          on-profile: blue
-    security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        redirect-uri: ${REDIRECT_GOOGLE_URL}
-    frontend:
-      redirect-uri: ${FRONTEND_URL}
-    jpa:
-      hibernate:
-        ddl-auto: none
+  config:
+    activate:
+      on-profile: blue
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: ${REDIRECT_GOOGLE_URL}
+  frontend:
+    redirect-uri: ${FRONTEND_URL}
+  jpa:
+    hibernate:
+      ddl-auto: none
 server:
-    port: 8080
-    serverAddress: ${SERVER_HOST}
-    serverName: blue_server
+  port: 8080
+  serverAddress: ${SERVER_HOST}
+  serverName: blue_server
 
 ---
 # green
 spring:
-    config:
-        activate:
-          on-profile: green
-    security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        redirect-uri: ${REDIRECT_GOOGLE_URL}
-    frontend:
-       redirect-uri: ${FRONTEND_URL}
+  config:
+    activate:
+      on-profile: green
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: ${REDIRECT_GOOGLE_URL}
+  frontend:
+    redirect-uri: ${FRONTEND_URL}
 
-    jpa:
-      hibernate:
-        ddl-auto: none
+  jpa:
+    hibernate:
+      ddl-auto: none
 server:
-    port: 8081
-    serverAddress: ${SERVER_HOST}
-    serverName: green_server
+  port: 8081
+  serverAddress: ${SERVER_HOST}
+  serverName: green_server
 
 ---
 # 공통(common)
 spring:
-    application:
-      name: BN_mincho
-    config:
-        activate:
-            on-profile: common
-        import: optional:file:.env[.properties]
+  application:
+    name: BN_mincho
+  config:
+    activate:
+      on-profile: common
+    import: optional:file:.env[.properties]
 
-    datasource:
-        url: ${DB_URL}
-        username: ${DB_USER}
-        password: ${DB_PASSWORD}
-        hikari:
-            maximum-pool-size: 20
-            connection-timeout: 30000
-            leak-detection-threshold: 5000
-    database: postgresql
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      leak-detection-threshold: 5000
+  database: postgresql
 
-    jpa:
-      open-in-view: false
-      hibernate:
-        jdbc:
-          time_zone: Asia/Seoul
+  jpa:
+    open-in-view: false
+    hibernate:
+      jdbc:
+        time_zone: Asia/Seoul
 
-    jwt:
-        secret: ${JWT}
+  jwt:
+    secret: ${JWT}
 
-    data:
-        redis:
-          host: ${REDIS_HOST}
-          port: ${REDIS_PORT}
-          password: ${REDIS_PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
 
-    ai:
-        openai:
-            api-key: ${OPEN_AI_KEY}
-            chat:
-                model: gpt-4.1-nano
-            embedding:
-                options:
-                    model: text-embedding-3-small
-        vectorstore:
-            index-type: HNSW
-            distance-type: CONSINE_DISTANCE
-            dimensions: 1536
-            initialize-schema: true
-            pgvector:
-                table-name: herb_vector
+  ai:
+    openai:
+      api-key: ${OPEN_AI_KEY}
+      chat:
+        model: gpt-4.1-nano
+      embedding:
+        options:
+          model: text-embedding-3-small
+    vectorstore:
+      index-type: HNSW
+      distance-type: CONSINE_DISTANCE
+      dimensions: 1536
+      initialize-schema: true
+      pgvector:
+        table-name: herb_vector
 
-    cloud:
-        aws:
-            credentials:
-                access-key: ${AWS_ACCESS_KEY}
-                secret-key: ${AWS_SECRET_KEY}
-            region:
-                static: ${AWS_REGION}
-            s3:
-                bucketName: ${AWS_S3_BUCKET_NAME}
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ${AWS_REGION}
+      s3:
+        bucketName: ${AWS_S3_BUCKET_NAME}
 
-    servlet:
-        multipart:
-            max-file-size: 5MB
-            max-request-size: 10MB
-            resolve-lazily: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+      resolve-lazily: true
 
-    security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        client-id: ${GOOGLE_CLIENT_ID}
-                        client-secret: ${GOOGLE_SECRET_KEY}
-                        scope:
-                            - email
-                            - profile
-                        client-name: Google
-    mail:
-        host: ${MAIL_HOST}
-        port: ${MAIL_PORT}
-        username: ${MAIL_USERNAME}
-        password: ${MAIL_PASSWORD}
-        auth-code-expiration-millis: ${MAIL_AUTH_CODE_EXPIRATION_MILLIS}
-    main:
-        sender:
-            email: ${SENDER_EMAIL}
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_SECRET_KEY}
+            scope:
+              - email
+              - profile
+            client-name: Google
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    auth-code-expiration-millis: ${MAIL_AUTH_CODE_EXPIRATION_MILLIS}
+  main:
+    sender:
+      email: ${SENDER_EMAIL}

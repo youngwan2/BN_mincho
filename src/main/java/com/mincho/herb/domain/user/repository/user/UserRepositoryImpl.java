@@ -142,4 +142,9 @@ public class UserRepositoryImpl implements UserRepository{
                 .orderBy(date.asc())
                 .fetch();
     }
+
+    @Override
+    public UserEntity findById(Long id) {
+        return userJpaRepository.findById(id).orElseThrow(()->new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 유저는 찾을 수 없습니다."));
+    }
 }

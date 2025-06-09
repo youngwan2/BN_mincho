@@ -2,13 +2,11 @@ package com.mincho.herb.domain.post.dto;
 
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+import java.util.List;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostRequestDTO {
@@ -18,6 +16,11 @@ public class PostRequestDTO {
     @Size(min = 10, max = 25000, message = "내용은 최소 10자 이상 25000자 이하로 입력해야 합니다.")
     private String contents;
 
-    @Pattern(regexp = "^(info|free|notice|question)$", message = "현재는 '정보', '자유', and '공지','질문' 카테고리만 허용됩니다.")
-    private String category;
+    @Pattern(
+            regexp = "DAILY|EXPERIENCE|INFO|CULTIVATION|CAUTION|EVENT|ETC",
+            message = "categoryType은 DAILY, EXPERIENCE, INFO, CULTIVATION, CAUTION, EVENT, ETC 중 하나여야 합니다."
+    )
+    private String categoryType;
+
+    private List<String> tags; // 태그 목록
 }

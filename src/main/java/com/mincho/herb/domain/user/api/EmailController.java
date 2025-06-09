@@ -1,14 +1,18 @@
 package com.mincho.herb.domain.user.api;
 
-
 import com.mincho.herb.domain.user.application.email.EmailService;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.dto.EmailRequestDTO;
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
+import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.ErrorResponse;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "이메일", description = "이메일 인증 관련 API")
 @RestController
@@ -34,8 +36,8 @@ public class EmailController {
     @Operation(summary = "인증번호 발송", description = "이메일로 인증번호 발송 API (type: register|reset)")
     @PostMapping("/send-verification-code")
     public ResponseEntity<?> sendVerificationCode(
-            @Valid @RequestBody EmailRequestDTO emailRequestDTO,
-            @RequestParam("type") String type) {
+            @Parameter(description = "인증번호를 발송할 이메일 정보") @Valid @RequestBody EmailRequestDTO emailRequestDTO,
+            @Parameter(description = "인증 타입 (register: 회원가입, reset: 비밀번호 재설정)") @RequestParam("type") String type) {
 
         log.info("email:{}",emailRequestDTO);
         try {
@@ -61,8 +63,8 @@ public class EmailController {
     @Operation(summary = "인증번호 검증", description = "이메일 인증번호 검증 API (type: register|reset)")
     @PostMapping("/send-verification")
     public ResponseEntity<Map<String, String>> emailVerification(
-            @Valid @RequestBody VerificationRequestDTO verificationRequestDTO,
-            @RequestParam("type") String type
+            @Parameter(description = "이메일과 인증번호 정보") @Valid @RequestBody VerificationRequestDTO verificationRequestDTO,
+            @Parameter(description = "인증 타입 (register: 회원가입, reset: 비밀번호 재설정)") @RequestParam("type") String type
             ) {
 
         boolean isVer = false;
@@ -78,11 +80,11 @@ public class EmailController {
 
             try {
                 String newPassword = emailService.sendResetPassword(verificationRequestDTO.getEmail()); // 새 비밀번호를 유저에게
-                log.info("raw new pass:{}", newPassword);
                 userService.updatePassword(verificationRequestDTO.getEmail(), newPassword );
 
             } catch (MessagingException e) {
-                throw new RuntimeException(e);
+                log.error("메시징 처리 예외: {}", e.getMessage());
+                throw new CustomHttpException(HttpErrorCode.INTERNAL_SERVER_ERROR, "서버 측 로그를 확인해주세요.");
             }
         }
 
@@ -93,4 +95,3 @@ public class EmailController {
         return new ErrorResponse().getResponse(409, "인증 실패하였습니다.", HttpErrorType.CONFLICT);
     }
 }
-

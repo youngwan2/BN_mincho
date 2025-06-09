@@ -90,7 +90,10 @@ public class UserAdminRepositoryImpl implements UserAdminRepository {
                                 .when(user.status.eq(UserStatusEnum.INACTIVE)).then("inactive")
                                 .otherwise("deleted"),
                         user.createdAt,
-                        user.lastLoginAt
+                        user.lastLoginAt,
+                        new CaseBuilder()
+                                .when(user.providerId.isNotNull()).then("social")
+                                .otherwise("email")
                         ))
                 .from(user)
                 .leftJoin(profile).on(user.id.eq(profile.user.id))

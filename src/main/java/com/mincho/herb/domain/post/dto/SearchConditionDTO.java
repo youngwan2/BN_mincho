@@ -15,5 +15,6 @@ public class SearchConditionDTO {
     private String queryType;
     private String sort;
     private String order;
-    private String category;
+    private Long categoryId;
+    private String tag;  // 태그로 검색할 때 사용
 }

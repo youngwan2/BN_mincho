@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/banners/statistics")
+@RequestMapping("/api/v1/admin/banners/statistics")
 @RequiredArgsConstructor
 @Tag(name = "Banner Statistics", description = "배너 통계 API")
 public class BannerStatisticsController {

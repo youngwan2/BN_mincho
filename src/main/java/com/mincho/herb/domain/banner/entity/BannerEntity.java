@@ -87,7 +87,12 @@ public class BannerEntity {
                 now.isBefore(endDate);
     }
 
-    // 배너 상태 자동 업데이트
+    /**
+     * 배너의 상태를 현재 날짜에 따라 업데이트합니다.
+     * <p>- 현재 날짜가 시작일 이전이면 SCHEDULED로 설정</p>
+     * <p>- 현재 날짜가 종료일 이후면 EXPIRED로 설정</p>
+     * <p>- SCHEDULED 상태에서 현재 날짜가 시작일 이후면 ACTIVE로 설정</p>
+     */
     public void updateStatusBasedOnDate() {
         LocalDateTime now = LocalDateTime.now();
 

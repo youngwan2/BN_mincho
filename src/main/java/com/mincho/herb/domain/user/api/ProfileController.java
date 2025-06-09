@@ -3,12 +3,14 @@ package com.mincho.herb.domain.user.api;
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.dto.ProfileRequestDTO;
 import com.mincho.herb.domain.user.dto.ProfileResponseDTO;
+import com.mincho.herb.domain.user.dto.ProfileSummaryDTO;
 import com.mincho.herb.global.response.error.ErrorResponse;
 import com.mincho.herb.global.response.error.HttpErrorType;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
 import com.mincho.herb.infra.auth.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,8 @@ public class ProfileController {
     private final ProfileService profileService;
     private final S3Service s3Service;
 
+
+
     /** 프로필 수정 */
     @Operation(summary = "프로필 수정", description = "유저 프로필 정보 수정 API")
     @PatchMapping("/me")
@@ -48,7 +52,6 @@ public class ProfileController {
     @Operation(summary = "프로필 이미지 업로드", description = "유저 프로필 이미지 업로드 API")
     @PatchMapping("/me/upload")
     public ResponseEntity<Void> uploadProfileImage(@RequestParam MultipartFile image) {
-        log.info("프로필 이미지 업로드 요청: {}", image.getOriginalFilename());
 
         profileService.updateProfileImage(image);
         return ResponseEntity.noContent().build();
@@ -65,8 +68,17 @@ public class ProfileController {
         }
 
         ProfileResponseDTO profile = profileService.getUserProfile(email);
-        log.info("조회된 프로필 정보: {}", profile);
 
         return new SuccessResponse<>().getResponse(200, "성공적으로 프로필 정보를 조회하였습니다.", HttpSuccessType.OK, profile);
+    }
+
+
+    /** 특정 유저 프로필 조회 */
+    @Operation(summary = "특정 유저 프로필 조회", description = "유저 ID로 프로필 정보 조회 API")
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<ProfileSummaryDTO> getUserProfile(
+            @Parameter(required = true, description = "유저 식별 ID") @PathVariable Long userId) {
+        ProfileSummaryDTO profile = profileService.getUserProfileById(userId);
+        return ResponseEntity.ok(profile);
     }
 }

@@ -7,6 +7,9 @@ import com.mincho.herb.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity(name = "Comments")
 @Table(name = "comments")
@@ -15,7 +18,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@ToString
+@ToString(exclude = {"user", "post", "parentComment", "mentions"})
 public class CommentEntity extends BaseEntity {
 
     @Id
@@ -31,11 +34,15 @@ public class CommentEntity extends BaseEntity {
     @JoinColumn(name ="post_id")
     private PostEntity post;
 
-    @ManyToOne // 스스로를 참조하므로 1:1 관계로 외래키 지정
+    @ManyToOne // 스스로를 참조
     @JoinColumn(name = "parent_comment_id")
     private CommentEntity parentComment;
     private Long level;
     private Boolean deleted;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<CommentMentionEntity> mentions = new ArrayList<>();
 
     public static CommentEntity toEntity(Comment comment, UserEntity userEntity, CommentEntity parentComment, PostEntity postEntity){
         CommentEntity commentEntity = new CommentEntity();
@@ -57,6 +64,11 @@ public class CommentEntity extends BaseEntity {
                 .postId(this.post.getId())
                 .deleted(this.deleted)
                 .build();
+    }
 
+    // 멘션 추가 메서드
+    public void addMention(CommentMentionEntity mention) {
+        this.mentions.add(mention);
+        mention.setComment(this);
     }
 }

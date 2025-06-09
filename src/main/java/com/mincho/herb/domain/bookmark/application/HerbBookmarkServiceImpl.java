@@ -2,10 +2,10 @@ package com.mincho.herb.domain.bookmark.application;
 
 
 import com.mincho.herb.domain.bookmark.domain.HerbBookmark;
-import com.mincho.herb.domain.bookmark.dto.HerbBookmarkLogResponseDTO;
-import com.mincho.herb.domain.bookmark.dto.HerbBookmarkResponseDTO;
+import com.mincho.herb.domain.bookmark.dto.herbBookmark.HerbBookmarkLogResponseDTO;
+import com.mincho.herb.domain.bookmark.dto.herbBookmark.HerbBookmarkResponseDTO;
 import com.mincho.herb.domain.bookmark.entity.HerbBookmarkEntity;
-import com.mincho.herb.domain.bookmark.repository.HerbBookmarkRepository;
+import com.mincho.herb.domain.bookmark.repository.herbBookmark.HerbBookmarkRepository;
 import com.mincho.herb.domain.herb.application.herb.HerbUserQueryService;
 import com.mincho.herb.domain.herb.entity.HerbEntity;
 import com.mincho.herb.domain.user.application.user.UserService;
@@ -126,6 +126,39 @@ public class HerbBookmarkServiceImpl implements HerbBookmarkService {
 
 
 
+        return HerbBookmarkResponseDTO.builder()
+                .count(totalCount)
+                .bookmarks(bookmarks)
+                .build();
+    }
+
+    /**
+     * 특정 사용자 ID의 관심 약초 목록을 조회합니다.
+     *
+     * @param userId 조회할 사용자의 ID
+     * @param pageable 페이징 정보
+     * @return 관심 허브 목록 응답 DTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public HerbBookmarkResponseDTO getBookmarksByUserId(Long userId, Pageable pageable) {
+        // 해당 사용자의 북마크 총 개수 조회
+        Long totalCount = herbBookmarkRepository.countByUserId(userId);
+
+        // 해당 사용자의 북마크 목록 조회
+        List<HerbBookmark> bookmarks = herbBookmarkRepository.findByUserId(userId, pageable)
+                .stream().map((bookmarkEntity) -> {
+                    return HerbBookmark.builder()
+                            .id(bookmarkEntity.getId())
+                            .cntntsSj(bookmarkEntity.getHerb().getCntntsSj())
+                            .bneNm(bookmarkEntity.getHerb().getBneNm())
+                            .hbdcNm(bookmarkEntity.getHerb().getHbdcNm())
+                            .url(bookmarkEntity.getUrl())
+                            .createdAt(bookmarkEntity.getCreatedAt())
+                            .build();
+                }).toList();
+
+        // 응답 DTO 구성
         return HerbBookmarkResponseDTO.builder()
                 .count(totalCount)
                 .bookmarks(bookmarks)

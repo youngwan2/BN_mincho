@@ -1,7 +1,6 @@
 package com.mincho.herb.domain.report.dto;
 
-import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
-import com.mincho.herb.domain.report.entity.ReportResonSummaryEnum;
+import com.mincho.herb.domain.report.entity.ReportReasonSummaryEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +26,7 @@ public class ReportDTO {
     private String targetType; // 신고 대상의 타입 (예: 사용자, 게시물 등)
     private String reporter;
     private String status;
-    private ReportResonSummaryEnum reasonSummary;
+    private ReportReasonSummaryEnum reasonSummary;
     private String reason;
     private String handleTitle;
     private String handleMemo;

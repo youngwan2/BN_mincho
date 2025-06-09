@@ -25,4 +25,9 @@ public class PostViewsEntity {
     @JoinColumn(name = "post_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private PostEntity post;
+
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
 }

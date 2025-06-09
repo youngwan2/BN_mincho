@@ -1,9 +1,9 @@
 package com.mincho.herb.infra.auth;
 
-import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.domain.Profile;
-import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;

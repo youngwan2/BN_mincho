@@ -4,6 +4,8 @@ import com.mincho.herb.domain.user.domain.User;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Builder
 @Data
 public class Post {
@@ -11,26 +13,12 @@ public class Post {
     private Long id;
     private String title;
     private String contents;
-    private String category;
+    private PostCategory category;
+    private Boolean isDeleted;
     private User user;
+    private Boolean pined;
 
-    public Post withChangePostContents( String contents){
-        return  Post.builder()
-                .contents(contents)
-                .title(this.title)
-                .build();
-    }
-    public Post withChangePostTitle(String title){
-        return  Post.builder()
-                .contents(this.contents)
-                .title(title)
-                .build();
-    }
+    private List<String> tags;
 
-    public Post withPost(String title, String contents){
-        return  Post.builder()
-                .contents(contents)
-                .title(title)
-                .build();
-    }
+
 }

@@ -1,6 +1,6 @@
 package com.mincho.herb.domain.post.repository.post;
 
-import com.mincho.herb.domain.post.dto.PostCountDTO;
+import com.mincho.herb.domain.post.dto.PostCategoryInfoDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import org.springframework.data.domain.Page;
@@ -24,9 +24,9 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
                                 WHERE pl.post.id = p.id
                           ) AS likeCount
                     FROM PostEntity p
-                    WHERE p.category.category = :category
+                    WHERE p.category.name = :name
                 """)
-        Page<Object[]> findAllByCategoryWithLikeCount(@Param("category") String category, Pageable pageable);
+        Page<Object[]> findAllByCategoryWithLikeCount(@Param("name") String category, Pageable pageable);
                 
 
         @Query("""
@@ -48,15 +48,19 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
         @Query("SELECT p.user FROM PostEntity p WHERE p.id = :postId AND p.user.email = :email")
         Optional<UserEntity> findAuthorByPostIdAndEmail(@Param("postId") Long postId, @Param("email") String email);
 
-        // 카테고리별 포스트 개수 조회
-        @Query("SELECT COUNT(p) FROM PostEntity p WHERE p.category.id = :categoryId")
-        int countByCategoryId(@Param("categoryId") Long categoryId);
-
         // 카테고리별 포스트 통계
-        @Query("SELECT new com.mincho.herb.domain.post.dto.PostCountDTO(c.category, COUNT(p)) " +
-                "FROM PostCategoryEntity c LEFT JOIN PostEntity p ON p.category = c " +
-                "GROUP BY c.category")
-        List<PostCountDTO> countPostsByCategory();
+        @Query("SELECT new com.mincho.herb.domain.post.dto.PostCategoryInfoDTO(c.id, c.name, c.type, c.description, COUNT(p)) " +
+                "FROM PostCategoryEntity c LEFT JOIN PostEntity p ON p.category = c AND p.isDeleted = false " +
+                "GROUP BY c.id, c.name, c.type, c.description ORDER BY c.id asc")
+        List<PostCategoryInfoDTO> countPostsByCategory();
+
+        // 게시글 상세 조회
+        @Query("SELECT p FROM PostEntity p WHERE p.id = :postId AND p.isDeleted = false")
+        Optional<PostEntity> findByIdAndIsDeletedFalse(@Param("postId") Long postId);
+
+        // 태그 정보를 함께 조회하는 메서드
+        @Query("SELECT p FROM PostEntity p LEFT JOIN FETCH p.tags WHERE p.id = :postId")
+        Optional<PostEntity> findByIdWithTagsAndDetails(@Param("postId") Long postId);
 
         /** 마이페이지 */
         // 사용자가 작성한 게시글의 수

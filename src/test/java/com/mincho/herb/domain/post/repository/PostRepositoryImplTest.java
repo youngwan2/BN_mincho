@@ -4,10 +4,13 @@ import com.mincho.herb.domain.post.dto.PostStatisticsDTO;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostJpaRepository;
 import com.mincho.herb.domain.post.repository.post.PostRepositoryImpl;
+import com.mincho.herb.domain.post.repository.postStatistics.PostStatisticsRepositoryImpl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -18,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class PostRepositoryImplTest {
 
+    private static final Logger log = LoggerFactory.getLogger(PostRepositoryImplTest.class);
     @Autowired
     private PostJpaRepository postJpaRepository;
 
@@ -25,10 +29,12 @@ class PostRepositoryImplTest {
     private EntityManager entityManager;
 
     private PostRepositoryImpl postRepository;
+    private PostStatisticsRepositoryImpl postStatisticsRepository;
 
     @BeforeEach
     void setUp() {
-        postRepository = new PostRepositoryImpl(postJpaRepository, new JPAQueryFactory(entityManager));
+        postRepository = new PostRepositoryImpl(postJpaRepository, new JPAQueryFactory(entityManager), entityManager);
+        postStatisticsRepository = new PostStatisticsRepositoryImpl(postJpaRepository, new JPAQueryFactory(entityManager));
     }
 
     @Test
@@ -55,9 +61,10 @@ class PostRepositoryImplTest {
         postJpaRepository.save(postEntity);
 
         // when
-        PostStatisticsDTO statistics = postRepository.findPostStatics();
+        PostStatisticsDTO statistics = postStatisticsRepository.findPostStatics();
 
         // then
         assertThat(statistics.getTotalCount()).isGreaterThan(0);
     }
+
 }

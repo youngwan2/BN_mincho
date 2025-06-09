@@ -21,8 +21,8 @@ public interface BannerJpaRepository extends JpaRepository<BannerEntity, Long> {
     List<BannerEntity> findActiveBanners(@Param("now") LocalDateTime now);
 
     // 카테고리별 활성화된 배너 조회
-    @Query("SELECT b FROM BannerEntity b WHERE b.category = :category AND b.status = 'ACTIVE' AND b.startDate <= :now AND b.endDate >= :now ORDER BY b.sortOrder ASC")
-    List<BannerEntity> findActiveBannersByCategory(@Param("category") String category, @Param("now") LocalDateTime now);
+    @Query("SELECT b FROM BannerEntity b WHERE b.category = :name AND b.status = 'ACTIVE' AND b.startDate <= :now AND b.endDate >= :now ORDER BY b.sortOrder ASC")
+    List<BannerEntity> findActiveBannersByCategory(@Param("name") String category, @Param("now") LocalDateTime now);
 
     // 상태별 배너 조회 (페이징)
     Page<BannerEntity> findByStatusOrderByCreatedAtDesc(BannerStatusEnum status, Pageable pageable);

@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +19,7 @@ public class PostViewsController {
     private final PostViewsService postViewsService;
 
     // 포스트 조회수 증가
-    @PatchMapping("/{id}/view-count")
+    @PatchMapping("/{id}/view")
     @Operation(summary = "게시글 조회수 증가", description = "게시글의 조회수를 1 증가시킵니다.")
     public ResponseEntity<?> updatePostViewCount(
             @Parameter(description = "게시글 ID", required = true) @PathVariable() Long id
@@ -35,5 +32,21 @@ public class PostViewsController {
         postViewsService.updateViewCount(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // 게시글 조회
+    @GetMapping("/{id}/view")
+    @Operation(summary = "게시글 조회수 조회", description = "게시글의 조회수를 조회합니다.")
+    public ResponseEntity<Long> getPostViewCount(
+            @Parameter(description = "게시글 ID", required = true) @PathVariable() Long id
+    ) {
+
+        if(id == null){
+            throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "포스트 식별을 위한 id 값은 필수입니다.");
+        }
+
+        Long viewCount = postViewsService.getPostViewCount(id);
+
+        return ResponseEntity.ok(viewCount);
     }
 }

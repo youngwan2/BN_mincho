@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.tag.application;
 
-import com.mincho.herb.domain.tag.dto.TagRequestDTO;
 import com.mincho.herb.domain.tag.dto.TagDTO;
+import com.mincho.herb.domain.tag.dto.TagRequestDTO;
 import com.mincho.herb.domain.tag.entity.TagEntity;
 import com.mincho.herb.domain.tag.entity.TagTypeEnum;
 import com.mincho.herb.domain.tag.repository.TagRepository;

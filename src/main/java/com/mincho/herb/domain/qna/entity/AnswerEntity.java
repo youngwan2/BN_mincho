@@ -23,7 +23,7 @@ public class AnswerEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qna_id")
-    private QnaEntity qna;
+    private QuestionEntity qna;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
@@ -37,10 +37,10 @@ public class AnswerEntity extends BaseEntity {
     }
 
     // 엔티티로
-    public static AnswerEntity toEntity(Answer answer, QnaEntity qnaEntity, UserEntity userEntity){
+    public static AnswerEntity toEntity(Answer answer, QuestionEntity questionEntity, UserEntity userEntity){
         AnswerEntity answerEntity = new AnswerEntity();
             answerEntity.setId(answer.getId());
-            answerEntity.setQna(qnaEntity);
+            answerEntity.setQna(questionEntity);
             answerEntity.setWriter(userEntity);
             answerEntity.setContent(answer.getContent());
             answerEntity.setIsAdopted(answer.getIsAdopted());

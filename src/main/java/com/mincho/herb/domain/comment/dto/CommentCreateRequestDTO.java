@@ -3,6 +3,8 @@ package com.mincho.herb.domain.comment.dto;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class CommentCreateRequestDTO {
     private Boolean isDeleted;
     private Long postId;
     private Long parentCommentId;
+    private List<Long> mentionedUserIds; // 멘션할 사용자 ID 리스트
 }

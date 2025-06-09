@@ -4,9 +4,9 @@ package com.mincho.herb.domain.qna.application.answer;
 import com.mincho.herb.domain.qna.application.answerImage.AnswerImageService;
 import com.mincho.herb.domain.qna.dto.AnswerRequestDTO;
 import com.mincho.herb.domain.qna.entity.AnswerEntity;
-import com.mincho.herb.domain.qna.entity.QnaEntity;
+import com.mincho.herb.domain.qna.entity.QuestionEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
-import com.mincho.herb.domain.qna.repository.qna.QnaRepository;
+import com.mincho.herb.domain.qna.repository.question.QuestionRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
@@ -43,7 +43,7 @@ public class AnswerServiceImplTest {
     private AnswerServiceImpl answerService;
 
     @Mock
-    private QnaRepository qnaRepository;
+    private QuestionRepository questionRepository;
 
     @Mock
     private AnswerRepository answerRepository;
@@ -58,7 +58,7 @@ public class AnswerServiceImplTest {
     private AuthUtils authUtils;
 
     private UserEntity member;
-    private QnaEntity qna;
+    private QuestionEntity qna;
     private AnswerRequestDTO requestDTO;
 
 
@@ -68,7 +68,7 @@ public class AnswerServiceImplTest {
     @BeforeEach
     void setUp() {
         member = UserEntity.builder().id(1L).email("test@example.com").build();
-        qna = QnaEntity.builder().id(1L).writer(UserEntity.builder().id(2L).build()).build();
+        qna = QuestionEntity.builder().id(1L).writer(UserEntity.builder().id(2L).build()).build();
         requestDTO = new AnswerRequestDTO();
         requestDTO.setContent("답변 내용");
     }
@@ -81,7 +81,7 @@ public class AnswerServiceImplTest {
         // given
         when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail(eq("test@example.com"))).thenReturn(member);
-        when(qnaRepository.findById(1L)).thenReturn(qna);
+        when(questionRepository.findById(1L)).thenReturn(qna);
         when(answerRepository.existsByQnaIdAndWriterId(1L, 1L)).thenReturn(false);
         when(answerRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
@@ -103,7 +103,7 @@ public class AnswerServiceImplTest {
         qna.setWriter(member); // 본인 질문
         when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(member);
-        when(qnaRepository.findById(1L)).thenReturn(qna);
+        when(questionRepository.findById(1L)).thenReturn(qna);
 
         // expect
         assertThatThrownBy(() -> answerService.create(1L, requestDTO, null))
@@ -155,13 +155,13 @@ public class AnswerServiceImplTest {
     @Test
     void adopt_Success() {
         // given
-        QnaEntity qna = QnaEntity.builder().id(10L).writer(member).build();
+        QuestionEntity qna = QuestionEntity.builder().id(10L).writer(member).build();
         AnswerEntity answer = AnswerEntity.builder().id(1L).qna(qna).isAdopted(false).build();
 
         when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(member);
         when(answerRepository.findById(1L)).thenReturn(answer);
-        when(qnaRepository.findById(1L)).thenReturn(qna);
+        when(questionRepository.findById(1L)).thenReturn(qna);
         when(answerRepository.existsByQnaIdAndIdAndIsAdoptedTrue(10L, 1L)).thenReturn(false);
 
         // when

@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.user.application.email;
 
 import com.mincho.herb.domain.user.dto.VerificationRequestDTO;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
@@ -145,11 +146,15 @@ public class EmailServiceImpl implements EmailService {
     public void sendVerificationCodeForReset(String toMail) throws MessagingException {
         boolean isValidMx = this.validateMx(toMail.split("@")[1]);
 
+        UserEntity user = userRepository.findByEmail(toMail);
+        if(user == null) {
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "등록된 유저가 아닙니다.");
+        }
         if (isValidMx) {
             boolean isLocal = userRepository.existsByEmailAndProviderIsNull(toMail);
 
             if (!isLocal) {
-                throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "소셜 로그인 계정은 비밀번호 재설정을 이용할 수 없습니다.");
+                throw new CustomHttpException(HttpErrorCode.FORBIDDEN_ACCESS, "소셜 로그인 계정은 비밀번호 재설정을 이용할 수 없습니다.");
             }
 
             String authCode = authUtils.createAuthCode(5);

@@ -1,10 +1,14 @@
 package com.mincho.herb.domain.user.repository.profile;
 
 import com.mincho.herb.domain.user.domain.Profile;
+import com.mincho.herb.domain.user.dto.ProfileSummaryDTO;
 import com.mincho.herb.domain.user.entity.ProfileEntity;
+import com.mincho.herb.domain.user.entity.QProfileEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -13,14 +17,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class ProfileRepositoryImpl implements ProfileRepository {
-    private final ProfileJpaRepository profileJpaRepository; // 의도: jpa 를 외부에서 주입하여 JPA 의존성을 약화
+    private final ProfileJpaRepository profileJpaRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Profile saveProfile(ProfileEntity profileEntity) {
-        ProfileEntity profile =profileJpaRepository.save(profileEntity);
-        log.info("조회 프로필: {}", profile);
-
-        return null;
+    public ProfileEntity saveProfile(ProfileEntity profileEntity) {
+        return profileJpaRepository.save(profileEntity);
     }
 
     // 프로필 수정
@@ -29,7 +31,12 @@ public class ProfileRepositoryImpl implements ProfileRepository {
         profileJpaRepository.updateProfile(profile.getNickname(), profile.getIntroduction(), profile.getAvatarUrl(), user.getId());
     }
 
-    // 사용자 정보로 프로필 조회
+
+    /** 프로필 조회
+     *
+     * @param member 사용자 엔티티
+     * @return 프로필 엔티티
+     */
     @Override
     public ProfileEntity findProfileByUser(UserEntity member) {
         Long userId = member.getId();
@@ -44,8 +51,33 @@ public class ProfileRepositoryImpl implements ProfileRepository {
         return profileEntity;
     }
 
+
+    /**
+     * 프로필 요약 정보 조회
+     *
+     * @param userId 사용자 ID
+     * */
+    @Override
+    public ProfileSummaryDTO findProfileByUserId(Long userId) {
+        QProfileEntity profile = QProfileEntity.profileEntity;
+        return jpaQueryFactory
+                .select(Projections.constructor(ProfileSummaryDTO.class,
+                        profile.nickname,
+                        profile.introduction,
+                        profile.avatarUrl
+                        ))
+                .from(profile)
+                .where(profile.user.id.eq(userId))
+                .fetchOne();
+    }
+
+    /** * 프로필 삭제
+     *
+     * @param user 사용자 엔티티
+     */
     @Override
     public void deleteByUser(UserEntity user) {
         profileJpaRepository.deleteByUser(user);
     }
+
 }

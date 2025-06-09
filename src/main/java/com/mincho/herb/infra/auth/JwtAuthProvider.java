@@ -1,7 +1,6 @@
 package com.mincho.herb.infra.auth;
 
 import com.mincho.herb.global.util.JWTUtils;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

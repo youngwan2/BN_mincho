@@ -18,7 +18,12 @@ public interface AnswerImageJpaRepository extends JpaRepository<AnswerImageEntit
 
     Optional<List<AnswerImageEntity>> findAllByAnswerId(Long qndId);
 
+    /**
+     * 이미지 URL 목록에 해당하는 AnswerImageEntity를 삭제합니다.
+     *
+     * @param imageUrls 삭제할 이미지 URL 목록
+     */
     @Modifying
-    @Query("DELETE FROM AnswerImageEntity qi WHERE qi.imageUrl NOT IN :urls ")
+    @Query("DELETE FROM AnswerImageEntity qi WHERE qi.imageUrl IN :urls ")
     void deleteByImageUrlIn(@Param("urls") List<String> imageUrls);
 }

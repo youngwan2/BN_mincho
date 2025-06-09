@@ -1,7 +1,7 @@
 package com.mincho.herb.global.util;
 
-import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.exception.CustomHttpException;
+import com.mincho.herb.global.response.error.HttpErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -72,7 +72,7 @@ public class JWTUtils {
     }
 
     public String getCategory(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("name", String.class);
     }
 
 }

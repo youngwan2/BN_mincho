@@ -4,6 +4,11 @@ import com.mincho.herb.domain.report.application.ReportService;
 import com.mincho.herb.domain.report.dto.*;
 import com.mincho.herb.domain.report.entity.ReportHandleStatusEnum;
 import com.mincho.herb.domain.report.entity.ReportHandleTargetTypeEnum;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +26,11 @@ import java.util.List;
 public class ReportController {
     private final ReportService reportService;
 
-
-    // 신고하기
+    @Operation(summary = "신고 생성", description = "새로운 신고를 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "신고 생성 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(hidden = true)))
+    })
     @PostMapping()
     public ResponseEntity<Void> createReport(
             @Valid @RequestBody CreateReportRequestDTO requestDTO
@@ -33,7 +40,12 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // 신고 처리하기
+    @Operation(summary = "신고 처리", description = "특정 신고를 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "신고 처리 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "404", description = "신고를 찾을 수 없음", content = @Content(schema = @Schema(hidden = true)))
+    })
     @PatchMapping("/{reportId}/handle")
     public ResponseEntity<Void> handleReport(
             @PathVariable Long reportId,
@@ -44,7 +56,11 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // 신고 단건 조회
+    @Operation(summary = "신고 단건 조회", description = "특정 신고의 상세 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "신고 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "신고를 찾을 수 없음", content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("/{reportId}")
     public ResponseEntity<ReportDTO> getReport(
             @PathVariable Long reportId
@@ -53,17 +69,11 @@ public class ReportController {
     }
 
 
-    /**
-     * 신고 검색 API
-     *
-     * @param startDate   검색 시작 날짜 (yyyy-MM-dd)
-     * @param endDate     검색 종료 날짜 (yyyy-MM-dd)
-     * @param targetType  대상 타입 (예: "POST", "POST_COMMENT")
-     * @param keyword     검색 키워드 (신고자, 제목 등)
-     * @param status      신고 상태 (예: "PENDING", "RESOLVED")
-     * @param pageable    페이징 정보
-     * @return 조건에 맞는 신고 목록 페이지
-     */
+    @Operation(summary = "신고 검색", description = "조건에 맞는 신고 목록을 검색합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "신고 검색 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(hidden = true)))
+    })
     @GetMapping("search")
     public ResponseEntity<ReportsResponseDTO> getAllReports(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -84,4 +94,3 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.OK).body(reportService.getAllReports(keyword,filteringConditionDTO, reportSortDTO, pageable));
     }
 }
-

@@ -24,4 +24,6 @@ public interface UserRepository {
     UserStatisticsDTO findUserStatics();
 
     List<DailyUserStatisticsDTO> findDailyRegisterStatistics(LocalDate startDate, LocalDate endDate);
+
+    UserEntity findById(Long id);
 }

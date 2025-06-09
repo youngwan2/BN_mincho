@@ -1,7 +1,7 @@
 package com.mincho.herb.domain.post.api;
 
 import com.mincho.herb.domain.post.application.postStatistics.PostStatisticsService;
-import com.mincho.herb.domain.post.dto.PostCountDTO;
+import com.mincho.herb.domain.post.dto.PostCategoryInfoDTO;
 import com.mincho.herb.global.response.success.HttpSuccessType;
 import com.mincho.herb.global.response.success.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,11 +28,11 @@ public class PostStatisticsController {
     @Operation(summary = "게시글 통계 조회", description = "게시글 통계 정보를 조회합니다.")
     public ResponseEntity<?> getPostStatistics(){
 
-        List<PostCountDTO> postCountDTOs = postStatisticsService.getPostStatistics();
+        List<PostCategoryInfoDTO> postCategoryInfoDTOS = postStatisticsService.getPostStatistics();
 
-        log.info("post 통계: {}", postCountDTOs);
+        log.info("post 통계: {}", postCategoryInfoDTOS);
 
-        return new SuccessResponse<>().getResponse(200, "성공적으로 조회되었습니다.", HttpSuccessType.OK, postCountDTOs);
+        return new SuccessResponse<>().getResponse(200, "성공적으로 조회되었습니다.", HttpSuccessType.OK, postCategoryInfoDTOS);
 
     }
 }
