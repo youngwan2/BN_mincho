@@ -18,7 +18,7 @@ import java.util.List;
 @Tag(name = "QnA 이미지", description = "QnA 이미지 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/community/qna")
+@RequestMapping("/api/v1/community/qnas")
 public class QuestionImageController {
 
     private final QuestionImageService questionImageService;
@@ -26,7 +26,7 @@ public class QuestionImageController {
 
     @Operation(summary = "QnA 이미지 수정", description = "QnA 이미지를 수정합니다. 새로운 이미지를 추가하고 삭제할 이미지를 지정할 수 있습니다.")
     @PatchMapping("/{qnaId}/images")
-    public ResponseEntity<QuestionImageResponseDTO> update(
+    public ResponseEntity<Void> update(
                 @Parameter(description = "새로 추가할 이미지 파일 목록") @RequestPart(value = "images", required = false) List<MultipartFile> images,
                 @Parameter(description = "삭제할 이미지 URL 목록") @RequestPart(value = "deletedImageUrls", required = false) List<String> imageUrlsToDelete,
                 @PathVariable Long qnaId

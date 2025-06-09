@@ -19,7 +19,7 @@ public class QuestionReactionController {
 
     private final QuestionReactionService questionReactionService;
 
-    @PostMapping("questions/{questionId}/reactions")
+    @PostMapping("/questions/{questionId}/reactions")
     @Operation(summary = "질문에 반응 추가", description = "질문에 좋아요/싫어요를 추가합니다. 같은 반응을 다시 요청하면 취소됩니다.")
     public ResponseEntity<Void> addReaction(
             @Parameter(description = "질문 ID", required = true) @PathVariable Long questionId,
@@ -29,7 +29,7 @@ public class QuestionReactionController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("questions/{questionId}/reactions")
+    @DeleteMapping("/questions/{questionId}/reactions")
     @Operation(summary = "질문에 대한 반응 취소", description = "질문에 대한 자신의 좋아요/싫어요 반응을 취소합니다.")
     public ResponseEntity<Void> cancelReaction(
             @Parameter(description = "질문 ID", required = true) @PathVariable Long questionId
@@ -38,7 +38,7 @@ public class QuestionReactionController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("questions/{questionId}/reactions/count")
+    @GetMapping("/questions/{questionId}/reactions/count")
     @Operation(summary = "질문의 반응 개수 조회", description = "질문의 좋아요 또는 싫어요 개수를 조회합니다.")
     public ResponseEntity<Long> getReactionCount(
             @Parameter(description = "질문 ID", required = true) @PathVariable Long questionId,

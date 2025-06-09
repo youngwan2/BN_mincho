@@ -5,6 +5,7 @@ import com.mincho.herb.domain.qna.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -26,20 +27,20 @@ public class QuestionController {
 
     // 질문 생성
     @Operation(summary = "질문 생성", description = "새로운 질문을 생성합니다.")
-    @PostMapping("/community/qna")
+    @PostMapping("/community/qnas")
     public ResponseEntity<Void> create(
-            @Parameter(description = "질문 정보") @RequestPart(value = "question") QuestionRequestDTO requestDTO,
+            @Parameter(description = "질문 정보") @RequestPart(value = "question") @Valid QuestionRequestDTO requestDTO,
             @Parameter(description = "첨부 이미지 파일 (선택사항)") @RequestPart(value ="images", required = false) List<MultipartFile> images
             ) {
                 log.info("requestDTO: {}", requestDTO);
                 log.info("images: {}", images);
-//                questionService.create(requestDTO, images);
+                questionService.create(requestDTO, images);
                 return ResponseEntity.status(201).build();
     }
 
     // 질문 수정
     @Operation(summary = "질문 수정", description = "기존 질문을 수정합니다.")
-    @PutMapping("/community/qna/{qnaId}")
+    @PatchMapping("/community/qnas/{qnaId}")
     public ResponseEntity<Void> update(
             @Parameter(description = "수정할 질문 정보") @RequestBody QuestionRequestDTO requestDTO,
             @Parameter(description = "수정할 질문 ID") @PathVariable Long qnaId
@@ -50,7 +51,7 @@ public class QuestionController {
 
     // 질문 삭제
     @Operation(summary = "질문 삭제", description = "질문을 삭제합니다.")
-    @DeleteMapping("/community/qna/{qnaId}")
+    @DeleteMapping("/community/qnas/{qnaId}")
     public ResponseEntity<Void> delete(
             @Parameter(description = "삭제할 질문 ID") @PathVariable Long qnaId
     ){
@@ -61,7 +62,7 @@ public class QuestionController {
 
     // 질문 목록조회
     @Operation(summary = "질문 목록 조회", description = "질문 목록을 조건에 따라 페이징하여 조회합니다.")
-    @GetMapping("/community/qna")
+    @GetMapping("/community/qnas")
     public ResponseEntity<QuestionResponseDTO> getQnaList(
             @Parameter(description = "검색 조건") @ModelAttribute QuestionSearchConditionDTO questionSearchConditionDTO,
             @Parameter(description = "페이징 정보") Pageable pageable
@@ -77,7 +78,7 @@ public class QuestionController {
 
     // 질문 상세 조회
     @Operation(summary = "질문 상세 조회", description = "질문 ID로 상세 정보를 조회합니다.")
-    @GetMapping("/community/qna/{qnaId}")
+    @GetMapping("/community/qnas/{qnaId}")
     public ResponseEntity<QuestionDTO> getQna(
             @Parameter(description = "조회할 질문 ID") @PathVariable Long qnaId
     ){
@@ -85,13 +86,21 @@ public class QuestionController {
     }
 
     // 사용자별 질문 목록 조회
-    @Operation(summary = "사용자별 질문 목록 조회", description = "특정 사용자가 작성한 질문 목록을 페이징하여 조회합니다. 비공개 질문은 제외됩니다.")
-    @GetMapping("/users/{userId}/qna")
+    @Operation(summary = "사용자별 질문 목록 조회", description = "특정 사용자가 작성한 질문 목���을 페이징하여 조회합니다. 비공개 질문은 제외됩니다.")
+    @GetMapping("/users/{userId}/qnas")
     public ResponseEntity<UserQuestionResponseDTO> getQnaListByUserId(
             @Parameter(description = "조회할 사용자 ID", required = true) @PathVariable Long userId,
             @Parameter(description = "페이징 정보") Pageable pageable
     ) {
         UserQuestionResponseDTO responseDTO = questionService.getAllByUserId(userId, pageable);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    // 질문 조회수 증가
+    @Operation(summary = "질문 조회수 증가", description = "특정 질문의 조회수를 1 증가시킵니다.")
+    @PostMapping("/community/qnas/{qnaId}/view")
+    public ResponseEntity<Void> increaseViewCount(@PathVariable Long qnaId) {
+        questionService.increaseViewCount(qnaId);
+        return ResponseEntity.ok().build();
     }
 }

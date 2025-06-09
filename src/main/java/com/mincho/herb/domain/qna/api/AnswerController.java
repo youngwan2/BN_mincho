@@ -23,7 +23,7 @@ import java.util.List;
 public class AnswerController {
     private final AnswerService answerService;
 
-    @PostMapping("qna/{qnaId}/answers")
+    @PostMapping("qnas/{qnaId}/answers")
     @Operation(summary = "답변 생성", description = "QnA에 답변을 생성합니다.")
     public ResponseEntity<Void> create(
             @Parameter(description = "QnA ID", required = true) @PathVariable Long qnaId,
@@ -37,7 +37,7 @@ public class AnswerController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PatchMapping("qna/answers/{answerId}")
+    @PatchMapping("qnas/answers/{answerId}")
     @Operation(summary = "답변 수정", description = "QnA 답변을 수정합니다.")
     public ResponseEntity<Void> update(
             @Parameter(description = "답변 ID", required = true) @PathVariable Long answerId,
@@ -48,7 +48,7 @@ public class AnswerController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("qna/{qnaId}/answers/{answerId}")
+    @DeleteMapping("qnas/{qnaId}/answers/{answerId}")
     @Operation(summary = "답변 삭제", description = "QnA 답변을 삭제합니다.")
     public ResponseEntity<Void> delete(
             @Parameter(description = "답변 ID", required = true) @PathVariable Long answerId
@@ -57,7 +57,7 @@ public class AnswerController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PatchMapping("qna/{qnaId}/answers/{answerId}/adopt")
+    @PatchMapping("qnas/{qnaId}/answers/{answerId}/adopt")
     @Operation(summary = "답변 채택", description = "QnA 답변을 채택 처리합니다.")
     public ResponseEntity<Void> adopt(
             @Parameter(description = "답변 ID", required = true) @PathVariable Long answerId

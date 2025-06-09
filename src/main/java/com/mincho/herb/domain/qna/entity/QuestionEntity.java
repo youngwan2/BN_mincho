@@ -49,6 +49,15 @@ public class QuestionEntity extends BaseEntity {
     @Builder.Default
     private List<String> tags = new ArrayList<>();
 
+
+    public List<String> getTags(){
+        if(this.tags.isEmpty()){
+            return List.of();
+        } else {
+            return this.tags;
+        }
+    }
+
     /**
      * Question 도메인 객체 → 엔티티로 변환
      */

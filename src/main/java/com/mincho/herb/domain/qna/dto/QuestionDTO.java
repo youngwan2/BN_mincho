@@ -18,9 +18,14 @@ public class QuestionDTO {
     private String content;
     private Boolean isPrivate;
     private Boolean isMine;
+    private Long writerId;
     private String writer;
+    private String avatarUrl;
     private List<String> imageUrls;
     private List<AnswerDTO> answers;
+    private List<String> tags;
     private LocalDateTime createdAt;
     private Long view;
+    private Long categoryId;     // 카테고리 ID
+    private String categoryName; // 카테고리 이름
 }

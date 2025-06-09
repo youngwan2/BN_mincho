@@ -1,6 +1,7 @@
 package com.mincho.herb.domain.qna.application.question;
 
 import com.mincho.herb.domain.qna.application.questionImage.QuestionImageService;
+import com.mincho.herb.domain.qna.application.questionReaction.QuestionReactionService;
 import com.mincho.herb.domain.qna.domain.Question;
 import com.mincho.herb.domain.qna.dto.*;
 import com.mincho.herb.domain.qna.entity.QuestionCategoryEntity;
@@ -8,12 +9,14 @@ import com.mincho.herb.domain.qna.entity.QuestionEntity;
 import com.mincho.herb.domain.qna.repository.answer.AnswerRepository;
 import com.mincho.herb.domain.qna.repository.question.QuestionRepository;
 import com.mincho.herb.domain.qna.repository.questionCategory.QuestionCategoryRepository;
+import com.mincho.herb.domain.qna.repository.questionReaction.QuestionReactionRepository;
 import com.mincho.herb.domain.user.application.user.UserService;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.mincho.herb.global.util.AuthUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final QuestionReactionRepository questionReactionRepository;
     private final AnswerRepository answerRepository;
     private final UserService userService;
     private final QuestionImageService questionImageService;
@@ -41,7 +46,7 @@ public class QuestionServiceImpl implements QuestionService {
         UserEntity writer = userService.getUserByEmail(email);
 
         // 카테고리 조회
-        QuestionCategoryEntity categoryEntity = questionCategoryRepository.findById(requestDTO.getCategoryId());
+        QuestionCategoryEntity categoryEntity = questionCategoryRepository.findById(requestDTO.getCategory());
 
         // 태그 유효성 검증 (선택적으로 추가)
         validateTags(requestDTO.getTags());
@@ -57,7 +62,9 @@ public class QuestionServiceImpl implements QuestionService {
 
         QuestionEntity questionEntity = questionRepository.save(QuestionEntity.toEntity(question, writer, categoryEntity)); // 질문 등록
 
-        questionImageService.imageUpload(images, questionEntity); // 이미지 업로드
+        if(images !=null){
+            questionImageService.imageUpload(images, questionEntity); // 이미지 업로드
+        }
         
         return questionEntity;
     }
@@ -67,32 +74,46 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     @Transactional
     public void update(Long qnaId, QuestionRequestDTO requestDTO) {
+        log.debug("1. qnaId 로 질문 수정 시작: {}, requestDTO: {}", qnaId, requestDTO);
+
         String email = throwAuthExceptionOrReturnEmail();
+        log.debug("2. 인증된 유저 이메일 확인: {}", email);
 
         UserEntity writer = userService.getUserByEmail(email);
+        log.debug("3. 질문 작성자 정보 조회: {}", writer);
+
         QuestionEntity questionEntity = questionRepository.findById(qnaId);
+        log.debug("4. 질문 정보 조회: {}", questionEntity);
 
         // 글쓴 사람과 수정 요청한 사람이 동일한가?
-        if(!questionEntity.getWriter().getId().equals(writer.getId())) {
+        if (!questionEntity.getWriter().getId().equals(writer.getId())) {
+            log.warn("인증 안 된 유저의 ID: {}", writer.getId());
             throw new CustomHttpException(HttpErrorCode.UNAUTHORIZED_REQUEST, "질문수정 권한이 없습니다.");
         }
 
         // 카테고리 조회
-        QuestionCategoryEntity categoryEntity = questionCategoryRepository.findById(requestDTO.getCategoryId());
+        QuestionCategoryEntity categoryEntity = questionCategoryRepository.findById(requestDTO.getCategory());
+        log.debug("5. 카테고리 정보 조회: {}", categoryEntity);
 
         // 태그 유효성 검증
         validateTags(requestDTO.getTags());
+        log.debug("6. 태그 유효성 검증 성공 시 보임: {}", requestDTO.getTags());
 
         // 기존 정보 수정
         questionEntity.setTitle(requestDTO.getTitle());
         questionEntity.setContent(requestDTO.getContent());
         questionEntity.setIsPrivate(requestDTO.getIsPrivate());
         questionEntity.setCategory(categoryEntity);
+        log.debug("7. 새로운 값으로 질문이 업데이트 되면 보임: {}", questionEntity);
 
         // 태그 업데이트
         questionEntity.getTags().clear();
-        if(requestDTO.getTags() != null && !requestDTO.getTags().isEmpty()) {
-            questionEntity.getTags().addAll(requestDTO.getTags());
+        log.debug("8. 존재하는 태그를 모두 초기화하면 보임.");
+
+        if (requestDTO.getTags() != null && !requestDTO.getTags().isEmpty()) {
+            log.debug("9. 새로운 태그 추가 시작: {}", requestDTO.getTags());
+            questionEntity.setTags(requestDTO.getTags());
+            log.debug("9-2.새로운 태그 추가 완료(모든 변경 사항 반영 성공): {}", requestDTO.getTags());
         }
     }
 
@@ -118,6 +139,9 @@ public class QuestionServiceImpl implements QuestionService {
 
         // 자식 테이블인 이미지 먼저 삭제
         questionImageService.imageDelete(questionImageService.getImages(id), questionEntity);
+
+        // 자식 테이블인 좋아요/싫어요 테이블 삭제
+        questionReactionRepository.deleteAllByQuestion(questionEntity);
 
         // 질문삭제
         questionRepository.deleteById(id);
@@ -162,6 +186,28 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
+     * 질문의 조회수를 1 증가시킵니다.
+     *
+     * @param qnaId 조회수를 증가시킬 질문 ID
+     */
+    @Override
+    @Transactional
+    public void increaseViewCount(Long qnaId) {
+        // 질문 ID로 질문 엔티티를 조회합니다.
+        QuestionEntity questionEntity = questionRepository.findById(qnaId);
+
+        // 현재 조회수를 가져와서 1 증가시킵니다.
+        Long currentViewCount = questionEntity.getView();
+        questionEntity.setView(currentViewCount + 1);
+
+        // 변경된 엔티티를 저장합니다.
+        questionRepository.save(questionEntity);
+
+        log.info("질문 ID: {}의 조회수가 {} -> {}로 증가했습니다.",
+                qnaId, currentViewCount, questionEntity.getView());
+    }
+
+    /**
      * 태그 유효성 검증
      *
      * @param tags 태그 목록
@@ -186,10 +232,6 @@ public class QuestionServiceImpl implements QuestionService {
                 throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "태그는 20자 이내로 입력해야 합니다.");
             }
 
-            // 특수문자 체크 (영문, 한글, 숫자, 하이픈, 언더스코어만 허용)
-            if(!tag.matches("^[가-힣a-zA-Z0-9\\-_]+$")) {
-                throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "태그는 영문, 한글, 숫자, 하이픈, 언더스코어만 사용 가능합니다.");
-            }
         }
     }
 

@@ -14,6 +14,6 @@ public interface QuestionReactionRepository {
     Long countByQuestionIdAndReactionType(Long questionId, ReactionType reactionType);
 
     void deleteByUserAndQuestion(UserEntity user, QuestionEntity question);
-
+    void deleteAllByQuestion(QuestionEntity question);
     void delete(QuestionReactionEntity reactionEntity);
 }

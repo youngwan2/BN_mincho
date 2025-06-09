@@ -19,5 +19,5 @@ public interface QuestionRepository {
 
     UserQuestionResponseDTO findAllByUserId(Long userId, Pageable pageable);
 
-    void deleteById(Long qnaId);
+    void deleteById(Long questionId);
 }

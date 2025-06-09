@@ -34,7 +34,7 @@ public class CommentEntity extends BaseEntity {
     @JoinColumn(name ="post_id")
     private PostEntity post;
 
-    @ManyToOne // 스스로를 참조하므로 1:1 관계로 외래키 지정
+    @ManyToOne // 스스로를 참조
     @JoinColumn(name = "parent_comment_id")
     private CommentEntity parentComment;
     private Long level;

@@ -18,4 +18,7 @@ public interface QuestionReactionJpaRepository extends JpaRepository<QuestionRea
     Long countByQuestionIdAndReactionType(@Param("questionId") Long questionId, @Param("reactionType") ReactionType reactionType);
 
     void deleteByUserAndQuestion(UserEntity user, QuestionEntity question);
+
+    @Query("DELETE FROM QuestionReactionEntity r WHERE r.question = :question")
+    void deleteAllByQuestion(QuestionEntity question);
 }

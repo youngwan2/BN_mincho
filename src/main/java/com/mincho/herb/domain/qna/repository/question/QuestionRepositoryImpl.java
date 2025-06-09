@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -38,7 +39,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
 
     /**
-     * 질문 엔티티를 저장합니다.
+     * 질문 엔티티 저장합니다.
      *
      * @param questionEntity 저장할 QuestionEntity 객체
      * @return 저장된 QuestionEntity 객체
@@ -57,13 +58,13 @@ public class QuestionRepositoryImpl implements QuestionRepository {
      * @throws CustomHttpException 질문이 존재하지 않을 경우 예외 발생
      */
     @Override
-    public QuestionEntity findById(Long id){
-        return questionJpaRepository.findById(id).orElseThrow(()-> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 질문 내역은 없습니다."));
+    public QuestionEntity findById(Long id) {
+        return questionJpaRepository.findById(id).orElseThrow(() -> new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 질문 내역은 없습니다."));
     }
 
 
     /**
-     * ID로 질문을 조회하고, 사용자 이메일을 기반으로 isMine 여부와 함께
+     * ID로 질문을 ���회하고, 사용자 이메일을 기반으로 isMine 여부와 함께
      * 이미지 및 답변 정보를 포함한 QnaDTO를 반환합니다.
      *
      * @param id    질문 ID
@@ -92,10 +93,11 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         QuestionEntity questionEntityResult = jpaQueryFactory
                 .selectFrom(qnaEntity)
                 .leftJoin(qnaEntity.writer).fetchJoin()
+                .leftJoin(qnaEntity.category).fetchJoin() // 카테고리 정보도 함께 조회
                 .where(qnaEntity.id.eq(id))
                 .fetchOne();
 
-        if(questionEntityResult == null){
+        if (questionEntityResult == null) {
             throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 질문 내용을 찾을 수 없습니다.");
         }
 
@@ -126,7 +128,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                                         qAnswerEntity.createdAt,
                                         GroupBy.list(qAnswerImageEntity.imageUrl)
                                 )
-                ));
+                        ));
 
         return QuestionDTO.builder()
                 .id(id)
@@ -134,9 +136,14 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                 .content(questionEntityResult.getContent())
                 .isPrivate(questionEntityResult.getIsPrivate())
                 .isMine(questionEntityResult.getWriter().getEmail().equals(safeEmail))
+                .writerId(questionEntityResult.getWriter().getId())
+                .avatarUrl(questionEntityResult.getWriter().getProfile().getAvatarUrl())
                 .writer(questionEntityResult.getWriter().getProfile().getNickname())
                 .imageUrls(imageUrls)
                 .answers(answers)
+                .tags(questionEntityResult.getTags())
+                .categoryId(questionEntityResult.getCategory().getId()) // 카테고리 ID 추가
+                .categoryName(questionEntityResult.getCategory().getName()) // 카테고리 이름 추가
                 .createdAt(questionEntityResult.getCreatedAt())
                 .view(questionEntityResult.getView())
                 .build();
@@ -166,6 +173,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         String type = conditionDTO.getSearchType();
         String keyword = conditionDTO.getKeyword();
         Long categoryId = conditionDTO.getCategoryId();
+        String tag = conditionDTO.getTag();
 
         // 키워드 검색
         if(type != null){
@@ -183,6 +191,11 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         // 카테고리 검색
         if(categoryId != null){
             builder.and(qnaEntity.category.id.eq(categoryId));
+        }
+
+        // 태그 검색 (추가된 부분)
+        if(tag != null && !tag.isEmpty()) {
+            builder.and(qnaEntity.tags.contains(tag));
         }
 
         // 기간별 조회
@@ -213,7 +226,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                                         qnaEntity.id,
                                         qnaEntity.title,
                                         Expressions.stringTemplate("SUBSTRING({0} FROM 1 FOR 100)" ,qnaEntity.content),
-                                        qnaEntity.isPrivate, // 고정글 유무
+                                        qnaEntity.isPrivate, // 비밀글 유무
                                         new CaseBuilder().when(qnaEntity.writer.email.eq(safeEmail)).then(true).otherwise(false), // 질문자 본인확인
                                         qnaEntity.writer.profile.nickname,
                                         GroupBy.list(qQnaImageEntity.imageUrl),
@@ -224,6 +237,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                                                 new CaseBuilder().when(qAnswerWriter.email.eq(safeEmail)).then(true).otherwise(false), // 답변자 본인확인
                                                 qAnswerEntity.createdAt
                                         )),
+                                        GroupBy.list(qnaEntity.tags), // 태그 목록 추가
                                         qnaEntity.createdAt,
                                         qnaEntity.view
                                 )
@@ -232,61 +246,71 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
         Long total = jpaQueryFactory.select(qnaEntity.count()).from(qnaEntity).where(builder).fetchOne();
 
-      return QuestionResponseDTO.builder()
-              .qnas(qnas)
-              .totalCount(total)
-              .build();
+        return QuestionResponseDTO.builder()
+                .qnas(qnas)
+                .totalCount(total)
+                .build();
     }
 
     /**
-     * 질문 ID로 해당 질문을 삭제합니다.
+     * 특정 사용자가 작성한 질문 목록을 조회합니다.
+     * 비공개 질문은 제외하고 공개된 질문만 조회합니다.
      *
-     * @param qnaId 삭제할 질문 ID
-     */
-    @Override
-    public void deleteById(Long qnaId) {
-        questionJpaRepository.deleteById(qnaId);
-    }
-
-    /**
-     * 특정 사용자의 질문 목록을 조회합니다.
-     * 비공개(isPrivate=true) 질문은 제외하고 페이징 처리합니다.
-     *
-     * @param userId 조회할 사용자의 ID
+     * @param userId   조회할 사용자 ID
      * @param pageable 페이징 정보
-     * @return UserQuestionResponseDTO 사용자 질문 목록과 총 개수를 포함
+     * @return 사용자가 작��한 질문 목록과 총 개수를 포함한 응답 DTO
      */
     @Override
     public UserQuestionResponseDTO findAllByUserId(Long userId, Pageable pageable) {
         QQuestionEntity qnaEntity = QQuestionEntity.questionEntity;
+        QQuestionImageEntity qQnaImageEntity = QQuestionImageEntity.questionImageEntity;
 
-        // 비공개 질문을 제외한 사용자 질문 조회
-        List<UserQuestionSummaryDTO> qnas = jpaQueryFactory
+        // 특정 사용자가 작성한 공개 질문만 필터링
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(qnaEntity.writer.id.eq(userId));
+        builder.and(qnaEntity.isPrivate.eq(false)); // 공개 질문만 조회
+
+        List<UserQuestionSummaryDTO> userQuestions = jpaQueryFactory
                 .select(Projections.constructor(UserQuestionSummaryDTO.class,
                         qnaEntity.id,
                         qnaEntity.title,
-                        Expressions.stringTemplate("SUBSTRING({0} FROM 1 FOR 30)", qnaEntity.content),
-                        qnaEntity.createdAt))
+                        Expressions.stringTemplate("SUBSTRING({0} FROM 1 FOR 100)", qnaEntity.content),
+                        qnaEntity.createdAt
+                ))
                 .from(qnaEntity)
-                .where(qnaEntity.writer.id.eq(userId)
-                        .and(qnaEntity.isPrivate.eq(false)).or(
-                                qnaEntity.isPrivate.isNull())) // 비공개 여부가 null인 경우도 포함))
+                .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(qnaEntity.createdAt.desc())
+                .orderBy(qnaEntity.createdAt.desc()) // 최신순 정렬
                 .fetch();
 
         // 총 개수 조회
         Long total = jpaQueryFactory
                 .select(qnaEntity.count())
                 .from(qnaEntity)
-                .where(qnaEntity.writer.id.eq(userId)
-                        .and(qnaEntity.isPrivate.eq(false)))
+                .where(builder)
                 .fetchOne();
 
         return UserQuestionResponseDTO.builder()
-                .qnas(qnas)
-                .totalCount(total)
+                .qnas(userQuestions)
+                .totalCount(total != null ? total : 0L)
                 .build();
+    }
+
+    /**
+     * 질문을 ID로 삭제합니다.
+     * 질문과 관련된 외래키 관계가 있는 엔티티들의 삭제 처리도 함께 고려합니다.
+     * - 질문 이미지
+     * - 답변 관련 데이터
+     * - 태그 관계
+     *
+     * 참고: 실제 삭제는 서비스 계층에서 외래키 관계를 먼저 처리한 후 호출됩니다.
+     *
+     * @param questionId 삭제할 질문 ID
+     */
+    @Override
+    @Transactional
+    public void deleteById(Long questionId) {
+        questionJpaRepository.deleteById(questionId);
     }
 }

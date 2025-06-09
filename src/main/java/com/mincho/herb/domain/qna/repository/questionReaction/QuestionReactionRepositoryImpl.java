@@ -33,6 +33,11 @@ public class QuestionReactionRepositoryImpl implements QuestionReactionRepositor
     }
 
     @Override
+    public void deleteAllByQuestion(QuestionEntity question) {
+        questionReactionJpaRepository.deleteAllByQuestion(question);
+    }
+
+    @Override
     public void delete(QuestionReactionEntity reactionEntity) {
         questionReactionJpaRepository.delete(reactionEntity);
     }

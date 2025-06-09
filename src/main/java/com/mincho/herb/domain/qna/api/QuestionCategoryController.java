@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/community/qna")
+@RequestMapping("/api/v1/community/qnas")
 @RequiredArgsConstructor
 @Tag(name = "QnA 카테고리", description = "QnA 카테고리 관련 API")
 public class QuestionCategoryController {

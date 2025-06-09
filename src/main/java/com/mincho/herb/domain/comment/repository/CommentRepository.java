@@ -29,10 +29,10 @@ public interface CommentRepository {
 
 
     // 댓글 조회
-    List<CommentDTO> findByPostIdAndMemberId(Long postId, Long memberId);
+    List<CommentDTO> findByPostId(Long postId, Long memberId);
 
     // 부모 댓글로 댓글 엔티티 조회
-    List<CommentDTO> findByParentCommentIdAndUserId(Long parentCommentId, Long userId);
+    List<CommentDTO> findByParentCommentId(Long parentCommentId, Long userId);
 
     // 유저가 작성한 모든 댓글 가져오기
     List<CommentEntity> findAllByUser(UserEntity member);

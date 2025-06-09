@@ -17,7 +17,7 @@ import java.util.List;
 @Tag(name = "답변 이미지", description = "답변 이미지 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/community/qna")
+@RequestMapping("/api/v1/community/qnas")
 public class AnswerImageController {
 
     private final AnswerImageService answerImageService;

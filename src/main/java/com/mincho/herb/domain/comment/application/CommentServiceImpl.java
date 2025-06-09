@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -43,22 +42,37 @@ public class CommentServiceImpl implements CommentService{
     @Transactional
     public void addComment(CommentCreateRequestDTO commentCreateRequestDTO, String email) {
 
-        UserEntity userEntity = userService.getUserByEmail(email);
-        PostEntity postEntity = postService.getPostById(commentCreateRequestDTO.getPostId());
+        UserEntity userEntity = userService.getUserByEmail(email); // 댓글 작성자의 정보 조회
+        PostEntity postEntity = postService.getPostById(commentCreateRequestDTO.getPostId()); // 게시글 정보 조회
 
         CommentEntity parentCommentEntity = null;
         if(commentCreateRequestDTO.getParentCommentId() != null){
             parentCommentEntity = commentRepository.findById(commentCreateRequestDTO.getParentCommentId());
         }
 
-        // 부모 도메인이 존재하지 않을 때 까지 level 증가
         long depth = 0L;
         CommentEntity currentComment = parentCommentEntity;
 
-        while (currentComment != null) {
+        while (currentComment != null && depth <2) {
             depth++;
             currentComment = currentComment.getParentComment();
             log.info("Current depth: {}", depth);
+        }
+
+        if (commentCreateRequestDTO.getMentionedUserIds() == null) {
+                commentCreateRequestDTO.setMentionedUserIds(new ArrayList<>());
+        }
+
+        // 부모 댓글 작성자를 자동 멘션 리스트에 추가
+        if (parentCommentEntity != null && parentCommentEntity.getUser() != null) {
+           Long parentUserId = parentCommentEntity.getUser().getId();
+
+           // 자기 자신이 아닌 경우와 이미 멘션 리스트에 없는 경우에만 추가
+           if (!parentUserId.equals(userEntity.getId()) &&
+               !commentCreateRequestDTO.getMentionedUserIds().contains(parentUserId)) {
+                // 부모 댓글 작성자를 멘션 리스트에 추가
+                commentCreateRequestDTO.getMentionedUserIds().add(parentUserId);
+             }
         }
 
         CommentEntity unsavedCommentEntity = CommentEntity.builder()
@@ -76,21 +90,27 @@ public class CommentServiceImpl implements CommentService{
         // 멘션 처리
         handleMentions(commentCreateRequestDTO, savedCommentEntity, postEntity);
 
-        // 부모 댓글이 존재하는 경우, 해당 부모 댓글의 작성자에게 알림
-        Long targetUserId = parentCommentEntity == null || parentCommentEntity.getDeleted() ? null : parentCommentEntity.getUser().getId();
+        // 댓글 알림 처리
+        handleCommentNotification(commentCreateRequestDTO, parentCommentEntity, postEntity, userEntity);
+    }
 
-        log.info("targetUserId:{}", targetUserId);
+    // 댓글 알림 처리
+    private void handleCommentNotification(CommentCreateRequestDTO commentCreateRequestDTO, CommentEntity parentCommentEntity, PostEntity postEntity, UserEntity userEntity) {
+        // 부모 댓글이 존재하는 경우, 부모 댓글 작성자의 ID를 가져옴
+        Long targetUserId = parentCommentEntity == null || parentCommentEntity.getDeleted() ? null : parentCommentEntity.getUser().getId();
 
         String path = "/community/posts/"+postEntity.getId(); // 해당 댓글이 작성된 게시글 경로
 
-        // 대댓인 경우, 대댓의 부모 댓글 작성자에게 알림
+        // 부모 댓글이 존재하는 경우, 해당 부모 댓글의 작성자에게 알림 전송
         if(targetUserId != null && !targetUserId.equals(userEntity.getId())) { // 자신의 댓글에는 알림을 보내지 않음
             notificationService.sendNotification(targetUserId, "comment", path, "당신의 댓글에 답글이 달렸습니다.");
         }
-        // 대댓이 아닌 경우, 게시글 작성자에게 알림 (멘션이 없는 경우에만)
+        // 게시글 대상 댓글 작성 |  멘션된 사용자가 아닌 경우만 실행
         else if (commentCreateRequestDTO.getMentionedUserIds() == null || commentCreateRequestDTO.getMentionedUserIds().isEmpty()) {
             Long postOwnerId = postEntity.getUser().getId();
-            if (!postOwnerId.equals(userEntity.getId())) { // 자신의 게시글에는 알림을 보내지 않음
+
+            // 본인이 작성한 게시글에 댓글을 남기면 알림 안 보냄
+            if (!postOwnerId.equals(userEntity.getId())) {
                 notificationService.sendNotification(postOwnerId, "post", path, "당신의 게시글에 댓글이 달렸습니다.");
             }
         }
@@ -172,10 +192,9 @@ public class CommentServiceImpl implements CommentService{
     /* 댓글 조회*/
     @Override
     public CommentResponseDTO getCommentsByPostId(Long postId) {
-        // 부모 댓글과 자식 댓글을 모두 가져오는 페치 조인 쿼리 실행
         String email = authUtils.userCheck();
-        UserEntity member = userService.getUserByEmailOrNull(email);
-        Long memberId;
+        UserEntity member = userService.getUserByEmailOrNull(email); // 로그인한 사용자 정보 조회
+        Long memberId; // 로그인한 사용자의 ID로 해당 댓글이 본인이 작성한 댓글인지 확인하기 위해 활용
 
         if(member != null){
             memberId = member.getId();
@@ -183,15 +202,15 @@ public class CommentServiceImpl implements CommentService{
             memberId = null;
         }
 
-        List<CommentDTO> parentCommentDtos = commentRepository.findByPostIdAndMemberId(postId,memberId );
+        List<CommentDTO> parentComments = commentRepository.findByPostId(postId, memberId );
 
         // 댓글 목록
-        List<CommentsDTO> comments = parentCommentDtos.stream().map((commentDto)-> {
+        List<CommentsDTO> comments = parentComments.stream().map((commentDto)-> {
                     // 부모 댓글의 ID
                     Long parentCommentId = commentDto.getId();
 
                     // parentId 를 가지고 있는 자식 댓글 조회
-                    List<CommentDTO> replies =  commentRepository.findByParentCommentIdAndUserId(parentCommentId, memberId);
+                    List<CommentDTO> replies =  commentRepository.findByParentCommentId(parentCommentId, memberId);
 
                     // 대체 텍스트
                     String contents = "사용자에 의해 삭제된 댓글입니다.";

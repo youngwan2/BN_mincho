@@ -56,6 +56,7 @@ public class QuestionImageServiceImpl implements QuestionImageService {
      */
     @Override
     public void imageUpload(List<MultipartFile> images, QuestionEntity questionEntity) {
+        if(images == null) {return;} // 이미지 업로드 시도 자체가 없으면 그냥 탈출
 
         throwValidImageException(images);
 
@@ -80,12 +81,14 @@ public class QuestionImageServiceImpl implements QuestionImageService {
     @Override
     @Transactional
     public void imageUpload(List<MultipartFile> images, Long qnaId) {
-            throwValidImageException(images);
+        if(images == null || images.isEmpty()) {return;}
 
-            QuestionEntity questionEntity = questionRepository.findById(qnaId);
+        throwValidImageException(images);
 
-            // 이미지 업로드(S3, DB)
-            images.forEach(image -> {
+        QuestionEntity questionEntity = questionRepository.findById(qnaId);
+
+        // 이미지 업로드(S3, DB)
+        images.forEach(image -> {
             questionImageRepository.save(
                     QuestionImageEntity.builder()
                             .imageUrl(s3Service.upload(image, "qna/" + questionEntity.getId()))
@@ -96,15 +99,15 @@ public class QuestionImageServiceImpl implements QuestionImageService {
     }
 
     /**
-     * 전달받은 이미지 URL 목록에 해당하는 이미지들을 S3 및 DB에서 제거합니다.
+     * 이미지 수정 - 삭제할 이미지 URL 목록을 처리합니다.
      *
      * @param imageUrlsToDelete 삭제할 이미지 URL 목록
-     * @param id                Q&A 게시글 ID
+     * @param qnaId 질문 ID
      */
     @Override
     @Transactional
-    public void imageUpdate(List<String> imageUrlsToDelete, Long id) {
-        throwAuthExceptionOrReturnEmail(); // 예외 처리
+    public void imageUpdate(List<String> imageUrlsToDelete, Long qnaId) {
+        throwAuthExceptionOrReturnEmail(); // 인증 확인
 
         // 전달받은 imageUrls가 null이거나 비어있으면 처리하지 않음
         if (imageUrlsToDelete == null || imageUrlsToDelete.isEmpty()) {
@@ -113,7 +116,7 @@ public class QuestionImageServiceImpl implements QuestionImageService {
 
         log.info("삭제 요청된 이미지 URL 목록: {}", imageUrlsToDelete);
 
-        // DB와 S3에서 이미지 삭제
+        // DB에서 이미지 삭제
         questionImageRepository.deleteByImageUrlIn(imageUrlsToDelete);
 
         // S3에서 이미지 파일 삭제
@@ -124,31 +127,30 @@ public class QuestionImageServiceImpl implements QuestionImageService {
         });
     }
 
-
     /**
-     * Q&A 게시글에 연결된 모든 이미지를 삭제합니다.
+     * 이미지 삭제 - 이미지 URL 목록과 질문 엔���티를 받아 삭제합니다.
      *
      * @param imageUrls 삭제할 이미지 URL 목록
-     * @param questionEntity 삭제할 Q&A 게시글 엔티티
+     * @param questionEntity 질문 엔티티
      */
     @Override
     @Transactional
     public void imageDelete(List<String> imageUrls, QuestionEntity questionEntity) {
+        // S3에서 이미지 파일 삭제
         for(String imageUrl : imageUrls){
             String key = s3Service.extractKeyFromUrl(imageUrl);
             s3Service.deleteKey(key);
         }
 
+        // DB에서 이미지 데이터 삭제
         questionImageRepository.deleteByQnaId(questionEntity.getId());
-
     }
 
-
     /**
-     * 로그인 여부를 확인하고 이메일을 반환합니다.
+     * 인증 체크 메서드 - 로그인 상태 확인 및 이메일 반환
      *
-     * @return 로그인된 사용자의 이메일
-     * @throws CustomHttpException 로그인되어 있지 않은 경우 예외 발생
+     * @return 인증된 사용자 이메일
+     * @throws CustomHttpException 인증되지 않은 경우 예외 발생
      */
     private String throwAuthExceptionOrReturnEmail(){
         String email = authUtils.userCheck();
@@ -165,6 +167,8 @@ public class QuestionImageServiceImpl implements QuestionImageService {
      * @throws CustomHttpException 유효하지 않은 이미지가 포함된 경우 예외 발생
      */
     private void throwValidImageException(List<MultipartFile> images){
+        if(images == null) { return;}
+
         if(!images.isEmpty()){
             if (images.size() > MAX_IMAGE_COUNT) {
                 throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "이미지는 최대 3개까지만 업로드할 수 있습니다.");

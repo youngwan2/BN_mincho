@@ -21,6 +21,7 @@ import java.util.List;
         private String writer;
         private List<String> imageUrls;
         private List<AnswerSummaryDTO> answers;
+        private List<String> tags;
         private LocalDateTime createdAt;
         private Long view;
 

@@ -22,7 +22,7 @@ public class QuestionRequestDTO {
     private Boolean isPrivate;
 
     @NotNull(message = "카테고리는 필수 항목입니다.")
-    private Long categoryId;
+    private Long category;
 
     private List<String> tags; // 태그 목록
 }

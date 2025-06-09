@@ -16,6 +16,7 @@ public class QuestionSearchConditionDTO {
     private String keyword;
     private Long categoryId;
     private String searchType;
+    private String tag; // 태그 검색 필드 추가
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fromDate;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

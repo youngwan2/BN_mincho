@@ -15,4 +15,11 @@ public interface QuestionService {
     void update(Long id, QuestionRequestDTO dto);
     void delete(Long id);
     UserQuestionResponseDTO getAllByUserId(Long userId, Pageable pageable);
+
+    /**
+     * 질문의 조회수를 증가시킵니다.
+     *
+     * @param qnaId 조회수를 증가시킬 질문 ID
+     */
+    void increaseViewCount(Long qnaId);
 }

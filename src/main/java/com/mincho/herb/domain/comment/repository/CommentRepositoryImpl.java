@@ -57,12 +57,12 @@ public class CommentRepositoryImpl implements CommentRepository{
 
     /* 임시 쿼리 */
     @Override
-    public List<CommentDTO> findByPostIdAndMemberId(Long postId, Long memberId) {
+    public List<CommentDTO> findByPostId(Long postId, Long memberId) {
         return commentJpaRepository.findByPostIdAndUserId(postId, memberId);
     }
 
     @Override
-    public List<CommentDTO> findByParentCommentIdAndUserId(Long parentCommentId, Long memberId) {
+    public List<CommentDTO> findByParentCommentId(Long parentCommentId, Long memberId) {
         return commentJpaRepository.findByParentCommentIdAndUserId(parentCommentId, memberId);
     }
 
