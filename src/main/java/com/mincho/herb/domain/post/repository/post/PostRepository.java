@@ -1,10 +1,6 @@
 package com.mincho.herb.domain.post.repository.post;
 
-import com.mincho.herb.domain.post.dto.DetailPostDTO;
-import com.mincho.herb.domain.post.dto.PostResponseDTO;
-import com.mincho.herb.domain.post.dto.SearchConditionDTO;
-import com.mincho.herb.domain.post.dto.TagCountDTO;
-import com.mincho.herb.domain.post.dto.UserPostResponseDTO;
+import com.mincho.herb.domain.post.dto.*;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.page.PageInfoDTO;

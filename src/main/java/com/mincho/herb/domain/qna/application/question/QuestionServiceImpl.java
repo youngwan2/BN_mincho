@@ -1,7 +1,6 @@
 package com.mincho.herb.domain.qna.application.question;
 
 import com.mincho.herb.domain.qna.application.questionImage.QuestionImageService;
-import com.mincho.herb.domain.qna.application.questionReaction.QuestionReactionService;
 import com.mincho.herb.domain.qna.domain.Question;
 import com.mincho.herb.domain.qna.dto.*;
 import com.mincho.herb.domain.qna.entity.QuestionCategoryEntity;

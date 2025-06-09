@@ -5,7 +5,6 @@ import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
 
 import java.util.List;
 

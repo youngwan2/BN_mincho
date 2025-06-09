@@ -24,4 +24,24 @@ public class QuestionCategoryRepositoryImpl implements QuestionCategoryRepositor
     public List<QuestionCategoryEntity> findAll() {
         return questionCategoryJpaRepository.findAll();
     }
+
+    @Override
+    public QuestionCategoryEntity save(QuestionCategoryEntity categoryEntity) {
+        return questionCategoryJpaRepository.save(categoryEntity);
+    }
+
+    @Override
+    public void delete(QuestionCategoryEntity categoryEntity) {
+        questionCategoryJpaRepository.delete(categoryEntity);
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return questionCategoryJpaRepository.existsByName(name);
+    }
+
+    @Override
+    public boolean hasRelatedQuestions(Long categoryId) {
+        return questionCategoryJpaRepository.countByQuestionCategoryId(categoryId) > 0;
+    }
 }

@@ -1,8 +1,7 @@
 package com.mincho.herb.domain.qna.api;
 
-import com.mincho.herb.domain.qna.application.questionImage.QuestionImageService;
 import com.mincho.herb.domain.qna.application.question.QuestionService;
-import com.mincho.herb.domain.qna.dto.QuestionImageResponseDTO;
+import com.mincho.herb.domain.qna.application.questionImage.QuestionImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
