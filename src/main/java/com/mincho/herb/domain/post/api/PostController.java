@@ -69,6 +69,9 @@ public class PostController {
     public ResponseEntity<?> getDetailPost(
             @Parameter(description = "게시글 ID", required = true) @PathVariable Long id) {
         DetailPostResponseDTO detailPost = postService.getDetailPostById(id);
+        if (detailPost.getIsDeleted()) {
+            return new ErrorResponse().getResponse(404, "삭제된 게시글입니다.", HttpErrorType.NOT_FOUND);
+        }
         return new SuccessResponse<>().getResponse(200, "정상적으로 조회되었습니다.", HttpSuccessType.OK, detailPost);
     }
 

@@ -24,5 +24,5 @@ import java.util.List;
         private List<String> tags;
         private LocalDateTime createdAt;
         private Long view;
-
+        private Boolean hasAdoptedAnswer; // 채택된 답변 존재 여부
 }

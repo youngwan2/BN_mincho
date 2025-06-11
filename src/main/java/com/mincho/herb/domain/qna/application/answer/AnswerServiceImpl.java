@@ -103,12 +103,13 @@ public class AnswerServiceImpl implements AnswerService {
 
     // 답변 채택
     @Override
-    public void adopt(Long answerId) {
+    @Transactional
+    public void adopt(Long qnaId, Long answerId) {
         String email = throwAuthExceptionOrReturnEmail();
 
         UserEntity writer = userService.getUserByEmail(email);
         AnswerEntity answerEntity= answerRepository.findById(answerId);
-        QuestionEntity questionEntity = questionRepository.findById(answerId);
+        QuestionEntity questionEntity = questionRepository.findById(qnaId);
 
         // 요청 유저와 질문자가 동일한가?
         if(!writer.equals(questionEntity.getWriter())){

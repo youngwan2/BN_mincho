@@ -161,11 +161,11 @@ public class AnswerServiceImplTest {
         when(authUtils.userCheck()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(member);
         when(answerRepository.findById(1L)).thenReturn(answer);
-        when(questionRepository.findById(1L)).thenReturn(qna);
+        when(questionRepository.findById(10L)).thenReturn(qna);
         when(answerRepository.existsByQnaIdAndIdAndIsAdoptedTrue(10L, 1L)).thenReturn(false);
 
         // when
-        answerService.adopt(1L);
+        answerService.adopt(10L, 1L);
 
         // then
         assertThat(answer.getIsAdopted()).isTrue();

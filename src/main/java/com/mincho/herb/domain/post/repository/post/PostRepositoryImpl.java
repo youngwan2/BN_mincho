@@ -127,6 +127,7 @@ public class PostRepositoryImpl implements PostRepository {
                 .viewCount(viewCount)
                 .createdAt(post.getCreatedAt())
                 .tags(post.getTags()) // 태그 목록 포함
+                .isDeleted(post.getIsDeleted()) // 삭제 상태 추가
                 .build();
     }
 

@@ -17,7 +17,7 @@ public interface QuestionRepository {
 
     QuestionResponseDTO findAll(QuestionSearchConditionDTO conditionDTO, Pageable pageable, String email);
 
-    UserQuestionResponseDTO findAllByUserId(Long userId, Pageable pageable);
+    UserQuestionResponseDTO findAllByUserId(Long userId, Pageable pageable, String email);
 
     void deleteById(Long questionId);
 }

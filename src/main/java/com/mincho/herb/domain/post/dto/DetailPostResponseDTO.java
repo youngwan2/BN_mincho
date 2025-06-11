@@ -24,4 +24,5 @@ public class DetailPostResponseDTO {
     private Long viewCount;
     private LocalDateTime createdAt;
     private List<String> tags; // 게시글의 태그 목록
+    private Boolean isDeleted; // 삭제 여부 필드 추가
 }

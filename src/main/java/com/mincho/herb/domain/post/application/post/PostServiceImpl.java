@@ -68,11 +68,16 @@ public class PostServiceImpl implements PostService {
         // 현재 사용자 이메일 가져오기 (로그인하지 않았다면 null)
         String email = authUtils.userCheck();
 
+        // 게시글 상세 정보 조회 (태그 포함)
+        DetailPostDTO detailPost = postRepository.findDetailPostById(id, email);
+
+        // 삭제된 게시글인 경우 예외 처리
+        if (detailPost.getIsDeleted()) {
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "삭제된 게시글입니다.");
+        }
+
         // 조회수 증가 처리
         updateViewCount(id);
-
-        // QueryDSL을 사용하여 게시글 상세 정보 조회 (태그 포함)
-        DetailPostDTO detailPost = postRepository.findDetailPostById(id, email);
 
         // 조회수를 1 증가시킨 값으로 DetailPostResponseDTO 구성
         return DetailPostResponseDTO.builder()
@@ -86,6 +91,7 @@ public class PostServiceImpl implements PostService {
                 .viewCount(detailPost.getViewCount() + 1) // 조회수 1 증가
                 .createdAt(detailPost.getCreatedAt())
                 .tags(detailPost.getTags()) // 태그 목록 포함
+                .isDeleted(detailPost.getIsDeleted())
                 .build();
     }
 

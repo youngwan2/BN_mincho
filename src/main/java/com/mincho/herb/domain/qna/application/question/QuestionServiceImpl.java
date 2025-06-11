@@ -110,7 +110,7 @@ public class QuestionServiceImpl implements QuestionService {
         log.debug("8. 존재하는 태그를 모두 초기화하면 보임.");
 
         if (requestDTO.getTags() != null && !requestDTO.getTags().isEmpty()) {
-            log.debug("9. 새로운 태그 추가 시작: {}", requestDTO.getTags());
+            log.debug("9. 새로운 태그 추가 시���: {}", requestDTO.getTags());
             questionEntity.setTags(requestDTO.getTags());
             log.debug("9-2.새로운 태그 추가 완료(모든 변경 사항 반영 성공): {}", requestDTO.getTags());
         }
@@ -167,8 +167,11 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     @Transactional(readOnly = true)
     public UserQuestionResponseDTO getAllByUserId(Long userId, Pageable pageable) {
-        // 해당 사용자의 질문 목록 조회 (비공개 질문은 제외)
-        return questionRepository.findAllByUserId(userId, pageable);
+        // 현재 요청한 사용자의 이메일 가져오기 (로그인하지 않은 경우 null)
+        String email = authUtils.userCheck();
+
+        // 해당 사용자의 질문 목록 조회 (비공개 질문은 본인만 볼 수 있음)
+        return questionRepository.findAllByUserId(userId, pageable, email);
     }
 
     // 카테고리 목록 조회
@@ -228,7 +231,7 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             if(tag.length() > 20) {
-                throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "태그는 20자 이내로 입력해야 합니다.");
+                throw new CustomHttpException(HttpErrorCode.BAD_REQUEST, "태그는 20자 이내로 입력해야 합���다.");
             }
 
         }

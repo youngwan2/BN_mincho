@@ -70,7 +70,8 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
         @Query("""
                    SELECT p
                    FROM PostEntity p
-                   WHERE p.user.id =:userId
+                   WHERE p.user.id = :userId
+                   AND p.isDeleted = false
                 """)
         Page<PostEntity> findByUserId(@Param("userId") Long userId, Pageable pageable);
 

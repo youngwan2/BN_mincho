@@ -4,6 +4,7 @@ import com.mincho.herb.domain.qna.dto.*;
 import com.mincho.herb.domain.qna.entity.*;
 import com.mincho.herb.domain.user.entity.QProfileEntity;
 import com.mincho.herb.domain.user.entity.QUserEntity;
+import com.mincho.herb.domain.user.entity.UserEntity;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.HttpErrorCode;
 import com.querydsl.core.BooleanBuilder;
@@ -64,7 +65,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
 
     /**
-     * ID로 질문을 ���회하고, 사용자 이메일을 기반으로 isMine 여부와 함께
+     * ID로 질문을 조회하고, 사용자 이메일을 기반으로 isMine 여부와 함께
      * 이미지 및 답변 정보를 포함한 QnaDTO를 반환합니다.
      *
      * @param id    질문 ID
@@ -239,7 +240,15 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                                         )),
                                         GroupBy.list(qnaEntity.tags), // 태그 목록 추가
                                         qnaEntity.createdAt,
-                                        qnaEntity.view
+                                        qnaEntity.view,
+                                        // Boolean 타입에 max() 함수 사용 불가능 문제 해결
+                                        jpaQueryFactory.select(
+                                                jpaQueryFactory.selectOne()
+                                                .from(qAnswerEntity)
+                                                .where(qAnswerEntity.qna.id.eq(qnaEntity.id)
+                                                       .and(qAnswerEntity.isAdopted.eq(true)))
+                                                .exists()
+                                        )
                                 )
                         )
                 );
@@ -254,21 +263,39 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
     /**
      * 특정 사용자가 작성한 질문 목록을 조회합니다.
-     * 비공개 질문은 제외하고 공개된 질문만 조회합니다.
+     * 비공개 질문은 요청자가 작성자 본인인 경우에만 조회되고, 그렇지 않은 경우 공개 질문만 조회됩니다.
      *
      * @param userId   조회할 사용자 ID
      * @param pageable 페이징 정보
-     * @return 사용자가 작��한 질문 목록과 총 개수를 포함한 응답 DTO
+     * @param email    현재 요청자의 이메일 (본인 확인용, null 가능)
+     * @return 사용자가 작성한 질문 목록과 총 개수를 포함한 응답 DTO
      */
     @Override
-    public UserQuestionResponseDTO findAllByUserId(Long userId, Pageable pageable) {
+    public UserQuestionResponseDTO findAllByUserId(Long userId, Pageable pageable, String email) {
         QQuestionEntity qnaEntity = QQuestionEntity.questionEntity;
         QQuestionImageEntity qQnaImageEntity = QQuestionImageEntity.questionImageEntity;
 
-        // 특정 사용자가 작성한 공개 질문만 필터링
+        // 특정 사용자가 작성한 질문 필터링
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(qnaEntity.writer.id.eq(userId));
-        builder.and(qnaEntity.isPrivate.eq(false)); // 공개 질문만 조회
+
+        // 이메일이 있고 해당 사용자의 이메일과 일치하면 모든 질문(비공개 포함) 조회 가능
+        // 그렇지 않으면 공개 질문만 조회
+        boolean isOwner = false;
+        if (email != null && !email.isEmpty()) {
+            // 현재 로그인한 사용자와 조회 대상 사용자가 같은지 확인
+            UserEntity userEntity = jpaQueryFactory
+                    .selectFrom(QUserEntity.userEntity)
+                    .where(QUserEntity.userEntity.id.eq(userId)
+                            .and(QUserEntity.userEntity.email.eq(email)))
+                    .fetchFirst();
+
+            isOwner = (userEntity != null);
+        }
+
+        if (!isOwner) {
+            builder.and(qnaEntity.isPrivate.eq(false)); // 공개 질문만 조회
+        }
 
         List<UserQuestionSummaryDTO> userQuestions = jpaQueryFactory
                 .select(Projections.constructor(UserQuestionSummaryDTO.class,

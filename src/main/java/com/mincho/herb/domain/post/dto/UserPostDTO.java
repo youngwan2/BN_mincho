@@ -24,5 +24,6 @@ public class UserPostDTO {
     private List<String> tags;
     private PostCategoryDTO category;
     private LocalDateTime createdAt; // 작성일시
+    private Boolean isDeleted; // 삭제 여부 필드 추가
 
 }
