@@ -44,20 +44,35 @@ public class SecurityConfig {
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
         http.addFilterAt(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                    authorizationManagerRequestMatcherRegistry
-                            .requestMatchers("/api/v1/users/register/**").permitAll()
-                            .requestMatchers("/api/v1/users/login/**").permitAll()
-                            .requestMatchers("/oauth2/**", "/login/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/api/v1/community/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/api/v1/herbs/**").permitAll()
-                            .requestMatchers("/api/v1/users/send-verification").permitAll()
-                            .requestMatchers("/api/v1/users/send-verification-code").permitAll()
-                            .requestMatchers("/api/v1/notification/**").permitAll()
-                            .requestMatchers("/api/v1/users/me/**").hasRole("USER")
-                            .requestMatchers("/api/v1/dashboard/**").hasRole("ADMIN") // 관리자만 허용
-                            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // 관리자만 허용
-                            .anyRequest().permitAll()
+        http.authorizeHttpRequests(authorize -> authorize
+                // 인증 없이 접근 가능한 공개 API 엔드포인트
+                .requestMatchers(
+                    "/api/v1/users/register/**",
+                    "/api/v1/users/login/**",
+                    "/api/v1/users/send-verification",
+                    "/api/v1/users/send-verification-code",
+                    "/oauth2/**",
+                    "/login/**"
+                ).permitAll()
+
+                // GET 메서드만 허용하는 공개 API
+                .requestMatchers(HttpMethod.GET,
+                    "/api/v1/community/**",
+                    "/api/v1/herbs/**",
+                    "/api/v1/notification/**"
+                ).permitAll()
+
+                // 인증된 사용자만 접근 가능
+                .requestMatchers("/api/v1/users/me/**").hasRole("USER")
+
+                // 관리자만 접근 가능
+                .requestMatchers(
+                    "/api/v1/dashboard/**",
+                    "/api/v1/admin/**"
+                ).hasRole("ADMIN")
+
+                // 나머지 요청
+                .anyRequest().permitAll()
         );
         http.oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo

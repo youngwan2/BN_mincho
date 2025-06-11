@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PostRequestDTO {
 
-    @Size(min = 2, max = 30, message = "제목은 2자 이상 30자 이하로 입력해야 합니다.")
+    @Size(min = 2, max = 100, message = "제목은 2자 이상 100자 이하로 입력해야 합니다.")
     private String title;
     @Size(min = 10, max = 25000, message = "내용은 최소 10자 이상 25000자 이하로 입력해야 합니다.")
     private String contents;

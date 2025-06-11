@@ -64,7 +64,7 @@ public class S3Service {
     }
 
     /**
-     * 업로드할 이미지 파일에 대해 S3 프리사인드 URL을 생성합
+     * 업로드할 이미지 파일에 대해 S3 프리사인드 URL을 생성합니다
      * 파일은 유효성 검사 후, 주어진 유효 시간(duration) 동안 유효한 PUT presigned URL을 반환
      *
      * @param file     업로드할 이미지 파일
@@ -168,19 +168,16 @@ public class S3Service {
         });
     }
 
-
-
-
-
     /**
      * HTML 컨텐츠에서 이미지의 src 속성을 정규표현식을 사용해 모두 추출
+     * 'amazonaws.com'이 포함된 S3 이미지 URL만 추출합니다.
      *
      * @param content HTML 형식의 문자열
-     * @return src 속성 값 리스트 (이미지 URL 목록)
+     * @return src 속성 값 리스트 (S3 이미지 URL 목록)
      */
     public List<String> extractImageUrls(String content){
         List<String> imageUrls = new ArrayList<>();
-        String regex =  "<img[^>]+src=[\"']?([^\"'>\\s]+)[\"']?";
+        String regex =  "<img[^>]+src=[\"']?([^\"'>\\s]+(?:s3\\.amazonaws\\.com)[^\"'>\\s]*)[\"']?";
 
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(content);
