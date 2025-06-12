@@ -113,6 +113,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         // 답변자 조회
         List<AnswerDTO> answers = jpaQueryFactory
                 .selectFrom(qAnswerEntity)
+                .distinct()
                 .leftJoin(qAnswerWriter).on(qAnswerWriter.eq(qAnswerEntity.writer))
                 .leftJoin(qAnswerImageEntity).on(qAnswerImageEntity.answer.eq(qAnswerEntity))
                 .orderBy(qAnswerEntity.createdAt.asc())

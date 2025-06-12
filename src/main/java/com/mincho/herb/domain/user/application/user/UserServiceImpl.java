@@ -7,6 +7,10 @@ import com.mincho.herb.domain.like.repository.HerbLikeRepository;
 import com.mincho.herb.domain.post.entity.PostEntity;
 import com.mincho.herb.domain.post.repository.post.PostRepository;
 import com.mincho.herb.domain.post.repository.postLike.PostLikeRepository;
+import com.mincho.herb.domain.qna.entity.AnswerEntity;
+import com.mincho.herb.domain.qna.entity.QuestionEntity;
+import com.mincho.herb.domain.qna.repository.answer.AnswerJpaRepository;
+import com.mincho.herb.domain.qna.repository.question.QuestionJpaRepository;
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
@@ -50,6 +54,8 @@ public class UserServiceImpl implements  UserService{
     private final RefreshTokenRepository refreshTokenRepository;
     private final PostRepository postRepository;
     private final PrivacyConsentRepository privacyConsentRepository;
+    private final QuestionJpaRepository questionJpaRepository;
+    private final AnswerJpaRepository answerJpaRepository;
 
 
 
@@ -139,6 +145,20 @@ public class UserServiceImpl implements  UserService{
 
         List<PostEntity> postEntities = postRepository.findAllByUser(userEntity);
         List<CommentEntity> commentEntities = commentRepository.findAllByUser(userEntity);
+
+        // 질문과 연관관계 끊기
+        List<QuestionEntity> questionEntities = questionJpaRepository.findAllByWriter(userEntity);
+        for (QuestionEntity questionEntity : questionEntities) {
+            questionEntity.setWriter(null);
+            questionJpaRepository.save(questionEntity);
+        }
+
+        // 답변과 연관관계 끊기
+        List<AnswerEntity> answerEntities = answerJpaRepository.findAllByWriter(userEntity);
+        for (AnswerEntity answerEntity : answerEntities) {
+            answerEntity.setWriter(null);
+            answerJpaRepository.save(answerEntity);
+        }
 
         // 댓글과 연관관계 끊기
         for(CommentEntity commentEntity : commentEntities){
