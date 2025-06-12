@@ -116,6 +116,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                 .leftJoin(qAnswerWriter).on(qAnswerWriter.eq(qAnswerEntity.writer))
                 .leftJoin(qAnswerImageEntity).on(qAnswerImageEntity.answer.eq(qAnswerEntity))
                 .orderBy(qAnswerEntity.createdAt.asc())
+                .where(qAnswerEntity.qna.id.eq(id))
                 .transform(
                         GroupBy.groupBy(qAnswerEntity.id).list(
                                 Projections.constructor(AnswerDTO.class,
