@@ -2,11 +2,13 @@ package com.mincho.herb.domain.user.api;
 
 import com.mincho.herb.domain.user.application.profile.ProfileService;
 import com.mincho.herb.domain.user.application.user.UserService;
+import com.mincho.herb.domain.user.application.privacyConsent.PrivacyConsentService;
 import com.mincho.herb.domain.user.domain.User;
 import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
 import com.mincho.herb.domain.user.dto.UpdatePasswordRequestDTO;
+import com.mincho.herb.domain.user.dto.PrivacyConsentRequestDTO;
 import com.mincho.herb.global.exception.CustomHttpException;
 import com.mincho.herb.global.response.error.ErrorResponse;
 import com.mincho.herb.global.response.error.HttpErrorCode;
@@ -17,6 +19,7 @@ import com.mincho.herb.global.util.CookieUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -39,17 +42,29 @@ public class UserController {
     private final CookieUtils cookieUtils;
     private final UserService userService;
     private final ProfileService profileService;
+    private final PrivacyConsentService privacyConsentService;
 
     /** 회원가입 */
     @Operation(summary = "회원가입", description = "신규 유저 회원가입 API")
     @Transactional
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(
-            @Parameter(description = "회원가입 정보") @Valid @RequestBody RegisterRequestDTO registerDTO) {
+            @Parameter(description = "회원가입 정보") @Valid @RequestBody RegisterRequestDTO registerDTO,
+            HttpServletRequest request) {
         log.info("회원가입 요청: {}", registerDTO);
 
         User savedUser = userService.register(registerDTO);
         profileService.insertProfile(savedUser);
+
+        // 개인정보 동의 정보 저장
+        PrivacyConsentRequestDTO consentDTO = PrivacyConsentRequestDTO.builder()
+                .essentialInfoConsent(registerDTO.getEssentialInfoConsent())
+                .optionalInfoConsent(registerDTO.getOptionalInfoConsent())
+                .automaticInfoConsent(registerDTO.getAutomaticInfoConsent())
+                .marketingConsent(registerDTO.getMarketingConsent())
+                .build();
+        String clientIp = request.getRemoteAddr();
+        privacyConsentService.saveConsent(consentDTO, savedUser.getEmail(), clientIp);
 
         return new SuccessResponse<>().getResponse(201, "등록되었습니다.", HttpSuccessType.CREATED);
     }

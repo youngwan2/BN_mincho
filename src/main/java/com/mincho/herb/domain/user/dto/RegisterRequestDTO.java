@@ -2,13 +2,9 @@ package com.mincho.herb.domain.user.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequestDTO {
@@ -21,11 +17,11 @@ public class RegisterRequestDTO {
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$", message = "비밀번호 형식과 일치하지 않습니다.")
     private String password;
 
-    @Override
-    public String toString() {
-        return "RequestRegisterDTO{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
+    // 개인정보 수집 동의 관련 필드 추가
+    private Boolean essentialInfoConsent; // 필수 정보 수집 동의 여부
+    private Boolean optionalInfoConsent;  // 선택 정보 수집 동의 여부
+    private Boolean automaticInfoConsent; // 자동 수집 정보 동의 여부
+    private Boolean marketingConsent;     // 마케팅 정보 수집 동의 여부
+
+
 }
