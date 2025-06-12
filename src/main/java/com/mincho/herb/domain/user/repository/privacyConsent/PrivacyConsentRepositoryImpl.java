@@ -74,4 +74,18 @@ public class PrivacyConsentRepositoryImpl implements PrivacyConsentRepository {
         PrivacyConsentEntity updatedEntity = privacyConsentJpaRepository.save(entity);
         return updatedEntity.toDomain();
     }
+
+    /**
+     * 동의 정보 삭제
+     *
+     * @param user
+     */
+    @Override
+    public void deleteByUser(UserEntity user) {
+        if (!privacyConsentJpaRepository.existsByUser(user)) {
+            throw new CustomHttpException(HttpErrorCode.RESOURCE_NOT_FOUND, "해당 유저의 개인정보 동의 정보를 찾을 수 없습니다.");
+        }
+        privacyConsentJpaRepository.deleteByUser(user);
+
+    }
 }

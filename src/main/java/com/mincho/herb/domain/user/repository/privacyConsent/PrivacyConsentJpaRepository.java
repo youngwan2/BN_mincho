@@ -20,4 +20,15 @@ public interface PrivacyConsentJpaRepository extends JpaRepository<PrivacyConsen
      * 사용자 ID로 마케팅 동의 여부 조회
      */
     boolean existsByUserAndMarketingConsentTrue(UserEntity user);
+
+
+    /**
+     * 사용자 ID로 동의 정보 존재 확인
+     */
+    boolean existsByUser(UserEntity user);
+
+    /**
+     * 사용자 ID로 동의정보 제거
+     */
+    void deleteByUser(UserEntity user);
 }

@@ -12,6 +12,7 @@ import com.mincho.herb.domain.user.dto.DuplicateCheckDTO;
 import com.mincho.herb.domain.user.dto.LoginRequestDTO;
 import com.mincho.herb.domain.user.dto.RegisterRequestDTO;
 import com.mincho.herb.domain.user.entity.UserEntity;
+import com.mincho.herb.domain.user.repository.privacyConsent.PrivacyConsentRepository;
 import com.mincho.herb.domain.user.repository.profile.ProfileRepository;
 import com.mincho.herb.domain.user.repository.refreshToken.RefreshTokenRepository;
 import com.mincho.herb.domain.user.repository.user.UserRepository;
@@ -48,6 +49,7 @@ public class UserServiceImpl implements  UserService{
     private final PostLikeRepository postLikeRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PostRepository postRepository;
+    private final PrivacyConsentRepository privacyConsentRepository;
 
 
 
@@ -133,6 +135,7 @@ public class UserServiceImpl implements  UserService{
         refreshTokenRepository.deleteByUser(userEntity);
         herbLikeRepository.deleteByUser(userEntity);
         postLikeRepository.deleteByUser(userEntity);
+        privacyConsentRepository.deleteByUser(userEntity);
 
         List<PostEntity> postEntities = postRepository.findAllByUser(userEntity);
         List<CommentEntity> commentEntities = commentRepository.findAllByUser(userEntity);

@@ -32,4 +32,9 @@ public interface PrivacyConsentRepository {
      * 동의 정보 업데이트
      */
     PrivacyConsent update(Long id, PrivacyConsent privacyConsent);
+
+    /**
+     * 동의 정보 삭제
+     */
+    void deleteByUser(UserEntity user);
 }
